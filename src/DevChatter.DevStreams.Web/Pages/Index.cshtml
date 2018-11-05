@@ -1,0 +1,45 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="row">
+    <div class="col-md-3">
+        <h2>Foo Bar</h2>
+        <ul>
+            <li>FizzBuzz</li>
+            <li>BazzFezz</li>
+        </ul>
+    </div>
+    <div class="col-md-3">
+        <h2>Something Something</h2>
+        <ul>
+            <li>Something</li>
+            <li>Dark</li>
+            <li>Side</li>
+        </ul>
+    </div>
+    <div class="col-md-3">
+        <h2>Something Something</h2>
+        <ul>
+            <li>Something</li>
+            <li>Complete</li>
+        </ul>
+    </div>
+    <div class="col-md-3">
+        <h2>Far Right</h2>
+        <ul>
+            <li>Bullet 1</li>
+            <li>Bullet 2</li>
+            <li>Bullet 3</li>
+        </ul>
+    </div>
+</div>
+
+@section Scripts
+{
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.css' />
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.js'></script>
+}

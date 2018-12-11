@@ -1,0 +1,11 @@
+﻿@page
+@model DevChatter.DevStreams.Web.Pages.Streams.CreateModel
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h2>Create</h2>
+
+<select asp-for="LocationId" asp-items="Model.Locations">
+    <option value="">Choose Location</option>
+</select>

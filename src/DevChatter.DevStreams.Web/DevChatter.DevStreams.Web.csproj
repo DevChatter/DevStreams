@@ -12,9 +12,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Pages\Streams\" />
-    <Folder Include="Pages\Streamers\" />
     <Folder Include="wwwroot\images\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DevChatter.DevStreams.Core\DevChatter.DevStreams.Core.csproj" />
   </ItemGroup>
 
 </Project>

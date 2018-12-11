@@ -8,5 +8,6 @@ namespace DevChatter.DevStreams.Web.Data.Model
         public string Name { get; set; }
         public Uri Uri { get; set; }
         public List<StreamTime> StreamTimes { get; set; }
+        public string TimeZoneId { get; set; }
     }
 }

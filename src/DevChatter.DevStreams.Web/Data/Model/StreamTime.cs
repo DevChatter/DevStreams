@@ -1,5 +1,4 @@
-﻿using System;
-using NodaTime;
+﻿using NodaTime;
 
 namespace DevChatter.DevStreams.Web.Data.Model
 {

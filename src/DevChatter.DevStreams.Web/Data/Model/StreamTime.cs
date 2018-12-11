@@ -1,12 +1,12 @@
 ﻿using System;
-using DevChatter.DevStreams.Core.Model;
-using DevChatter.DevStreams.Web.Pages.Streams;
+using NodaTime;
 
 namespace DevChatter.DevStreams.Web.Data.Model
 {
     public class StreamTime
     {
-        public DateTime Time { get; set; }
-        public Location Location { get; set; }
+        public string TimeZoneId { get; set; }
+        public IsoDayOfWeek DayOfWeek { get; set; }
+        public LocalTime LocalTime { get; set; }
     }
 }

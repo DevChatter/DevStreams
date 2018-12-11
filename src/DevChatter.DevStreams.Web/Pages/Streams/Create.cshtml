@@ -6,6 +6,19 @@
 
 <h2>Create</h2>
 
-<select asp-for="LocationId" asp-items="Model.Locations">
-    <option value="">Choose Location</option>
-</select>
+<form method="post">
+    <select asp-for="TimeZoneId" asp-items="Model.TimeZoneIds">
+        <option value="">Choose Location</option>
+    </select>
+
+    <input asp-for="LocalTime" type="time" />
+    
+    <input type="submit" value="click this" />
+</form>
+
+<ul>
+    @foreach (var item in Model.SuggestedSessions)
+    {
+        <li>@CreateModel.ZonedDateTimePattern.Format(item)</li>
+    }
+</ul>

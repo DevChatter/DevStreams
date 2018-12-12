@@ -1,4 +1,6 @@
 ﻿@page
+@using Streams
+@using NodaTime;
 @model DevChatter.DevStreams.Web.Pages.Streams.CreateModel
 @{
     ViewData["Title"] = "Create";
@@ -7,11 +9,14 @@
 <h2>Create</h2>
 
 <form method="post">
-    <select asp-for="TimeZoneId" asp-items="Model.TimeZoneIds">
+    <select asp-for="StreamTime.TimeZoneId" asp-items="Model.TimeZoneIds">
         <option value="">Choose Location</option>
     </select>
 
-    <input asp-for="LocalTime" type="time" />
+    <input asp-for="StreamTime.LocalTime" type="time" />
+    
+    <select asp-for="StreamTime.DayOfWeek" asp-items="Html.GetEnumSelectList<IsoDayOfWeek>()">
+    </select>
     
     <input type="submit" value="click this" />
 </form>

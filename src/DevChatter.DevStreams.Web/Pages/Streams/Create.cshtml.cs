@@ -5,17 +5,35 @@ using NodaTime.Extensions;
 using NodaTime.Text;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using DevChatter.DevStreams.Web.Data.ViewModel;
+using Microsoft.AspNetCore.Mvc;
 
 namespace DevChatter.DevStreams.Web.Pages.Streams
 {
     public class CreateModel : PageModel
     {
-        private static readonly LocalTimePattern TimePattern = LocalTimePattern.CreateWithInvariantCulture("HH:mm");
-        public static readonly ZonedDateTimePattern ZonedDateTimePattern = ZonedDateTimePattern.CreateWithInvariantCulture("yyyy-MM-dd HH:mm o<G>", null);
+        private static readonly LocalTimePattern TimePattern = 
+            LocalTimePattern.CreateWithInvariantCulture("HH:mm");
+        public static readonly ZonedDateTimePattern ZonedDateTimePattern = 
+            ZonedDateTimePattern.CreateWithInvariantCulture("yyyy-MM-dd HH:mm o<G>", null);
 
-        private readonly IClock clock = SystemClock.Instance;
-        public string TimeZoneId { get; set; }
-        public string LocalTime { get; set; } = "14:00";
+
+        private readonly IClock _clock;
+
+        public CreateModel()
+        {
+            _clock = SystemClock.Instance;
+        }
+
+
+        [BindProperty]
+        public CreateStreamTimeViewModel StreamTime { get; set; } = new CreateStreamTimeViewModel
+        {
+            DayOfWeek = IsoDayOfWeek.Monday,
+            LocalTime = "14:00"
+        };
+
         public IEnumerable<SelectListItem> TimeZoneIds;
         public List<ZonedDateTime> SuggestedSessions = new List<ZonedDateTime>();
         public void OnGet()
@@ -34,16 +52,15 @@ namespace DevChatter.DevStreams.Web.Pages.Streams
 
         public void OnPost()
         {
-            var dayOfWeek = IsoDayOfWeek.Monday;
-            var parseResult = TimePattern.Parse(LocalTime);
+            var parseResult = TimePattern.Parse(StreamTime.LocalTime);
             var localTime = parseResult.Value;
 
-            var zone = DateTimeZoneProviders.Tzdb["America/New_York"];
+            var zone = DateTimeZoneProviders.Tzdb[StreamTime.TimeZoneId];
             //var version = DateTimeZoneProviders.Tzdb.VersionId;
-            var zonedClock = clock.InZone(zone);
+            var zonedClock = _clock.InZone(zone);
 
             LocalDate today = zonedClock.GetCurrentDate();
-            LocalDate next = today.With(DateAdjusters.Next(dayOfWeek));
+            LocalDate next = today.With(DateAdjusters.Next(StreamTime.DayOfWeek));
 
             SuggestedSessions = new List<ZonedDateTime>();
             for (int i = 0; i < 52; i++)

@@ -11,13 +11,13 @@ namespace DevChatter.DevStreams.Web.Controllers
     public class TimeZonesController : Controller
     {
         [HttpGet]
-        public IDictionary<string, string> Get(string country, DateTimeOffset? threshold)
+        public IDictionary<string, string> Get(string countryCode, DateTimeOffset? threshold)
         {
             var languageCode = CultureInfo.CurrentUICulture.Name;
 
-            if (country != null)
+            if (countryCode != null)
             {
-                return GetTimeZonesForCountry(country, threshold, languageCode);
+                return GetTimeZonesForCountry(countryCode, threshold, languageCode);
             }
 
             return TZNames.GetCountryNames(languageCode)
@@ -27,11 +27,11 @@ namespace DevChatter.DevStreams.Web.Controllers
                 .ToDictionary(x => x.Key, x => $"{x.First().Country} - {x.First().TimeZoneName}");
         }
 
-        private static IDictionary<string, string> GetTimeZonesForCountry(string country, DateTimeOffset? threshold, string languageCode)
+        private static IDictionary<string, string> GetTimeZonesForCountry(string countryCode, DateTimeOffset? threshold, string languageCode)
         {
             return threshold == null
-                ? TZNames.GetTimeZonesForCountry(country, languageCode)
-                : TZNames.GetTimeZonesForCountry(country, languageCode, threshold.Value);
+                ? TZNames.GetTimeZonesForCountry(countryCode, languageCode)
+                : TZNames.GetTimeZonesForCountry(countryCode, languageCode, threshold.Value);
         }
     }
 }

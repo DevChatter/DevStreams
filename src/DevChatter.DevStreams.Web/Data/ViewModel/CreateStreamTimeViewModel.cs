@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using DevChatter.DevStreams.Web.Data.Model;
+using DevChatter.DevStreams.Core.Model;
 using NodaTime;
 using NodaTime.Text;
 

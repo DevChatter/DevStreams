@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace DevChatter.DevStreams.Web.Data.Model
+namespace DevChatter.DevStreams.Core.Model
 {
     public class Stream
     {

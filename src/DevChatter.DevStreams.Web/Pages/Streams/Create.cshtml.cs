@@ -7,6 +7,8 @@ using NodaTime.Extensions;
 using NodaTime.Text;
 using System.Collections.Generic;
 using System.Linq;
+using System.Globalization;
+using TimeZoneNames;
 
 namespace DevChatter.DevStreams.Web.Pages.Streams
 {
@@ -27,10 +29,12 @@ namespace DevChatter.DevStreams.Web.Pages.Streams
         public CreateStreamTimeViewModel StreamTime { get; set; } = new CreateStreamTimeViewModel
         {
             DayOfWeek = IsoDayOfWeek.Monday,
-            LocalTime = "14:00"
+            LocalStartTime = "14:00",
+            LocalEndTime = "16:00",
         };
 
         public IEnumerable<SelectListItem> TimeZoneIds;
+        public IEnumerable<SelectListItem> Countries;
         public List<ZonedDateTime> SuggestedSessions = new List<ZonedDateTime>();
         public void OnGet()
         {
@@ -39,6 +43,9 @@ namespace DevChatter.DevStreams.Web.Pages.Streams
 
             // TODO: Use better names than the ID itself.
             TimeZoneIds = tzdbIds.Select(x => new SelectListItem(x, x));
+
+            Countries = TZNames.GetCountryNames(CultureInfo.CurrentUICulture.Name)
+                .Select(x => new SelectListItem(x.Value, x.Key));
 
             //var localTime = new LocalTime(14,0,0,0);
             //string formatted = LocalTimePattern.ExtendedIso.Format(localTime);
@@ -60,7 +67,7 @@ namespace DevChatter.DevStreams.Web.Pages.Streams
             SuggestedSessions = new List<ZonedDateTime>();
             for (int i = 0; i < 52; i++)
             {
-                LocalDateTime nextLocalDateTime = next + streamTime.LocalTime;
+                LocalDateTime nextLocalDateTime = next + streamTime.LocalStartTime;
 
                 SuggestedSessions.Add(nextLocalDateTime.InZoneLeniently(zone));
                 next = next.PlusWeeks(1);

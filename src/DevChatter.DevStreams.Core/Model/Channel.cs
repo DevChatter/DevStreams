@@ -4,13 +4,13 @@ using System.Collections.Generic;
 namespace DevChatter.DevStreams.Core.Model
 {
     /// <summary>
-    /// Information about a stream. Example: DevChatter
+    /// Information about a streaming channel. Example: DevChatter
     /// </summary>
-    public class Stream
+    public class Channel : DataEntity
     {
         public string Name { get; set; }
         public Uri Uri { get; set; }
-        public List<StreamTime> StreamTimes { get; set; }
+        public List<ScheduledStream> ScheduledStreams { get; set; }
         public string TimeZoneId { get; set; }
     }
 }

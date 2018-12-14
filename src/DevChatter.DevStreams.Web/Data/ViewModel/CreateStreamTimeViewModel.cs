@@ -28,14 +28,14 @@ namespace DevChatter.DevStreams.Web.Data.ViewModel
         [Required]
         public string LocalEndTime { get; set; }
 
-        public StreamTime ToModel()
+        public ScheduledStream ToModel()
         {
             var parsedStart = TimePattern.Parse(LocalStartTime);
             var parsedEnd = TimePattern.Parse(LocalEndTime);
             var localStartTime = parsedStart.Value;
             var localEndTime = parsedEnd.Value;
 
-            return new StreamTime
+            return new ScheduledStream
             {
                 DayOfWeek = DayOfWeek,
                 TimeZoneId = TimeZoneId,

@@ -9,7 +9,7 @@
 
 <h4>Channel</h4>
 <hr />
-<div class="row">
+<div id="app" class="row">
     <div class="col-md-4">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -24,10 +24,24 @@
                 <span asp-validation-for="Channel.Uri" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label class="control-label">Country</label>
+                <select asp-items="Model.Countries" id="country" class="form-control"
+                        v-model="selectedCountry">
+                    <option value="">Select Country</option>
+                </select>
+            </div>
+            <div class="form-group">
                 <label asp-for="Channel.TimeZoneId" class="control-label"></label>
-                <input asp-for="Channel.TimeZoneId" class="form-control" />
+                <select asp-for="Channel.TimeZoneId" id="timeZone" class="form-control" v-model="selectedTimeZone">
+                    <option v-for="option in timeZoneOptions"
+                            :value="option.key"
+                            :key="option.key">
+                        {{ option.value }}
+                    </option>
+                </select>
                 <span asp-validation-for="Channel.TimeZoneId" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-default" />
             </div>
@@ -40,5 +54,6 @@
 </div>
 
 @section Scripts {
+    <script src="~/js/vue/streams-create.js"></script>
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

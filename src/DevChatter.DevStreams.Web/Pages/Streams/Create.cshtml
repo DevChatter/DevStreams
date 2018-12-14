@@ -8,66 +8,74 @@
 
 <h2>Create New Stream Time</h2>
 
-<form method="post">
-    
-    <h3>Time Zone</h3>
+<div id="app">
+    <form method="post">
 
-    <div class="panel panel-default" style="width: 400px">
-        <div class="form-horizontal panel-body">
-            <div class="form-group row">
-                <label asp-for="StreamTime.Country" class="col-xs-3 control-label"></label>
-                <div class="col-xs-9">
-                    <select asp-items="Model.Countries" id="country" class="form-control">
-                        <option value="">Select Country</option>
-                    </select>
-                </div>
-            </div>
-            <div class="form-group row">
-                <label asp-for="StreamTime.TimeZoneId" class="col-xs-3 control-label text-nowrap"></label>
-                <div class="col-xs-9">
-                    <select id="timeZone" class="form-control">
-                    </select>
-                </div>
-            </div>
-        </div>
-    </div>
+        <h3>Time Zone</h3>
 
-    <!-- <select asp-for="StreamTime.TimeZoneId" asp-items="Model.TimeZoneIds">
-        <option value="">Select Time Zone</option>
-    </select> -->
-
-
-    <h3>Stream Time</h3>
-    <div class="panel panel-default" style="width: 400px">
-        <div class="form-horizontal panel-body">
-            <div class="form-group row">
-                <label asp-for="StreamTime.DayOfWeek" class="col-xs-4 control-label"></label>
-                <div class="col-xs-8">
-                    <select asp-for="StreamTime.DayOfWeek" asp-items="Html.GetEnumSelectList<IsoDayOfWeek>()">
-                    </select>
+        <div class="panel panel-default" style="width: 400px">
+            <div class="form-horizontal panel-body">
+                <div class="form-group row">
+                    <label asp-for="StreamTime.Country" class="col-xs-3 control-label"></label>
+                    <div class="col-xs-9">
+                        <select asp-items="Model.Countries" id="country" class="form-control"
+                                v-model="selectedCountry">
+                            <option value="">Select Country</option>
+                        </select>
+                    </div>
                 </div>
-            </div>
-            <div class="form-group row">
-                <label asp-for="StreamTime.LocalStartTime" class="col-xs-4 control-label text-nowrap"></label>
-                <div class="col-xs-8">
-                    <input asp-for="StreamTime.LocalStartTime" type="time" />
-                </div>
-            </div>
-            <div class="form-group row">
-                <label asp-for="StreamTime.LocalEndTime" class="col-xs-4 control-label text-nowrap"></label>
-                <div class="col-xs-8">
-                    <input asp-for="StreamTime.LocalEndTime" type="time" />
+                <div class="form-group row">
+                    <label asp-for="StreamTime.TimeZoneId" class="col-xs-3 control-label text-nowrap"></label>
+                    <div class="col-xs-9">
+                        <select id="timeZone" class="form-control" v-model="selectedTimeZone">
+                            <option v-for="option in timeZoneOptions"
+                                    :value="option.key"
+                                    :key="option.key">
+                                {{ option.value }}
+                            </option>
+                        </select>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <input type="submit" value="Create Stream Time" />
-</form>
+        <h3>Stream Time</h3>
+        <div class="panel panel-default" style="width: 400px">
+            <div class="form-horizontal panel-body">
+                <div class="form-group row">
+                    <label asp-for="StreamTime.DayOfWeek" class="col-xs-4 control-label"></label>
+                    <div class="col-xs-8">
+                        <select asp-for="StreamTime.DayOfWeek" asp-items="Html.GetEnumSelectList<IsoDayOfWeek>()"></select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label asp-for="StreamTime.LocalStartTime" class="col-xs-4 control-label text-nowrap"></label>
+                    <div class="col-xs-8">
+                        <input asp-for="StreamTime.LocalStartTime" type="time" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label asp-for="StreamTime.LocalEndTime" class="col-xs-4 control-label text-nowrap"></label>
+                    <div class="col-xs-8">
+                        <input asp-for="StreamTime.LocalEndTime" type="time" />
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<ul>
-    @foreach (var item in Model.SuggestedSessions)
-    {
-        <li>@CreateModel.ZonedDateTimePattern.Format(item)</li>
-    }
-</ul>
+        <input type="submit" value="Create Stream Time" />
+    </form>
+
+    <ul>
+        @foreach (var item in Model.SuggestedSessions)
+        {
+            <li>@CreateModel.ZonedDateTimePattern.Format(item)</li>
+        }
+    </ul>
+</div>
+
+
+@section Scripts
+{
+    <script src="~/js/vue/streams-create.js"></script>
+}

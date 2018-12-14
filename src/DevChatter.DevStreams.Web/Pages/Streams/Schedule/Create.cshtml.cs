@@ -6,17 +6,16 @@ using NodaTime;
 using NodaTime.Extensions;
 using NodaTime.Text;
 using System.Collections.Generic;
-using System.Linq;
 using System.Globalization;
+using System.Linq;
 using TimeZoneNames;
 
-namespace DevChatter.DevStreams.Web.Pages.Streams
+namespace DevChatter.DevStreams.Web.Pages.Streams.Schedule
 {
     public class CreateModel : PageModel
     {
         public static readonly ZonedDateTimePattern ZonedDateTimePattern = 
             ZonedDateTimePattern.CreateWithInvariantCulture("yyyy-MM-dd HH:mm o<G>", null);
-
 
         private readonly IClock _clock;
 

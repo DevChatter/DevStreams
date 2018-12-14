@@ -9,7 +9,7 @@ namespace DevChatter.DevStreams.Core.Model
     public class Channel : DataEntity
     {
         public string Name { get; set; }
-        public Uri Uri { get; set; }
+        public string Uri { get; set; }
         public List<ScheduledStream> ScheduledStreams { get; set; }
         public string TimeZoneId { get; set; }
     }

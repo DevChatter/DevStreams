@@ -57,7 +57,7 @@ namespace DevChatter.DevStreams.Web.Pages.Streams
         {
             var streamTime = StreamTime.ToModel();
 
-            var zone = DateTimeZoneProviders.Tzdb[streamTime.TimeZoneId];
+            var zone = DateTimeZoneProviders.Tzdb[StreamTime.TimeZoneId];
             //var version = DateTimeZoneProviders.Tzdb.VersionId;
             ZonedClock zonedClock = _clock.InZone(zone);
 

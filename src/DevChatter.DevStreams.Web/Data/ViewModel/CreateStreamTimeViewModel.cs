@@ -38,7 +38,6 @@ namespace DevChatter.DevStreams.Web.Data.ViewModel
             return new ScheduledStream
             {
                 DayOfWeek = DayOfWeek,
-                TimeZoneId = TimeZoneId,
                 LocalStartTime = localStartTime,
                 LocalEndTime = localEndTime,
             };

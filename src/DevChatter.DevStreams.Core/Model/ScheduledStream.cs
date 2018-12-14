@@ -8,7 +8,6 @@ namespace DevChatter.DevStreams.Core.Model
     /// </summary>
     public class ScheduledStream : DataEntity
     {
-        public string TimeZoneId { get; set; }
         public IsoDayOfWeek DayOfWeek { get; set; }
         public LocalTime LocalStartTime { get; set; }
         public LocalTime LocalEndTime { get; set; }

@@ -1,9 +1,13 @@
-﻿using DevChatter.DevStreams.Core.Model;
+﻿using System.Collections.Generic;
+using System.Globalization;
+using DevChatter.DevStreams.Core.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using TimeZoneNames;
 
 namespace DevChatter.DevStreams.Web.Pages.Streams
 {
@@ -15,6 +19,8 @@ namespace DevChatter.DevStreams.Web.Pages.Streams
         {
             _context = context;
         }
+
+        public IEnumerable<SelectListItem> Countries { get; set; }
 
         [BindProperty]
         public Channel Channel { get; set; }
@@ -32,6 +38,10 @@ namespace DevChatter.DevStreams.Web.Pages.Streams
             {
                 return NotFound();
             }
+
+            Countries = TZNames.GetCountryNames(CultureInfo.CurrentUICulture.Name)
+                .Select(x => new SelectListItem(x.Value, x.Key));
+
             return Page();
         }
 

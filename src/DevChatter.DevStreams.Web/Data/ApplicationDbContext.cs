@@ -57,6 +57,8 @@ namespace DevChatter.DevStreams.Web.Data
                         .IsRequired();
                     builder.Property(x => x.TimeZoneId)
                         .IsRequired();
+                    builder.Property(x => x.CountryCode)
+                        .IsRequired();
                 });
         }
     }

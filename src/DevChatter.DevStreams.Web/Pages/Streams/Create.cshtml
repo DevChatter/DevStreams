@@ -27,7 +27,7 @@
                 <div class="form-group row">
                     <label asp-for="StreamTime.TimeZoneId" class="col-xs-3 control-label text-nowrap"></label>
                     <div class="col-xs-9">
-                        <select id="timeZone" class="form-control" v-model="selectedTimeZone">
+                        <select asp-for="StreamTime.TimeZoneId" id="timeZone" class="form-control" v-model="selectedTimeZone">
                             <option v-for="option in timeZoneOptions"
                                     :value="option.key"
                                     :key="option.key">

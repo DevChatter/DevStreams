@@ -59,7 +59,7 @@ namespace DevChatter.DevStreams.Web.Pages.Streams
 
             var zone = DateTimeZoneProviders.Tzdb[streamTime.TimeZoneId];
             //var version = DateTimeZoneProviders.Tzdb.VersionId;
-            var zonedClock = _clock.InZone(zone);
+            ZonedClock zonedClock = _clock.InZone(zone);
 
             LocalDate today = zonedClock.GetCurrentDate();
             LocalDate next = today.With(DateAdjusters.Next(streamTime.DayOfWeek));

@@ -9,7 +9,7 @@ namespace DevChatter.DevStreams.Web.Data
     public class ApplicationDbContext : IdentityDbContext
     {
         public DbSet<Channel> Channels { get; set; }
-//        public DbSet<StreamSession> StreamSessions { get; set; }
+        public DbSet<StreamSession> StreamSessions { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -20,7 +20,31 @@ namespace DevChatter.DevStreams.Web.Data
         {
             SetUpChannels(modelBuilder);
             SetUpScheduledStream(modelBuilder);
+            SetUpStreamSession(modelBuilder);
             base.OnModelCreating(modelBuilder);
+        }
+
+        private static void SetUpStreamSession(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<StreamSession>(builder =>
+            {
+                builder.Property(x => x.UtcStartTime)
+                    .HasConversion(
+                        x => x.ToUnixTimeTicks(),
+                        x => Instant.FromUnixTimeTicks(x))
+                    .IsRequired();
+                builder.Property(x => x.UtcEndTime)
+                    .HasConversion(
+                        x => x.ToUnixTimeTicks(),
+                        x => Instant.FromUnixTimeTicks(x))
+                    .IsRequired();
+                builder.Property(x => x.TzdbVersionId)
+                    .IsRequired();
+                builder.Property("ScheduledStreamId")
+                    .IsRequired();
+                builder.Property("ChannelId")
+                    .IsRequired();
+            });
         }
 
         private static void SetUpScheduledStream(ModelBuilder modelBuilder)

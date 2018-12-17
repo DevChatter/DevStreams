@@ -10,9 +10,7 @@ namespace DevChatter.DevStreams.Core.Model
     public class StreamSession : DataEntity
     {
         public Channel Channel { get; set; }
-        public LocalDateTime LocalStartDateTime { get; set; }
-        public LocalDateTime LocalEndDateTime { get; set; }
-        public string TimeZoneId { get; set; }
+        public ScheduledStream ScheduledStream { get; set; }
         public Instant UtcStartTime { get; set; }
         public Instant UtcEndTime { get; set; }
         public string TzdbVersionId { get; set; }

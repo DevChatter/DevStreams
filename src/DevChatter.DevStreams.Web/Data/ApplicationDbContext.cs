@@ -9,7 +9,7 @@ namespace DevChatter.DevStreams.Web.Data
     public class ApplicationDbContext : IdentityDbContext
     {
         public DbSet<Channel> Channels { get; set; }
-        //public DbSet<StreamSession> StreamSessions { get; set; }
+//        public DbSet<StreamSession> StreamSessions { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -61,5 +61,7 @@ namespace DevChatter.DevStreams.Web.Data
                         .IsRequired();
                 });
         }
+
+        public DbSet<DevChatter.DevStreams.Core.Model.ScheduledStream> ScheduledStream { get; set; }
     }
 }

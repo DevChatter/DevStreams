@@ -8,21 +8,27 @@ using NodaTime.Text;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
+using DevChatter.DevStreams.Core.Model;
+using Microsoft.EntityFrameworkCore;
 using TimeZoneNames;
 
 namespace DevChatter.DevStreams.Web.Pages.Streams.Schedule
 {
     public class CreateModel : PageModel
     {
-        public static readonly ZonedDateTimePattern ZonedDateTimePattern = 
-            ZonedDateTimePattern.CreateWithInvariantCulture("yyyy-MM-dd HH:mm o<G>", null);
+        private readonly DevChatter.DevStreams.Web.Data.ApplicationDbContext _context;
 
-        private readonly IClock _clock;
-
-        public CreateModel()
+        public CreateModel(DevChatter.DevStreams.Web.Data.ApplicationDbContext context)
         {
+            _context = context;
             _clock = SystemClock.Instance;
         }
+
+        public static readonly ZonedDateTimePattern ZonedDateTimePattern = 
+            ZonedDateTimePattern.CreateWithInvariantCulture("HH:mm o<G>", null);
+
+        private readonly IClock _clock;
 
         [BindProperty]
         public CreateStreamTimeViewModel StreamTime { get; set; } = new CreateStreamTimeViewModel
@@ -32,45 +38,46 @@ namespace DevChatter.DevStreams.Web.Pages.Streams.Schedule
             LocalEndTime = "16:00",
         };
 
-        public IEnumerable<SelectListItem> TimeZoneIds;
-        public IEnumerable<SelectListItem> Countries;
-        public List<ZonedDateTime> SuggestedSessions = new List<ZonedDateTime>();
-        public void OnGet()
+        public string TimeZoneName { get; set; }
+
+        public async Task OnGetAsync(int channelId)
         {
-            IDateTimeZoneProvider dateTimeZoneProvider = DateTimeZoneProviders.Tzdb;
-            var tzdbIds = dateTimeZoneProvider.Ids;
-
-            // TODO: Use better names than the ID itself.
-            TimeZoneIds = tzdbIds.Select(x => new SelectListItem(x, x));
-
-            Countries = TZNames.GetCountryNames(CultureInfo.CurrentUICulture.Name)
-                .Select(x => new SelectListItem(x.Value, x.Key));
-
-            //var localTime = new LocalTime(14,0,0,0);
-            //string formatted = LocalTimePattern.ExtendedIso.Format(localTime);
-
-            //var parsed = LocalTimePattern.ExtendedIso.Parse(formatted).Value;
+            Channel channel = await _context.Channels.FindAsync(channelId);
+            
+            TimeZoneName = TZNames.GetNamesForTimeZone(channel.TimeZoneId, CultureInfo.CurrentUICulture.Name).Generic;
         }
 
-        public void OnPost()
+        public async Task<IActionResult> OnPostAsync(int channelId)
         {
-            var streamTime = StreamTime.ToModel();
+            ScheduledStream stream = StreamTime.ToModel();
 
-            var zone = DateTimeZoneProviders.Tzdb[StreamTime.TimeZoneId];
-            //var version = DateTimeZoneProviders.Tzdb.VersionId;
-            ZonedClock zonedClock = _clock.InZone(zone);
+            Channel channel = await _context.Channels
+                .Include(x => x.ScheduledStreams)
+                .SingleAsync(x => x.Id == channelId);
 
-            LocalDate today = zonedClock.GetCurrentDate();
-            LocalDate next = today.With(DateAdjusters.Next(streamTime.DayOfWeek));
+            channel.ScheduledStreams.Add(stream);
 
-            SuggestedSessions = new List<ZonedDateTime>();
-            for (int i = 0; i < 52; i++)
-            {
-                LocalDateTime nextLocalDateTime = next + streamTime.LocalStartTime;
+//            var zone = DateTimeZoneProviders.Tzdb[stream.Channel.TimeZoneId];
+//            var version = DateTimeZoneProviders.Tzdb.VersionId;
+//            ZonedClock zonedClock = _clock.InZone(zone);
+//
+//            LocalDate today = zonedClock.GetCurrentDate();
+//            LocalDate next = today.With(DateAdjusters.Next(stream.DayOfWeek));
+//
+//            
+//            for (int i = 0; i < 52; i++)
+//            {
+//                LocalDateTime nextLocalDateTime = next + stream.LocalStartTime;
+//
+//                .Add(nextLocalDateTime.InZoneLeniently(zone));
+//                next = next.PlusWeeks(1);
+//            }
 
-                SuggestedSessions.Add(nextLocalDateTime.InZoneLeniently(zone));
-                next = next.PlusWeeks(1);
-            }
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToPage("./Index");
+
         }
     }
 }

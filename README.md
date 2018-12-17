@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="#" alt="DevStreams" width="200"><img src="https://www.devchatter.com/assets/css/images/DarkBack-Logo.png"></a>
+  <a href="#" alt="DevStreams" width="200"><img src="DevChatterLogo.png"></a>
 </p>
 <h4 align="center">Dev Streams</h4>
 

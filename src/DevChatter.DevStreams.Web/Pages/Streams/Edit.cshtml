@@ -1,11 +1,11 @@
 ﻿@page
-@model DevChatter.DevStreams.Web.Pages.Streams.CreateModel
+@model DevChatter.DevStreams.Web.Pages.Streams.EditModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Edit";
 }
 
-<h2>Create</h2>
+<h2>Edit</h2>
 
 <h4>Channel</h4>
 <hr />
@@ -25,7 +25,8 @@
             </div>
             <div class="form-group">
                 <label asp-for="Channel.CountryCode" class="control-label"></label>
-                <select asp-for="Channel.CountryCode" asp-items="Model.Countries" id="country" class="form-control" v-model="selectedCountry">
+                <select asp-for="Channel.CountryCode" asp-items="Model.Countries" id="country" class="form-control"
+                        v-model="selectedCountry">
                     <option value="">Select Country</option>
                 </select>
             </div>
@@ -40,16 +41,16 @@
                 </select>
                 <span asp-validation-for="Channel.TimeZoneId" class="text-danger"></span>
             </div>
-
+            <input type="hidden" asp-for="Channel.Id" />
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-default" />
+                <input type="submit" value="Save" class="btn btn-default" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-page="Index">Back to List</a>
+    <a asp-page="./Index">Back to List</a>
 </div>
 
 @section Scripts {

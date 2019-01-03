@@ -1,0 +1,49 @@
+﻿@page
+@model DevChatter.DevStreams.Web.Pages.Streams.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Channel[0].Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Channel[0].Uri)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Channel[0].TimeZoneId)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Channel) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Uri)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TimeZoneId)
+            </td>
+            <td>
+                <a asp-page="./Schedule/Index" asp-route-channelId="@item.Id">Schedule</a> |
+                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

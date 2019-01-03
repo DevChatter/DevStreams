@@ -7,12 +7,10 @@ namespace DevChatter.DevStreams.Core.Model
     /// date at a specific time.
     /// Example: DevChatter streamed 2018-12-13 at 15:00 UTC.
     /// </summary>
-    public class StreamSession
+    public class StreamSession : DataEntity
     {
-        public Stream Stream { get; set; }
-        public LocalDateTime LocalStartDateTime { get; set; }
-        public LocalDateTime LocalEndDateTime { get; set; }
-        public string TimeZoneId { get; set; }
+        public Channel Channel { get; set; }
+        public ScheduledStream ScheduledStream { get; set; }
         public Instant UtcStartTime { get; set; }
         public Instant UtcEndTime { get; set; }
         public string TzdbVersionId { get; set; }

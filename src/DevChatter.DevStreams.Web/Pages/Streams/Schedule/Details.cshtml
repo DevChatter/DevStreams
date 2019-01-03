@@ -1,0 +1,43 @@
+﻿@page
+@model DevChatter.DevStreams.Web.Pages.Streams.Schedule.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>ScheduledStream</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.ScheduledStream.DayOfWeek)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.ScheduledStream.DayOfWeek)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.ScheduledStream.LocalStartTime)
+        </dt>
+        <dd>
+            @Model.ScheduledStream.LocalStartTime.ToString("HH:mm", null)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.ScheduledStream.LocalEndTime)
+        </dt>
+        <dd>
+            @Model.ScheduledStream.LocalEndTime.ToString("HH:mm", null)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.ScheduledStream.Channel.TimeZoneId)
+        </dt>
+        <dd>
+            @Model.ScheduledStream.Channel.TimeZoneId
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.ScheduledStream.Id">Edit</a> |
+    <a asp-page="./Index" asp-route-channelId="@Model.ScheduledStream.Channel.Id">Back to List</a>
+</div>

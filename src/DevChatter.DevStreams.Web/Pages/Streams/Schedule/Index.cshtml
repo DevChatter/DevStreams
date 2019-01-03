@@ -1,0 +1,57 @@
+﻿@page "{channelId:int}"
+@using NodaTime.Text
+@model DevChatter.DevStreams.Web.Pages.Streams.Schedule.IndexModel
+
+@{
+    ViewData["Title"] = $"Scheduled Streams for {Model.Channel.Name}";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Channel.ScheduledStreams[0].DayOfWeek)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Channel.ScheduledStreams[0].LocalStartTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Channel.ScheduledStreams[0].LocalEndTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Channel.TimeZoneId)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Channel.ScheduledStreams)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DayOfWeek)
+                </td>
+                <td>
+                    @item.LocalStartTime.ToString("HH:mm", null)
+                </td>
+                <td>
+                    @item.LocalEndTime.ToString("HH:mm", null)
+                </td>
+                <td>
+                    @*TODO: Make this a friendly name instead.*@
+                    @Model.Channel.TimeZoneId
+                </td>
+                <td>
+                    <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

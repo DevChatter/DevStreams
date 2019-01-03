@@ -1,0 +1,54 @@
+﻿@page "{channelId:int}"
+@using Streams.Schedule
+@using NodaTime;
+@model DevChatter.DevStreams.Web.Pages.Streams.Schedule.CreateModel
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h2>Schedule New Stream Time</h2>
+
+<div id="app">
+    <form method="post">
+
+        <h3>Time Zone</h3>
+
+        <div class="panel panel-default" style="width: 400px">
+            <div class="form-horizontal panel-body">
+                <div class="form-group row">
+                    <label class="col-xs-3 control-label text-nowrap">Time Zone</label>
+                    <div class="col-xs-9">
+                        @Model.TimeZoneName
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h3>Stream Time</h3>
+        <div class="panel panel-default" style="width: 400px">
+            <div class="form-horizontal panel-body">
+                <div class="form-group row">
+                    <label asp-for="StreamTime.DayOfWeek" class="col-xs-4 control-label"></label>
+                    <div class="col-xs-8">
+                        <select asp-for="StreamTime.DayOfWeek" asp-items="Html.GetEnumSelectList<IsoDayOfWeek>()"></select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label asp-for="StreamTime.LocalStartTime" class="col-xs-4 control-label text-nowrap"></label>
+                    <div class="col-xs-8">
+                        <input asp-for="StreamTime.LocalStartTime" type="time" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label asp-for="StreamTime.LocalEndTime" class="col-xs-4 control-label text-nowrap"></label>
+                    <div class="col-xs-8">
+                        <input asp-for="StreamTime.LocalEndTime" type="time" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <input type="submit" value="Create Stream Time" />
+    </form>
+</div>
+

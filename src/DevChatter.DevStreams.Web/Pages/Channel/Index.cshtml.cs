@@ -1,10 +1,10 @@
-﻿using DevChatter.DevStreams.Core.Model;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using DevChatter.DevStreams.Core.Model;
 
-namespace DevChatter.DevStreams.Web.Pages.Streams
+namespace DevChatter.DevStreams.Web.Pages.Channels
 {
     public class IndexModel : PageModel
     {

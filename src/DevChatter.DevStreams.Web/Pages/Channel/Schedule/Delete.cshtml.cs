@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using DevChatter.DevStreams.Core.Model;
 using DevChatter.DevStreams.Web.Data;
 
-namespace DevChatter.DevStreams.Web.Pages.Streams.Schedule
+namespace DevChatter.DevStreams.Web.Pages.Channels.Schedule
 {
     public class DeleteModel : PageModel
     {

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
-namespace DevChatter.DevStreams.Web.Pages.Streams.Schedule
+namespace DevChatter.DevStreams.Web.Pages.Channels.Schedule
 {
     public class IndexModel : PageModel
     {

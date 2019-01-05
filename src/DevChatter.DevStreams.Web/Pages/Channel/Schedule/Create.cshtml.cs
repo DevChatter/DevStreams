@@ -13,7 +13,7 @@ using DevChatter.DevStreams.Core.Model;
 using Microsoft.EntityFrameworkCore;
 using TimeZoneNames;
 
-namespace DevChatter.DevStreams.Web.Pages.Streams.Schedule
+namespace DevChatter.DevStreams.Web.Pages.Channels.Schedule
 {
     public class CreateModel : PageModel
     {

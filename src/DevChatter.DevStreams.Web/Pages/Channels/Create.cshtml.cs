@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using DevChatter.DevStreams.Core.Model;
+﻿using DevChatter.DevStreams.Core.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Threading.Tasks;
 using TimeZoneNames;
 
 namespace DevChatter.DevStreams.Web.Pages.Channels

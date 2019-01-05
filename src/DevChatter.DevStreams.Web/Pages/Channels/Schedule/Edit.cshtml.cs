@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using DevChatter.DevStreams.Core.Model;
+using DevChatter.DevStreams.Web.Data.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using DevChatter.DevStreams.Core.Model;
-using DevChatter.DevStreams.Web.Data;
-using DevChatter.DevStreams.Web.Data.ViewModel;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DevChatter.DevStreams.Web.Pages.Channels.Schedule
 {

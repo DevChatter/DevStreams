@@ -2,9 +2,9 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace DevChatter.DevStreams.Web.Data.Migrations
+namespace DevChatter.DevStreams.Web.Migrations
 {
-    public partial class CreateIdentitySchema : Migration
+    public partial class InitialSchema : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -45,6 +45,22 @@ namespace DevChatter.DevStreams.Web.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Channels",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(nullable: false),
+                    Uri = table.Column<string>(nullable: false),
+                    CountryCode = table.Column<string>(nullable: false),
+                    TimeZoneId = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Channels", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -153,6 +169,50 @@ namespace DevChatter.DevStreams.Web.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "ScheduledStream",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    ChannelId = table.Column<int>(nullable: false),
+                    DayOfWeek = table.Column<string>(nullable: false),
+                    LocalStartTime = table.Column<long>(nullable: false),
+                    LocalEndTime = table.Column<long>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ScheduledStream", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ScheduledStream_Channels_ChannelId",
+                        column: x => x.ChannelId,
+                        principalTable: "Channels",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "StreamSessions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    UtcStartTime = table.Column<long>(nullable: false),
+                    UtcEndTime = table.Column<long>(nullable: false),
+                    TzdbVersionId = table.Column<string>(nullable: false),
+                    ScheduledStreamId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StreamSessions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_StreamSessions_ScheduledStream_ScheduledStreamId",
+                        column: x => x.ScheduledStreamId,
+                        principalTable: "ScheduledStream",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -191,6 +251,16 @@ namespace DevChatter.DevStreams.Web.Data.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ScheduledStream_ChannelId",
+                table: "ScheduledStream",
+                column: "ChannelId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StreamSessions_ScheduledStreamId",
+                table: "StreamSessions",
+                column: "ScheduledStreamId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -211,10 +281,19 @@ namespace DevChatter.DevStreams.Web.Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "StreamSessions");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "ScheduledStream");
+
+            migrationBuilder.DropTable(
+                name: "Channels");
         }
     }
 }

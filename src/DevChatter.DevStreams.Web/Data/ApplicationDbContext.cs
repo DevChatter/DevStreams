@@ -40,10 +40,6 @@ namespace DevChatter.DevStreams.Web.Data
                     .IsRequired();
                 builder.Property(x => x.TzdbVersionId)
                     .IsRequired();
-                builder.Property("ScheduledStreamId")
-                    .IsRequired();
-                builder.Property("ChannelId")
-                    .IsRequired();
             });
         }
 

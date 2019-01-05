@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace DevChatter.DevStreams.Web.Data.Migrations
+namespace DevChatter.DevStreams.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20181214205807_AddCountryCodeToChannel")]
-    partial class AddCountryCodeToChannel
+    [Migration("20190105180052_Initial-Schema")]
+    partial class InitialSchema
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -65,6 +65,28 @@ namespace DevChatter.DevStreams.Web.Data.Migrations
                     b.HasIndex("ChannelId");
 
                     b.ToTable("ScheduledStream");
+                });
+
+            modelBuilder.Entity("DevChatter.DevStreams.Core.Model.StreamSession", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("ScheduledStreamId");
+
+                    b.Property<string>("TzdbVersionId")
+                        .IsRequired();
+
+                    b.Property<long>("UtcEndTime");
+
+                    b.Property<long>("UtcStartTime");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ScheduledStreamId");
+
+                    b.ToTable("StreamSessions");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -234,10 +256,17 @@ namespace DevChatter.DevStreams.Web.Data.Migrations
 
             modelBuilder.Entity("DevChatter.DevStreams.Core.Model.ScheduledStream", b =>
                 {
-                    b.HasOne("DevChatter.DevStreams.Core.Model.Channel")
+                    b.HasOne("DevChatter.DevStreams.Core.Model.Channel", "Channel")
                         .WithMany("ScheduledStreams")
                         .HasForeignKey("ChannelId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("DevChatter.DevStreams.Core.Model.StreamSession", b =>
+                {
+                    b.HasOne("DevChatter.DevStreams.Core.Model.ScheduledStream")
+                        .WithMany("Sessions")
+                        .HasForeignKey("ScheduledStreamId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

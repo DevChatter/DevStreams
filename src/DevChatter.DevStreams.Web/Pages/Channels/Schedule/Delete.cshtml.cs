@@ -47,15 +47,19 @@ namespace DevChatter.DevStreams.Web.Pages.Channels.Schedule
                 return NotFound();
             }
 
-            ScheduledStream = await _context.ScheduledStream.FindAsync(id);
+            ScheduledStream = await _context.ScheduledStream
+                .Include(s => s.Channel)
+                .SingleOrDefaultAsync(s => s.Id == id);
 
             if (ScheduledStream != null)
             {
                 _context.ScheduledStream.Remove(ScheduledStream);
                 await _context.SaveChangesAsync();
+                return RedirectToPage("./Index", 
+                    new { channelId = ScheduledStream.Channel.Id });
             }
 
-            return RedirectToPage("./Index");
+            return NotFound();
         }
     }
 }

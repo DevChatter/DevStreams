@@ -9,6 +9,7 @@ namespace DevChatter.DevStreams.Web.Data
     public class ApplicationDbContext : IdentityDbContext
     {
         public DbSet<Channel> Channels { get; set; }
+        public DbSet<ScheduledStream> ScheduledStream { get; set; }
         public DbSet<StreamSession> StreamSessions { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
@@ -37,6 +38,8 @@ namespace DevChatter.DevStreams.Web.Data
                     .HasConversion(
                         x => x.ToUnixTimeTicks(),
                         x => Instant.FromUnixTimeTicks(x))
+                    .IsRequired();
+                builder.Property("ScheduledStreamId")
                     .IsRequired();
                 builder.Property(x => x.TzdbVersionId)
                     .IsRequired();
@@ -81,7 +84,5 @@ namespace DevChatter.DevStreams.Web.Data
                         .IsRequired();
                 });
         }
-
-        public DbSet<DevChatter.DevStreams.Core.Model.ScheduledStream> ScheduledStream { get; set; }
     }
 }

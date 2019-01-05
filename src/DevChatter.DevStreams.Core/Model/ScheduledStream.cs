@@ -10,6 +10,7 @@ namespace DevChatter.DevStreams.Core.Model
     public class ScheduledStream : DataEntity
     {
         public List<StreamSession> Sessions { get; set; }
+            = new List<StreamSession>();
         public Channel Channel { get; set; }
         public IsoDayOfWeek DayOfWeek { get; set; }
         public LocalTime LocalStartTime { get; set; }

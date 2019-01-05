@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DevChatter.DevStreams.Core.Model;
 using DevChatter.DevStreams.Web.Data;
+using DevChatter.DevStreams.Web.Data.ViewModel;
 
 namespace DevChatter.DevStreams.Web.Pages.Channels.Schedule
 {
@@ -21,7 +22,9 @@ namespace DevChatter.DevStreams.Web.Pages.Channels.Schedule
         }
 
         [BindProperty]
-        public ScheduledStream ScheduledStream { get; set; }
+        public EditScheduledStream ViewModel { get; set; }
+
+        public int ChannelId { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -30,14 +33,18 @@ namespace DevChatter.DevStreams.Web.Pages.Channels.Schedule
                 return NotFound();
             }
 
-            ScheduledStream = await _context.ScheduledStream
-                .Include(x => x.Channel)
+            ScheduledStream scheduledStream = await _context.ScheduledStream
+                .Include(x => x.Channel) // Required for "Back to List" link
                 .FirstOrDefaultAsync(m => m.Id == id);
 
-            if (ScheduledStream == null)
+            if (scheduledStream == null)
             {
                 return NotFound();
             }
+
+            ViewModel = scheduledStream.ToEditViewModel();
+            ChannelId = scheduledStream.Channel.Id;
+
             return Page();
         }
 
@@ -48,7 +55,13 @@ namespace DevChatter.DevStreams.Web.Pages.Channels.Schedule
                 return Page();
             }
 
-            _context.Attach(ScheduledStream).State = EntityState.Modified;
+            ScheduledStream model = await _context.ScheduledStream
+                .Include(x => x.Sessions) // Required for updating them.
+                .SingleOrDefaultAsync(x => x.Id == ViewModel.Id);
+
+            model.ApplyEditChanges(ViewModel);
+
+            // TODO: Update the Sessions
 
             try
             {
@@ -56,7 +69,7 @@ namespace DevChatter.DevStreams.Web.Pages.Channels.Schedule
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ScheduledStreamExists(ScheduledStream.Id))
+                if (!ScheduledStreamExists(ViewModel.Id))
                 {
                     return NotFound();
                 }
@@ -66,7 +79,7 @@ namespace DevChatter.DevStreams.Web.Pages.Channels.Schedule
                 }
             }
 
-            return RedirectToPage("./Details", new { id = ScheduledStream.Id });
+            return RedirectToPage("./Details", new { id = ViewModel.Id });
 
         }
 

@@ -14,22 +14,33 @@
     <div class="col-md-4">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="ScheduledStream.DayOfWeek" class="control-label"></label>
-                <select asp-for="ScheduledStream.DayOfWeek" asp-items="Html.GetEnumSelectList<IsoDayOfWeek>()" class="form-control"></select>
-                <span asp-validation-for="ScheduledStream.DayOfWeek" class="text-danger"></span>
+
+            <h3>Stream Time</h3>
+            <div class="panel panel-default" style="width: 400px">
+                <div class="form-horizontal panel-body">
+                    <div class="form-group row">
+                        <label asp-for="ViewModel.DayOfWeek" class="col-xs-4 control-label"></label>
+                        <div class="col-xs-8">
+                            <select asp-for="ViewModel.DayOfWeek" asp-items="Html.GetEnumSelectList<IsoDayOfWeek>()"></select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label asp-for="ViewModel.LocalStartTime" class="col-xs-4 control-label text-nowrap"></label>
+                        <div class="col-xs-8">
+                            <input asp-for="ViewModel.LocalStartTime" type="time" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label asp-for="ViewModel.LocalEndTime" class="col-xs-4 control-label text-nowrap"></label>
+                        <div class="col-xs-8">
+                            <input asp-for="ViewModel.LocalEndTime" type="time" />
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="ScheduledStream.LocalStartTime" class="control-label"></label>
-                <input asp-for="ScheduledStream.LocalStartTime" class="form-control" />
-                <span asp-validation-for="ScheduledStream.LocalStartTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ScheduledStream.LocalEndTime" class="control-label"></label>
-                <input asp-for="ScheduledStream.LocalEndTime" class="form-control" />
-                <span asp-validation-for="ScheduledStream.LocalEndTime" class="text-danger"></span>
-            </div>
-            <input type="hidden" asp-for="ScheduledStream.Id" />
+
+
+            <input type="hidden" asp-for="ViewModel.Id" />
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-default" />
             </div>
@@ -38,7 +49,7 @@
 </div>
 
 <div>
-    <a asp-page="./Index" asp-route-channelId="@Model.ScheduledStream.Channel.Id">Back to List</a>
+    <a asp-page="./Index" asp-route-channelId="@Model.ChannelId">Back to List</a>
 </div>
 
 @section Scripts {

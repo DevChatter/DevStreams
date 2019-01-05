@@ -57,22 +57,30 @@ namespace DevChatter.DevStreams.Web.Pages.Streams.Schedule
 
             channel.ScheduledStreams.Add(stream);
 
-//            var zone = DateTimeZoneProviders.Tzdb[stream.Channel.TimeZoneId];
-//            var version = DateTimeZoneProviders.Tzdb.VersionId;
-//            ZonedClock zonedClock = _clock.InZone(zone);
-//
-//            LocalDate today = zonedClock.GetCurrentDate();
-//            LocalDate next = today.With(DateAdjusters.Next(stream.DayOfWeek));
-//
-//            
-//            for (int i = 0; i < 52; i++)
-//            {
-//                LocalDateTime nextLocalDateTime = next + stream.LocalStartTime;
-//
-//                .Add(nextLocalDateTime.InZoneLeniently(zone));
-//                next = next.PlusWeeks(1);
-//            }
+            var zone = DateTimeZoneProviders.Tzdb[channel.TimeZoneId];
+            var version = DateTimeZoneProviders.Tzdb.VersionId;
+            ZonedClock zonedClock = _clock.InZone(zone);
 
+            LocalDate today = zonedClock.GetCurrentDate();
+            LocalDate next = today.With(DateAdjusters.Next(stream.DayOfWeek));
+
+            
+            for (int i = 0; i < 52; i++)
+            {
+                LocalDateTime nextLocalStartDateTime = next + stream.LocalStartTime;
+                LocalDateTime nextLocalEndDateTime = next + stream.LocalEndTime;
+
+                var streamSession = new StreamSession
+                {
+                    TzdbVersionId = version,
+                    UtcStartTime = nextLocalStartDateTime.InUtc().ToInstant(),
+                    UtcEndTime = nextLocalEndDateTime.InUtc().ToInstant(),
+                };
+
+                stream.Sessions.Add(streamSession);
+
+                next = next.PlusWeeks(1);
+            }
 
             await _context.SaveChangesAsync();
 

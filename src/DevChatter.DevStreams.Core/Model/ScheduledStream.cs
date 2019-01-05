@@ -1,4 +1,5 @@
-﻿using NodaTime;
+﻿using System.Collections.Generic;
+using NodaTime;
 
 namespace DevChatter.DevStreams.Core.Model
 {
@@ -8,6 +9,7 @@ namespace DevChatter.DevStreams.Core.Model
     /// </summary>
     public class ScheduledStream : DataEntity
     {
+        public List<StreamSession> Sessions { get; set; }
         public Channel Channel { get; set; }
         public IsoDayOfWeek DayOfWeek { get; set; }
         public LocalTime LocalStartTime { get; set; }

@@ -66,7 +66,8 @@ namespace DevChatter.DevStreams.Web.Pages.Channels.Schedule
                 }
             }
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("./Details", new { id = ScheduledStream.Id });
+
         }
 
         private bool ScheduledStreamExists(int id)

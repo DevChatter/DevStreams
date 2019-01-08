@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using DevChatter.DevStreams.Core;
+using DevChatter.DevStreams.Web.Controllers;
 using TimeZoneNames;
 
 namespace DevChatter.DevStreams.Web.Pages.Channels
@@ -23,6 +25,7 @@ namespace DevChatter.DevStreams.Web.Pages.Channels
         }
 
         public IEnumerable<SelectListItem> Countries { get; set; }
+        public IEnumerable<SelectListItem> TimeZones { get; set; }
 
         [BindProperty]
         public ChannelEditModel Channel { get; set; }
@@ -44,7 +47,12 @@ namespace DevChatter.DevStreams.Web.Pages.Channels
             Channel = model.ToChannelEditModel();
 
             Countries = TZNames.GetCountryNames(CultureInfo.CurrentUICulture.Name)
-                .Select(x => new SelectListItem(x.Value, x.Key));
+                .Select(x => 
+                    new SelectListItem(x.Value, x.Key, x.Key == model.CountryCode));
+
+            TimeZones = TimeZonesData.GetForCountry(model.CountryCode, null)
+                .Select(x => 
+                    new SelectListItem(x.Value, x.Key, x.Key == model.TimeZoneId));
 
             return Page();
         }

@@ -22,6 +22,7 @@
                 .then(response => {
                     this.timeZoneOptions = Object.keys(response.data)
                         .map(key => ({ key: key, value: response.data[key] }));
+                    this.selectedTimeZone = this.timeZoneOptions[0].key;
                 }, error => {
                     console.log(error.statusText);
                 });

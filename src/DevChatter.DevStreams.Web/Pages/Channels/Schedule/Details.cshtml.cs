@@ -1,4 +1,5 @@
 ﻿using DevChatter.DevStreams.Core.Model;
+using DevChatter.DevStreams.Web.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -8,9 +9,9 @@ namespace DevChatter.DevStreams.Web.Pages.Channels.Schedule
 {
     public class DetailsModel : PageModel
     {
-        private readonly DevChatter.DevStreams.Web.Data.ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public DetailsModel(DevChatter.DevStreams.Web.Data.ApplicationDbContext context)
+        public DetailsModel(ApplicationDbContext context)
         {
             _context = context;
         }

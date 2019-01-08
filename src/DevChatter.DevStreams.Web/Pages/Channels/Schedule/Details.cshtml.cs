@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
-namespace DevChatter.DevStreams.Web.Pages.Streams
+namespace DevChatter.DevStreams.Web.Pages.Channels.Schedule
 {
     public class DetailsModel : PageModel
     {
@@ -15,7 +15,8 @@ namespace DevChatter.DevStreams.Web.Pages.Streams
             _context = context;
         }
 
-        public Channel Channel { get; set; }
+
+        public ScheduledStream ScheduledStream { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -24,9 +25,8 @@ namespace DevChatter.DevStreams.Web.Pages.Streams
                 return NotFound();
             }
 
-            Channel = await _context.Channels.FirstOrDefaultAsync(m => m.Id == id);
-
-            if (Channel == null)
+            ScheduledStream = await _context.ScheduledStream.Include(x => x.Channel).FirstOrDefaultAsync(m => m.Id == id);
+            if (ScheduledStream == null)
             {
                 return NotFound();
             }

@@ -1,0 +1,57 @@
+﻿@page
+@using NodaTime
+@model DevChatter.DevStreams.Web.Pages.Channels.Schedule.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h2>Edit</h2>
+
+<h4>ScheduledStream</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <h3>Stream Time</h3>
+            <div class="panel panel-default" style="width: 400px">
+                <div class="form-horizontal panel-body">
+                    <div class="form-group row">
+                        <label asp-for="ViewModel.DayOfWeek" class="col-xs-4 control-label"></label>
+                        <div class="col-xs-8">
+                            <select asp-for="ViewModel.DayOfWeek" asp-items="Html.GetEnumSelectList<IsoDayOfWeek>()"></select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label asp-for="ViewModel.LocalStartTime" class="col-xs-4 control-label text-nowrap"></label>
+                        <div class="col-xs-8">
+                            <input asp-for="ViewModel.LocalStartTime" type="time" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label asp-for="ViewModel.LocalEndTime" class="col-xs-4 control-label text-nowrap"></label>
+                        <div class="col-xs-8">
+                            <input asp-for="ViewModel.LocalEndTime" type="time" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <input type="hidden" asp-for="ViewModel.Id" />
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index" asp-route-channelId="@Model.ChannelId">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
-namespace DevChatter.DevStreams.Web.Pages.Streams
+namespace DevChatter.DevStreams.Web.Pages.Channels.Schedule
 {
     public class DeleteModel : PageModel
     {
@@ -16,7 +16,7 @@ namespace DevChatter.DevStreams.Web.Pages.Streams
         }
 
         [BindProperty]
-        public Channel Channel { get; set; }
+        public ScheduledStream ScheduledStream { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -25,9 +25,11 @@ namespace DevChatter.DevStreams.Web.Pages.Streams
                 return NotFound();
             }
 
-            Channel = await _context.Channels.FirstOrDefaultAsync(m => m.Id == id);
+            ScheduledStream = await _context.ScheduledStream
+                    .Include(x => x.Channel)
+                    .FirstOrDefaultAsync(m => m.Id == id);
 
-            if (Channel == null)
+            if (ScheduledStream == null)
             {
                 return NotFound();
             }
@@ -41,15 +43,19 @@ namespace DevChatter.DevStreams.Web.Pages.Streams
                 return NotFound();
             }
 
-            Channel = await _context.Channels.FindAsync(id);
+            ScheduledStream = await _context.ScheduledStream
+                .Include(s => s.Channel)
+                .SingleOrDefaultAsync(s => s.Id == id);
 
-            if (Channel != null)
+            if (ScheduledStream != null)
             {
-                _context.Channels.Remove(Channel);
+                _context.ScheduledStream.Remove(ScheduledStream);
                 await _context.SaveChangesAsync();
+                return RedirectToPage("./Index", 
+                    new { channelId = ScheduledStream.Channel.Id });
             }
 
-            return RedirectToPage("./Index");
+            return NotFound();
         }
     }
 }

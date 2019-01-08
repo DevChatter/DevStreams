@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using DevChatter.DevStreams.Core.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using DevChatter.DevStreams.Core.Model;
-using DevChatter.DevStreams.Web.Data;
+using System.Threading.Tasks;
 
-namespace DevChatter.DevStreams.Web.Pages.Streams.Schedule
+namespace DevChatter.DevStreams.Web.Pages.Channels
 {
     public class DeleteModel : PageModel
     {
@@ -20,7 +16,7 @@ namespace DevChatter.DevStreams.Web.Pages.Streams.Schedule
         }
 
         [BindProperty]
-        public ScheduledStream ScheduledStream { get; set; }
+        public Channel Channel { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -29,11 +25,9 @@ namespace DevChatter.DevStreams.Web.Pages.Streams.Schedule
                 return NotFound();
             }
 
-            ScheduledStream = await _context.ScheduledStream
-                    .Include(x => x.Channel)
-                    .FirstOrDefaultAsync(m => m.Id == id);
+            Channel = await _context.Channels.FirstOrDefaultAsync(m => m.Id == id);
 
-            if (ScheduledStream == null)
+            if (Channel == null)
             {
                 return NotFound();
             }
@@ -47,11 +41,11 @@ namespace DevChatter.DevStreams.Web.Pages.Streams.Schedule
                 return NotFound();
             }
 
-            ScheduledStream = await _context.ScheduledStream.FindAsync(id);
+            Channel = await _context.Channels.FindAsync(id);
 
-            if (ScheduledStream != null)
+            if (Channel != null)
             {
-                _context.ScheduledStream.Remove(ScheduledStream);
+                _context.Channels.Remove(Channel);
                 await _context.SaveChangesAsync();
             }
 

@@ -1,15 +1,15 @@
-﻿using System.Collections.Generic;
-using System.Globalization;
-using DevChatter.DevStreams.Core.Model;
+﻿using DevChatter.DevStreams.Core.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using TimeZoneNames;
 
-namespace DevChatter.DevStreams.Web.Pages.Streams
+namespace DevChatter.DevStreams.Web.Pages.Channels
 {
     public class EditModel : PageModel
     {

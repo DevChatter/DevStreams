@@ -1,19 +1,16 @@
-﻿using DevChatter.DevStreams.Web.Data.ViewModel;
+﻿using DevChatter.DevStreams.Core.Model;
+using DevChatter.DevStreams.Web.Data.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using NodaTime.Extensions;
 using NodaTime.Text;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading.Tasks;
-using DevChatter.DevStreams.Core.Model;
-using Microsoft.EntityFrameworkCore;
 using TimeZoneNames;
 
-namespace DevChatter.DevStreams.Web.Pages.Streams.Schedule
+namespace DevChatter.DevStreams.Web.Pages.Channels.Schedule
 {
     public class CreateModel : PageModel
     {
@@ -42,7 +39,7 @@ namespace DevChatter.DevStreams.Web.Pages.Streams.Schedule
 
         public async Task OnGetAsync(int channelId)
         {
-            Channel channel = await _context.Channels.FindAsync(channelId);
+            var channel = await _context.Channels.FindAsync(channelId);
             
             TimeZoneName = TZNames.GetNamesForTimeZone(channel.TimeZoneId, CultureInfo.CurrentUICulture.Name).Generic;
         }
@@ -51,7 +48,7 @@ namespace DevChatter.DevStreams.Web.Pages.Streams.Schedule
         {
             ScheduledStream stream = StreamTime.ToModel();
 
-            Channel channel = await _context.Channels
+            var channel = await _context.Channels
                 .Include(x => x.ScheduledStreams)
                 .SingleAsync(x => x.Id == channelId);
 

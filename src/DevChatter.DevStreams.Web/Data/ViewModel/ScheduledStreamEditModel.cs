@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DevChatter.DevStreams.Web.Data.ViewModel
 {
-    public class EditScheduledStream
+    public class ScheduledStreamEditModel
     {
         public int Id { get; set; }
 

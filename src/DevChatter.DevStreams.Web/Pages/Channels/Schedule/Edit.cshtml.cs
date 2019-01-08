@@ -19,7 +19,7 @@ namespace DevChatter.DevStreams.Web.Pages.Channels.Schedule
         }
 
         [BindProperty]
-        public EditScheduledStream ViewModel { get; set; }
+        public ScheduledStreamEditModel ViewModel { get; set; }
 
         public int ChannelId { get; set; }
 

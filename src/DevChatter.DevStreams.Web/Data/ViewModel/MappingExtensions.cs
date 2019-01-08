@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using DevChatter.DevStreams.Core.Model;
+using NodaTime.Text;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using DevChatter.DevStreams.Core.Model;
-using NodaTime.Text;
 using TimeZoneNames;
 
 namespace DevChatter.DevStreams.Web.Data.ViewModel
@@ -12,10 +12,10 @@ namespace DevChatter.DevStreams.Web.Data.ViewModel
         private static readonly LocalTimePattern TimePattern =
             LocalTimePattern.CreateWithInvariantCulture("HH:mm");
 
-        public static EditScheduledStream ToEditViewModel(this ScheduledStream src)
+        public static ScheduledStreamEditModel ToEditViewModel(this ScheduledStream src)
         {
             
-            return new EditScheduledStream
+            return new ScheduledStreamEditModel
             {
                 Id = src.Id,
                 DayOfWeek = src.DayOfWeek,
@@ -25,7 +25,7 @@ namespace DevChatter.DevStreams.Web.Data.ViewModel
         }
 
         public static void ApplyEditChanges(this ScheduledStream model, 
-            EditScheduledStream viewModel)
+            ScheduledStreamEditModel viewModel)
         {
             var parsedStart = TimePattern.Parse(viewModel.LocalStartTime);
             var parsedEnd = TimePattern.Parse(viewModel.LocalEndTime);

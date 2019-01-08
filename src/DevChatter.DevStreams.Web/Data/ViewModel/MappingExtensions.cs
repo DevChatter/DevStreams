@@ -39,17 +39,24 @@ namespace DevChatter.DevStreams.Web.Data.ViewModel
             this Channel channel)
         {
             var viewModels = channel.ScheduledStreams
-                .Select(x => new ScheduledStreamViewModel
-                {
-                    Id = x.Id,
-                    DayOfWeek = x.DayOfWeek,
-                    LocalStartTime = TimePattern.Format(x.LocalStartTime),
-                    LocalEndTime = TimePattern.Format(x.LocalEndTime),
-                    TimeZoneName = TZNames.GetNamesForTimeZone(channel.TimeZoneId, CultureInfo.CurrentUICulture.Name).Generic
-                })
+                .Select(x => x.ToViewModel(channel))
                 .ToList();
 
             return viewModels;
+        }
+
+        public static ScheduledStreamViewModel ToViewModel(this ScheduledStream src,
+            Channel channel)
+        {
+            return new ScheduledStreamViewModel
+            {
+                Id = src.Id,
+                DayOfWeek = src.DayOfWeek,
+                LocalStartTime = TimePattern.Format(src.LocalStartTime),
+                LocalEndTime = TimePattern.Format(src.LocalEndTime),
+                TimeZoneName = TZNames.GetNamesForTimeZone(channel.TimeZoneId, CultureInfo.CurrentUICulture.Name).Generic,
+                ChannelId = channel.Id
+            };
         }
     }
 }

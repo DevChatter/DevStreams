@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using DevChatter.DevStreams.Web.Data.ViewModel;
 
 namespace DevChatter.DevStreams.Web.Pages.Channels.Schedule
 {
@@ -16,8 +17,7 @@ namespace DevChatter.DevStreams.Web.Pages.Channels.Schedule
             _context = context;
         }
 
-
-        public ScheduledStream ScheduledStream { get; set; }
+        public ScheduledStreamViewModel ScheduledStream { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -26,11 +26,14 @@ namespace DevChatter.DevStreams.Web.Pages.Channels.Schedule
                 return NotFound();
             }
 
-            ScheduledStream = await _context.ScheduledStream.Include(x => x.Channel).FirstOrDefaultAsync(m => m.Id == id);
-            if (ScheduledStream == null)
+            var model = await _context.ScheduledStream.Include(x => x.Channel).FirstOrDefaultAsync(m => m.Id == id);
+            if (model == null)
             {
                 return NotFound();
             }
+
+            ScheduledStream = model.ToViewModel(model.Channel);
+
             return Page();
         }
     }

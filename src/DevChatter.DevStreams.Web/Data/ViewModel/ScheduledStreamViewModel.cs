@@ -7,6 +7,8 @@ namespace DevChatter.DevStreams.Web.Data.ViewModel
     {
         public int Id { get; set; }
 
+        public int ChannelId { get; set; }
+
         [Display(Name = "Day of Week")]
         public IsoDayOfWeek DayOfWeek { get; set; }
 

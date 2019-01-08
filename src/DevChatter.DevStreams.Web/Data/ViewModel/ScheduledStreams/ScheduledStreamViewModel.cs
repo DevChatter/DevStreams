@@ -1,7 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-using NodaTime;
+﻿using NodaTime;
+using System.ComponentModel.DataAnnotations;
 
-namespace DevChatter.DevStreams.Web.Data.ViewModel
+namespace DevChatter.DevStreams.Web.Data.ViewModel.ScheduledStreams
 {
     public class ScheduledStreamViewModel
     {

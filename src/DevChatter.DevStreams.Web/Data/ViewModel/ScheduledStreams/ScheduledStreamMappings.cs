@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Linq;
 using TimeZoneNames;
 
-namespace DevChatter.DevStreams.Web.Data.ViewModel
+namespace DevChatter.DevStreams.Web.Data.ViewModel.ScheduledStreams
 {
     public static class ScheduledStreamMappings
     {

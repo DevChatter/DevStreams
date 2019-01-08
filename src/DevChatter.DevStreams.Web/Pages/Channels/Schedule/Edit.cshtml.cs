@@ -1,4 +1,5 @@
 ﻿using DevChatter.DevStreams.Core.Model;
+using DevChatter.DevStreams.Web.Data;
 using DevChatter.DevStreams.Web.Data.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -10,9 +11,9 @@ namespace DevChatter.DevStreams.Web.Pages.Channels.Schedule
 {
     public class EditModel : PageModel
     {
-        private readonly DevChatter.DevStreams.Web.Data.ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public EditModel(DevChatter.DevStreams.Web.Data.ApplicationDbContext context)
+        public EditModel(ApplicationDbContext context)
         {
             _context = context;
         }
@@ -69,10 +70,8 @@ namespace DevChatter.DevStreams.Web.Pages.Channels.Schedule
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
+
+                throw;
             }
 
             return RedirectToPage("./Details", new { id = ViewModel.Id });

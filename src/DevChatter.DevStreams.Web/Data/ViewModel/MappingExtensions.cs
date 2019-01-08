@@ -1,5 +1,9 @@
-﻿using DevChatter.DevStreams.Core.Model;
+﻿using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using DevChatter.DevStreams.Core.Model;
 using NodaTime.Text;
+using TimeZoneNames;
 
 namespace DevChatter.DevStreams.Web.Data.ViewModel
 {
@@ -29,6 +33,23 @@ namespace DevChatter.DevStreams.Web.Data.ViewModel
             model.DayOfWeek = viewModel.DayOfWeek;
             model.LocalStartTime = parsedStart.Value;
             model.LocalEndTime = parsedEnd.Value;
+        }
+
+        public static List<ScheduledStreamViewModel> ToScheduledStreamViewModels(
+            this Channel channel)
+        {
+            var viewModels = channel.ScheduledStreams
+                .Select(x => new ScheduledStreamViewModel
+                {
+                    Id = x.Id,
+                    DayOfWeek = x.DayOfWeek,
+                    LocalStartTime = TimePattern.Format(x.LocalStartTime),
+                    LocalEndTime = TimePattern.Format(x.LocalEndTime),
+                    TimeZoneName = TZNames.GetNamesForTimeZone(channel.TimeZoneId, CultureInfo.CurrentUICulture.Name).Generic
+                })
+                .ToList();
+
+            return viewModels;
         }
     }
 }

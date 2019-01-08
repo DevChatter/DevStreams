@@ -21,23 +21,23 @@
             @Html.DisplayNameFor(model => model.ScheduledStream.LocalStartTime)
         </dt>
         <dd>
-            @Model.ScheduledStream.LocalStartTime.ToString("HH:mm", null)
+            @Model.ScheduledStream.LocalStartTime
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.ScheduledStream.LocalEndTime)
         </dt>
         <dd>
-            @Model.ScheduledStream.LocalEndTime.ToString("HH:mm", null)
+            @Model.ScheduledStream.LocalEndTime
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.ScheduledStream.Channel.TimeZoneId)
+            @Html.DisplayNameFor(model => model.ScheduledStream.TimeZoneName)
         </dt>
         <dd>
-            @Model.ScheduledStream.Channel.TimeZoneId
+            @Model.ScheduledStream.TimeZoneName
         </dd>
     </dl>
 </div>
 <div>
     <a asp-page="./Edit" asp-route-id="@Model.ScheduledStream.Id">Edit</a> |
-    <a asp-page="./Index" asp-route-channelId="@Model.ScheduledStream.Channel.Id">Back to List</a>
+    <a asp-page="./Index" asp-route-channelId="@Model.ScheduledStream.ChannelId">Back to List</a>
 </div>

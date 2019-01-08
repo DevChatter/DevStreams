@@ -1,4 +1,5 @@
-﻿using DevChatter.DevStreams.Core.Model;
+﻿using DevChatter.DevStreams.Web.Data;
+using DevChatter.DevStreams.Web.Data.ViewModel.ScheduledStreams;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -8,15 +9,15 @@ namespace DevChatter.DevStreams.Web.Pages.Channels.Schedule
 {
     public class DeleteModel : PageModel
     {
-        private readonly DevChatter.DevStreams.Web.Data.ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public DeleteModel(DevChatter.DevStreams.Web.Data.ApplicationDbContext context)
+        public DeleteModel(ApplicationDbContext context)
         {
             _context = context;
         }
 
         [BindProperty]
-        public ScheduledStream ScheduledStream { get; set; }
+        public ScheduledStreamViewModel ScheduledStream { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -25,14 +26,14 @@ namespace DevChatter.DevStreams.Web.Pages.Channels.Schedule
                 return NotFound();
             }
 
-            ScheduledStream = await _context.ScheduledStream
-                    .Include(x => x.Channel)
-                    .FirstOrDefaultAsync(m => m.Id == id);
-
-            if (ScheduledStream == null)
+            var model = await _context.ScheduledStream.Include(x => x.Channel).FirstOrDefaultAsync(m => m.Id == id);
+            if (model == null)
             {
                 return NotFound();
             }
+
+            ScheduledStream = model.ToViewModel(model.Channel);
+
             return Page();
         }
 
@@ -43,16 +44,16 @@ namespace DevChatter.DevStreams.Web.Pages.Channels.Schedule
                 return NotFound();
             }
 
-            ScheduledStream = await _context.ScheduledStream
+            var modelToDelete = await _context.ScheduledStream
                 .Include(s => s.Channel)
                 .SingleOrDefaultAsync(s => s.Id == id);
 
-            if (ScheduledStream != null)
+            if (modelToDelete != null)
             {
-                _context.ScheduledStream.Remove(ScheduledStream);
+                _context.ScheduledStream.Remove(modelToDelete);
                 await _context.SaveChangesAsync();
                 return RedirectToPage("./Index", 
-                    new { channelId = ScheduledStream.Channel.Id });
+                    new { channelId = modelToDelete.Channel.Id });
             }
 
             return NotFound();

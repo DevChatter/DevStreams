@@ -1,22 +1,24 @@
 ﻿using NodaTime;
 using System.ComponentModel.DataAnnotations;
 
-namespace DevChatter.DevStreams.Web.Data.ViewModel
+namespace DevChatter.DevStreams.Web.Data.ViewModel.ScheduledStreams
 {
-    public class EditScheduledStream
+    public class ScheduledStreamViewModel
     {
         public int Id { get; set; }
 
+        public int ChannelId { get; set; }
+
         [Display(Name = "Day of Week")]
-        [Required]
         public IsoDayOfWeek DayOfWeek { get; set; }
 
         [Display(Name = "Start Time")]
-        [Required]
         public string LocalStartTime { get; set; }
 
         [Display(Name = "End Time")]
-        [Required]
         public string LocalEndTime { get; set; }
+
+        [Display(Name = "Time Zone")]
+        public string TimeZoneName { get; set; }
     }
 }

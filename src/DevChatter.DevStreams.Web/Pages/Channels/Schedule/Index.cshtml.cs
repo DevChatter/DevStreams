@@ -1,6 +1,7 @@
-﻿using DevChatter.DevStreams.Core.Model;
+﻿using DevChatter.DevStreams.Web.Data.ViewModel.ScheduledStreams;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace DevChatter.DevStreams.Web.Pages.Channels.Schedule
@@ -14,13 +15,18 @@ namespace DevChatter.DevStreams.Web.Pages.Channels.Schedule
             _context = context;
         }
 
-        public Channel Channel { get;set; }
+        public List<ScheduledStreamViewModel> ScheduledStreams { get; set; }
+        public string ChannelName { get; set; }
 
         public async Task OnGetAsync(int channelId)
         {
-            Channel = await _context.Channels
+            var channel = await _context.Channels
                 .Include(x => x.ScheduledStreams)
                 .SingleAsync(x => x.Id == channelId);
+
+            ChannelName = channel.Name;
+
+            ScheduledStreams = channel.ToScheduledStreamViewModels();
         }
     }
 }

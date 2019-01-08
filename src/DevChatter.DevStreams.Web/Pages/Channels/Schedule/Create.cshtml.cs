@@ -1,5 +1,5 @@
 ﻿using DevChatter.DevStreams.Core.Model;
-using DevChatter.DevStreams.Web.Data.ViewModel;
+using DevChatter.DevStreams.Web.Data.ViewModel.ScheduledStreams;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;

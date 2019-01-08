@@ -1,4 +1,6 @@
 ﻿using DevChatter.DevStreams.Core.Model;
+using DevChatter.DevStreams.Web.Data;
+using DevChatter.DevStreams.Web.Data.ViewModel.Channels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -7,23 +9,26 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using DevChatter.DevStreams.Core;
+using DevChatter.DevStreams.Web.Controllers;
 using TimeZoneNames;
 
 namespace DevChatter.DevStreams.Web.Pages.Channels
 {
     public class EditModel : PageModel
     {
-        private readonly DevChatter.DevStreams.Web.Data.ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public EditModel(DevChatter.DevStreams.Web.Data.ApplicationDbContext context)
+        public EditModel(ApplicationDbContext context)
         {
             _context = context;
         }
 
         public IEnumerable<SelectListItem> Countries { get; set; }
+        public IEnumerable<SelectListItem> TimeZones { get; set; }
 
         [BindProperty]
-        public Channel Channel { get; set; }
+        public ChannelEditModel Channel { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -32,15 +37,22 @@ namespace DevChatter.DevStreams.Web.Pages.Channels
                 return NotFound();
             }
 
-            Channel = await _context.Channels.FirstOrDefaultAsync(m => m.Id == id);
+            var model = await _context.Channels.FirstOrDefaultAsync(m => m.Id == id);
 
-            if (Channel == null)
+            if (model == null)
             {
                 return NotFound();
             }
 
+            Channel = model.ToChannelEditModel();
+
             Countries = TZNames.GetCountryNames(CultureInfo.CurrentUICulture.Name)
-                .Select(x => new SelectListItem(x.Value, x.Key));
+                .Select(x => 
+                    new SelectListItem(x.Value, x.Key, x.Key == model.CountryCode));
+
+            TimeZones = TimeZonesData.GetForCountry(model.CountryCode, null)
+                .Select(x => 
+                    new SelectListItem(x.Value, x.Key, x.Key == model.TimeZoneId));
 
             return Page();
         }
@@ -52,7 +64,9 @@ namespace DevChatter.DevStreams.Web.Pages.Channels
                 return Page();
             }
 
-            _context.Attach(Channel).State = EntityState.Modified;
+            Channel model = await _context.Channels.FindAsync(Channel.Id);
+
+            model.ApplyEditChanges(Channel);
 
             try
             {
@@ -64,10 +78,8 @@ namespace DevChatter.DevStreams.Web.Pages.Channels
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
+
+                throw;
             }
 
             return RedirectToPage("./Index");

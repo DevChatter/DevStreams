@@ -7,7 +7,7 @@ using TimeZoneNames;
 
 namespace DevChatter.DevStreams.Web.Data.ViewModel
 {
-    public static class MappingExtensions
+    public static class ScheduledStreamMappings
     {
         private static readonly LocalTimePattern TimePattern =
             LocalTimePattern.CreateWithInvariantCulture("HH:mm");

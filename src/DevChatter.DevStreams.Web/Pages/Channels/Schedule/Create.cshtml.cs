@@ -70,8 +70,8 @@ namespace DevChatter.DevStreams.Web.Pages.Channels.Schedule
                 var streamSession = new StreamSession
                 {
                     TzdbVersionId = version,
-                    UtcStartTime = nextLocalStartDateTime.InUtc().ToInstant(),
-                    UtcEndTime = nextLocalEndDateTime.InUtc().ToInstant(),
+                    UtcStartTime = nextLocalStartDateTime.InZoneLeniently(zone).ToInstant(),
+                    UtcEndTime = nextLocalEndDateTime.InZoneLeniently(zone).ToInstant(),
                 };
 
                 stream.Sessions.Add(streamSession);

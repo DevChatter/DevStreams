@@ -1,6 +1,6 @@
 using DevChatter.DevStreams.Core.Model;
 using DevChatter.DevStreams.Core.Services;
-using DevChatter.DevStreams.Web.Data.ViewModel;
+using DevChatter.DevStreams.Web.Data.ViewModel.Events;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -26,21 +26,9 @@ namespace DevChatter.DevStreams.Web.Controllers
             IList<StreamSession> sessions = 
                 await _streamSessionService.Get(timeZoneId, localDateTime);
 
-            return sessions.Select(ToViewModel).ToList();
-        }
-
-        private static EventViewModel ToViewModel(StreamSession x)
-        {
-            return new EventViewModel
-            {
-                Id = x.Id,
-                ScheduledStreamId = x.ScheduledStream.Id,
-                ChannelId = x.ScheduledStream.Channel.Id,
-                ChannelName = x.ScheduledStream.Channel.Name,
-                Uri = x.ScheduledStream.Channel.Uri,
-                UtcStartTime = x.UtcStartTime.ToDateTimeUtc(),
-                UtcEndTime = x.UtcEndTime.ToDateTimeUtc()
-            };
+            return sessions
+                .Select(x => x.ToViewModel())
+                .ToList();
         }
     }
 }

@@ -1,6 +1,6 @@
 using System;
 
-namespace DevChatter.DevStreams.Web.Data.ViewModel
+namespace DevChatter.DevStreams.Web.Data.ViewModel.Events
 {
     public class EventViewModel
     {

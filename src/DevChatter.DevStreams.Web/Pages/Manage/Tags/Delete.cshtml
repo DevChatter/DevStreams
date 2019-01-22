@@ -1,0 +1,34 @@
+﻿@page
+@model DevChatter.DevStreams.Web.Pages.Manage.Tags.DeleteModel
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>Tag</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Tag.Name)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Tag.Name)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Tag.Description)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Tag.Description)
+        </dd>
+    </dl>
+    
+    <form method="post">
+        <input type="hidden" asp-for="Tag.Id" />
+        <input type="submit" value="Delete" class="btn btn-default" /> |
+        <a asp-page="./Index">Back to List</a>
+    </form>
+</div>

@@ -24,7 +24,19 @@ namespace DevChatter.DevStreams.Web.Data
             SetUpScheduledStream(modelBuilder);
             SetUpStreamSession(modelBuilder);
             SetUpTags(modelBuilder);
+            SetUpChannelTags(modelBuilder);
             base.OnModelCreating(modelBuilder);
+        }
+
+        private static void SetUpChannelTags(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<ChannelTag>()
+                .HasKey(t => new { t.ChannelId, t.TagId });
+
+            modelBuilder.Entity<ChannelTag>()
+                .HasOne(pt => pt.Channel)
+                .WithMany(p => p.Tags)
+                .HasForeignKey(pt => pt.ChannelId);
         }
 
         private static void SetUpTags(ModelBuilder modelBuilder)

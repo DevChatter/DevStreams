@@ -13,5 +13,6 @@ namespace DevChatter.DevStreams.Core.Model
             = new List<ScheduledStream>();
         public string CountryCode { get; set; }
         public string TimeZoneId { get; set; }
+        public List<ChannelTag> Tags { get; set; } = new List<ChannelTag>();
     }
 }

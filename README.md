@@ -36,3 +36,4 @@ Have I mentioned that you're awesome for even considering contributing to this p
 ## Contributors
 * [Brendan Enrick](https://github.com/benrick)
 * [Jon Skeet](https://github.com/jskeet)
+* [Dave Paquette](https://github.com/dpaquette)

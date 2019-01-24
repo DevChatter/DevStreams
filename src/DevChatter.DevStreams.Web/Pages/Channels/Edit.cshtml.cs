@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -64,7 +65,9 @@ namespace DevChatter.DevStreams.Web.Pages.Channels
                 return Page();
             }
 
-            Channel model = await _context.Channels.FindAsync(Channel.Id);
+            Channel model = await _context.Channels
+                                    .Include(c => c.Tags)
+                                    .FirstOrDefaultAsync(c => c.Id == Channel.Id);
 
             model.ApplyEditChanges(Channel);
 

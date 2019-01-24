@@ -69,7 +69,7 @@ namespace DevChatter.DevStreams.Web.Controllers
                 throw;
             }
 
-            return RedirectToPage("./Index");
+            return Ok();
 
             bool ChannelExists(int id)
             {

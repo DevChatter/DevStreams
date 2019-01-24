@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using DevChatter.DevStreams.Core.Model;
 using TimeZoneNames;
+using DevChatter.DevStreams.Web.Data.ViewModel.Tags;
 
 namespace DevChatter.DevStreams.Web.Data.ViewModel.Channels
 {
@@ -28,12 +29,12 @@ namespace DevChatter.DevStreams.Web.Data.ViewModel.Channels
             model.Uri = editModel.Uri;
             model.CountryCode = editModel.CountryCode;
             model.TimeZoneId = editModel.TimeZoneId;
-            ApplyTagChanges(model, editModel.TagIdString);
+            ApplyTagChanges(model, editModel.Tags);
         }
 
-        private static void ApplyTagChanges(Channel model, string tagIdsString)
+        private static void ApplyTagChanges(Channel model, List<TagViewModel> tags)
         {
-            var desiredTagIds = tagIdsString.Split(',').Select(s => Int32.Parse(s));
+            var desiredTagIds = tags.Select(t => t.Id);
             var existingTagIds = model.Tags.Select(t=> t.TagId);
             var tagsToAdd = desiredTagIds.Except(existingTagIds);
             var tagsToRemove = existingTagIds.Except(desiredTagIds);
@@ -56,6 +57,7 @@ namespace DevChatter.DevStreams.Web.Data.ViewModel.Channels
                 Uri = src.Uri,
                 CountryCode = src.CountryCode,
                 TimeZoneId = src.TimeZoneId,
+                Tags = src.Tags.Select(x => x.Tag.ToViewModel()).ToList()
             };
         }
     }

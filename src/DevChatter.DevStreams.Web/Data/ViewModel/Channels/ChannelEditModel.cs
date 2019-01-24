@@ -11,7 +11,6 @@ namespace DevChatter.DevStreams.Web.Data.ViewModel.Channels
         public string Uri { get; set; }
         public string CountryCode { get; set; }
         public string TimeZoneId { get; set; }
-        public List<int> TagIds { get; set; } = new List<int>();
-        public string TagIdString { get; set; }
+        public List<TagViewModel> Tags { get; set; } = new List<TagViewModel>();
     }
 }

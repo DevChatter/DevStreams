@@ -25,72 +25,32 @@ namespace DevChatter.DevStreams.Web.Pages.Channels
             _context = context;
         }
 
-        public IEnumerable<SelectListItem> Countries { get; set; }
-        public IEnumerable<SelectListItem> TimeZones { get; set; }
+        public int ChannelId { get; set; }
 
-        [BindProperty]
-        public ChannelEditModel Channel { get; set; }
+        public IEnumerable<SelectListItem> Countries { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (id == null)
+            if (id.HasValue)
+            {
+                ChannelId = id.Value;
+            }
+            else
             {
                 return NotFound();
             }
 
-            var model = await _context.Channels.FirstOrDefaultAsync(m => m.Id == id);
-
-            if (model == null)
+            bool exists = await _context.Channels.AnyAsync(m => m.Id == id);
+            if (!exists)
             {
                 return NotFound();
             }
-
-            Channel = model.ToChannelEditModel();
 
             Countries = TZNames.GetCountryNames(CultureInfo.CurrentUICulture.Name)
                 .Select(x => 
-                    new SelectListItem(x.Value, x.Key, x.Key == model.CountryCode));
-
-            TimeZones = TimeZonesData.GetForCountry(model.CountryCode, null)
-                .Select(x => 
-                    new SelectListItem(x.Value, x.Key, x.Key == model.TimeZoneId));
+                    new SelectListItem(x.Value, x.Key));
 
             return Page();
-        }
-
-        public async Task<IActionResult> OnPostAsync()
-        {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-
-            Channel model = await _context.Channels
-                                    .Include(c => c.Tags)
-                                    .FirstOrDefaultAsync(c => c.Id == Channel.Id);
-
-            model.ApplyEditChanges(Channel);
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ChannelExists(Channel.Id))
-                {
-                    return NotFound();
-                }
-
-                throw;
-            }
-
-            return RedirectToPage("./Index");
-        }
-
-        private bool ChannelExists(int id)
-        {
-            return _context.Channels.Any(e => e.Id == id);
         }
     }
 }

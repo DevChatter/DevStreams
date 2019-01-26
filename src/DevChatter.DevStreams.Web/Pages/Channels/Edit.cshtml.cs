@@ -34,21 +34,19 @@ namespace DevChatter.DevStreams.Web.Pages.Channels
             if (id.HasValue)
             {
                 ChannelId = id.Value;
+                bool exists = await _context.Channels.AnyAsync(m => m.Id == id);
+                if (!exists)
+                {
+                    return NotFound();
+                }
             }
             else
             {
-                return NotFound();
-            }
-
-            bool exists = await _context.Channels.AnyAsync(m => m.Id == id);
-            if (!exists)
-            {
-                return NotFound();
+                ChannelId = -1;
             }
 
             Countries = TZNames.GetCountryNames(CultureInfo.CurrentUICulture.Name)
-                .Select(x => 
-                    new SelectListItem(x.Value, x.Key));
+                .Select(x => new SelectListItem(x.Value, x.Key));
 
             return Page();
         }

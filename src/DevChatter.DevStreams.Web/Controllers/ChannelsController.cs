@@ -23,7 +23,7 @@ namespace DevChatter.DevStreams.Web.Controllers
         {
             if (id <= 0)
             {
-                return null; // TODO: Return an InvalidIdResult
+                return new ChannelEditModel();
             }
 
             var model = await _context.Channels
@@ -49,9 +49,18 @@ namespace DevChatter.DevStreams.Web.Controllers
                 return BadRequest();
             }
 
-            Channel model = await _context.Channels
-                                    .Include(c => c.Tags)
-                                    .FirstOrDefaultAsync(c => c.Id == channel.Id);
+            Channel model;
+            if (IsNewChannel(channel))
+            {
+                model = new Channel();
+                _context.Channels.Add(model);
+            }
+            else
+            {
+                model = await _context.Channels
+                                .Include(c => c.Tags)
+                                .FirstOrDefaultAsync(c => c.Id == channel.Id);
+            }
 
             model.ApplyEditChanges(channel);
 
@@ -75,6 +84,8 @@ namespace DevChatter.DevStreams.Web.Controllers
             {
                 return _context.Channels.Any(e => e.Id == id);
             }
+
+            bool IsNewChannel(ChannelEditModel c) => c.Id <= 0;
         }
     }
 }

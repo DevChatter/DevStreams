@@ -3,19 +3,21 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using DevChatter.DevStreams.Web.Data;
+using DevChatter.DevStreams.Web.Data.ViewModel.Channels;
 
 namespace DevChatter.DevStreams.Web.Pages.Channels
 {
     public class DetailsModel : PageModel
     {
-        private readonly DevChatter.DevStreams.Web.Data.ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public DetailsModel(DevChatter.DevStreams.Web.Data.ApplicationDbContext context)
+        public DetailsModel(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        public Channel Channel { get; set; }
+        public ChannelViewModel Channel { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -24,12 +26,19 @@ namespace DevChatter.DevStreams.Web.Pages.Channels
                 return NotFound();
             }
 
-            Channel = await _context.Channels.FirstOrDefaultAsync(m => m.Id == id);
+            var model = await _context
+                        .Channels
+                        .Include(x => x.ScheduledStreams)
+                        .Include(x => x.Tags)
+                        .ThenInclude(x => x.Tag)
+                        .FirstOrDefaultAsync(m => m.Id == id);
 
-            if (Channel == null)
+            if (model == null)
             {
                 return NotFound();
             }
+
+            Channel = model.ToChannelViewModel();
             return Page();
         }
     }

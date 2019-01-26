@@ -22,6 +22,19 @@ namespace DevChatter.DevStreams.Web.Data.ViewModel.Channels
             };
         }
 
+        public static ChannelViewModel ToChannelViewModel(this Channel src)
+        {
+            return new ChannelViewModel
+            {
+                Id = src.Id,
+                Name = src.Name,
+                Uri = src.Uri,
+                TimeZoneName = TZNames.GetNamesForTimeZone(src.TimeZoneId, CultureInfo.CurrentUICulture.Name).Generic,
+                ScheduledStreamsCount = src.ScheduledStreams.Count,
+                Tags = string.Join(", ", src.Tags.Select(x => x.Tag.Name))
+            };
+        }
+
         public static void ApplyEditChanges(this Channel model,
             ChannelEditModel editModel)
         {

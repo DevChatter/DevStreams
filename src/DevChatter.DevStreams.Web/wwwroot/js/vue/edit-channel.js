@@ -9,7 +9,7 @@ let app = new Vue({
     data: {
         channelId: document.getElementById('channelId').value,
         model: null,
-        selectedTimeZone: null, // document.getElementById('timeZone').value,
+        selectedTimeZone: null,
         selectedTags: [],
         timeZoneOptions: [],
         tags: [],

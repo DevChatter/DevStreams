@@ -10,9 +10,9 @@ namespace DevChatter.DevStreams.Web.Data.ViewModel.Channels
 {
     public static class ChannelMappings
     {
-        public static ChannelViewModel ToChannelViewModel(this Channel src)
+        public static ChannelIndexModel ToChannelIndexModel(this Channel src)
         {
-            return new ChannelViewModel
+            return new ChannelIndexModel
             {
                 Id = src.Id,
                 Name = src.Name,

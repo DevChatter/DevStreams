@@ -2,7 +2,7 @@
 
 namespace DevChatter.DevStreams.Web.Data.ViewModel.Channels
 {
-    public class ChannelViewModel
+    public class ChannelIndexModel
     {
         public int Id { get; set; }
 

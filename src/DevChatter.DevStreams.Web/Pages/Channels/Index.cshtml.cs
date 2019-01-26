@@ -18,14 +18,14 @@ namespace DevChatter.DevStreams.Web.Pages.Channels
             _context = context;
         }
 
-        public IList<ChannelViewModel> Channels { get;set; }
+        public IList<ChannelIndexModel> Channels { get;set; }
 
         public async Task OnGetAsync()
         {
             List<Channel> models = await _context.Channels
                 .Include(x => x.ScheduledStreams)
                 .ToListAsync();
-            Channels = models.Select(model => model.ToChannelViewModel()).ToList();
+            Channels = models.Select(model => model.ToChannelIndexModel()).ToList();
         }
     }
 }

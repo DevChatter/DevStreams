@@ -1,4 +1,8 @@
-﻿namespace DevChatter.DevStreams.Web.Data.ViewModel.Channels
+﻿using System.Collections.Generic;
+using System.Linq;
+using DevChatter.DevStreams.Web.Data.ViewModel.Tags;
+
+namespace DevChatter.DevStreams.Web.Data.ViewModel.Channels
 {
     public class ChannelEditModel
     {
@@ -7,5 +11,6 @@
         public string Uri { get; set; }
         public string CountryCode { get; set; }
         public string TimeZoneId { get; set; }
+        public List<TagViewModel> Tags { get; set; } = new List<TagViewModel>();
     }
 }

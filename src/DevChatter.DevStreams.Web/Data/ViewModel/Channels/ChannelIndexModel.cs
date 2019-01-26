@@ -1,10 +1,8 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using DevChatter.DevStreams.Web.Data.ViewModel.Tags;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace DevChatter.DevStreams.Web.Data.ViewModel.Channels
 {
-    public class ChannelViewModel
+    public class ChannelIndexModel
     {
         public int Id { get; set; }
 
@@ -19,8 +17,5 @@ namespace DevChatter.DevStreams.Web.Data.ViewModel.Channels
 
         [Display(Name = "Time Zone")]
         public string TimeZoneName { get; set; }
-
-        [Display(Name = "Tags")]
-        public string Tags { get; set; }
     }
 }

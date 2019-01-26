@@ -16,3 +16,7 @@ body {
 #qrCode {
     margin: 15px;
 }
+
+[v-cloak] {
+    display: none;
+  }

@@ -11,6 +11,7 @@ namespace DevChatter.DevStreams.Web.Data
         public DbSet<Channel> Channels { get; set; }
         public DbSet<ScheduledStream> ScheduledStream { get; set; }
         public DbSet<StreamSession> StreamSessions { get; set; }
+        public DbSet<Tag> Tags { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -22,7 +23,29 @@ namespace DevChatter.DevStreams.Web.Data
             SetUpChannels(modelBuilder);
             SetUpScheduledStream(modelBuilder);
             SetUpStreamSession(modelBuilder);
+            SetUpTags(modelBuilder);
+            SetUpChannelTags(modelBuilder);
             base.OnModelCreating(modelBuilder);
+        }
+
+        private static void SetUpChannelTags(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<ChannelTag>()
+                .HasKey(t => new { t.ChannelId, t.TagId });
+
+            modelBuilder.Entity<ChannelTag>()
+                .HasOne(pt => pt.Channel)
+                .WithMany(p => p.Tags)
+                .HasForeignKey(pt => pt.ChannelId);
+        }
+
+        private static void SetUpTags(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Tag>(builder =>
+            {
+                builder.Property(x => x.Name).IsRequired();
+                builder.Property(x => x.Description).IsRequired();
+            });
         }
 
         private static void SetUpStreamSession(ModelBuilder modelBuilder)

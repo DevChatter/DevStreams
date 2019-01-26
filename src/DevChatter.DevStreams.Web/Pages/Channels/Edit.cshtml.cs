@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -24,70 +25,34 @@ namespace DevChatter.DevStreams.Web.Pages.Channels
             _context = context;
         }
 
-        public IEnumerable<SelectListItem> Countries { get; set; }
-        public IEnumerable<SelectListItem> TimeZones { get; set; }
+        public int ChannelId { get; set; }
 
-        [BindProperty]
-        public ChannelEditModel Channel { get; set; }
+        public string Title { get; set; }
+
+        public IEnumerable<SelectListItem> Countries { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (id == null)
+            if (id.HasValue)
             {
-                return NotFound();
-            }
-
-            var model = await _context.Channels.FirstOrDefaultAsync(m => m.Id == id);
-
-            if (model == null)
-            {
-                return NotFound();
-            }
-
-            Channel = model.ToChannelEditModel();
-
-            Countries = TZNames.GetCountryNames(CultureInfo.CurrentUICulture.Name)
-                .Select(x => 
-                    new SelectListItem(x.Value, x.Key, x.Key == model.CountryCode));
-
-            TimeZones = TimeZonesData.GetForCountry(model.CountryCode, null)
-                .Select(x => 
-                    new SelectListItem(x.Value, x.Key, x.Key == model.TimeZoneId));
-
-            return Page();
-        }
-
-        public async Task<IActionResult> OnPostAsync()
-        {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-
-            Channel model = await _context.Channels.FindAsync(Channel.Id);
-
-            model.ApplyEditChanges(Channel);
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ChannelExists(Channel.Id))
+                Title = "Edit";
+                ChannelId = id.Value;
+                bool exists = await _context.Channels.AnyAsync(m => m.Id == id);
+                if (!exists)
                 {
                     return NotFound();
                 }
-
-                throw;
+            }
+            else
+            {
+                Title = "Create";
+                ChannelId = -1;
             }
 
-            return RedirectToPage("./Index");
-        }
+            Countries = TZNames.GetCountryNames(CultureInfo.CurrentUICulture.Name)
+                .Select(x => new SelectListItem(x.Value, x.Key));
 
-        private bool ChannelExists(int id)
-        {
-            return _context.Channels.Any(e => e.Id == id);
+            return Page();
         }
     }
 }

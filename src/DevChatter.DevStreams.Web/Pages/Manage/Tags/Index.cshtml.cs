@@ -1,13 +1,11 @@
 ﻿using DevChatter.DevStreams.Core.Model;
 using DevChatter.DevStreams.Web.Data;
-using DevChatter.DevStreams.Web.Data.ViewModel.Channels;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
-namespace DevChatter.DevStreams.Web.Pages.Channels
+namespace DevChatter.DevStreams.Web.Pages.Manage.Tags
 {
     public class IndexModel : PageModel
     {
@@ -18,14 +16,11 @@ namespace DevChatter.DevStreams.Web.Pages.Channels
             _context = context;
         }
 
-        public IList<ChannelIndexModel> Channels { get;set; }
+        public IList<Tag> Tag { get;set; }
 
         public async Task OnGetAsync()
         {
-            List<Channel> models = await _context.Channels
-                .Include(x => x.ScheduledStreams)
-                .ToListAsync();
-            Channels = models.Select(model => model.ToChannelIndexModel()).ToList();
+            Tag = await _context.Tags.ToListAsync();
         }
     }
 }

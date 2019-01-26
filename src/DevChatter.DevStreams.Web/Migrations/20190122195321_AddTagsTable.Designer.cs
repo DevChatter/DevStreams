@@ -4,14 +4,16 @@ using DevChatter.DevStreams.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DevChatter.DevStreams.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190122195321_AddTagsTable")]
+    partial class AddTagsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -40,19 +42,6 @@ namespace DevChatter.DevStreams.Web.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Channels");
-                });
-
-            modelBuilder.Entity("DevChatter.DevStreams.Core.Model.ChannelTag", b =>
-                {
-                    b.Property<int>("ChannelId");
-
-                    b.Property<int>("TagId");
-
-                    b.HasKey("ChannelId", "TagId");
-
-                    b.HasIndex("TagId");
-
-                    b.ToTable("ChannelTag");
                 });
 
             modelBuilder.Entity("DevChatter.DevStreams.Core.Model.ScheduledStream", b =>
@@ -281,19 +270,6 @@ namespace DevChatter.DevStreams.Web.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
-                });
-
-            modelBuilder.Entity("DevChatter.DevStreams.Core.Model.ChannelTag", b =>
-                {
-                    b.HasOne("DevChatter.DevStreams.Core.Model.Channel", "Channel")
-                        .WithMany("Tags")
-                        .HasForeignKey("ChannelId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("DevChatter.DevStreams.Core.Model.Tag", "Tag")
-                        .WithMany()
-                        .HasForeignKey("TagId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("DevChatter.DevStreams.Core.Model.ScheduledStream", b =>

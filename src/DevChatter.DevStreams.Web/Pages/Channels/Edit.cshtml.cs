@@ -27,12 +27,15 @@ namespace DevChatter.DevStreams.Web.Pages.Channels
 
         public int ChannelId { get; set; }
 
+        public string Title { get; set; }
+
         public IEnumerable<SelectListItem> Countries { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id.HasValue)
             {
+                Title = "Edit";
                 ChannelId = id.Value;
                 bool exists = await _context.Channels.AnyAsync(m => m.Id == id);
                 if (!exists)
@@ -42,6 +45,7 @@ namespace DevChatter.DevStreams.Web.Pages.Channels
             }
             else
             {
+                Title = "Create";
                 ChannelId = -1;
             }
 

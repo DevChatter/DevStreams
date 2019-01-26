@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using DevChatter.DevStreams.Web.Data.ViewModel.Channels;
 
 namespace DevChatter.DevStreams.Web.Pages.Channels
 {
@@ -15,8 +16,7 @@ namespace DevChatter.DevStreams.Web.Pages.Channels
             _context = context;
         }
 
-        [BindProperty]
-        public Channel Channel { get; set; }
+        public ChannelViewModel Channel { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -25,12 +25,19 @@ namespace DevChatter.DevStreams.Web.Pages.Channels
                 return NotFound();
             }
 
-            Channel = await _context.Channels.FirstOrDefaultAsync(m => m.Id == id);
+            var model = await _context
+                        .Channels
+                        .Include(x => x.ScheduledStreams)
+                        .Include(x => x.Tags)
+                        .ThenInclude(x => x.Tag)
+                        .FirstOrDefaultAsync(m => m.Id == id);
 
-            if (Channel == null)
+            if (model == null)
             {
                 return NotFound();
             }
+
+            Channel = model.ToChannelViewModel();
             return Page();
         }
 
@@ -41,11 +48,11 @@ namespace DevChatter.DevStreams.Web.Pages.Channels
                 return NotFound();
             }
 
-            Channel = await _context.Channels.FindAsync(id);
+            var model = await _context.Channels.FindAsync(id);
 
-            if (Channel != null)
+            if (model != null)
             {
-                _context.Channels.Remove(Channel);
+                _context.Channels.Remove(model);
                 await _context.SaveChangesAsync();
             }
 

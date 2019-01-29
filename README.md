@@ -37,3 +37,5 @@ Have I mentioned that you're awesome for even considering contributing to this p
 * [Brendan Enrick](https://github.com/benrick)
 * [Jon Skeet](https://github.com/jskeet)
 * [Dave Paquette](https://github.com/dpaquette)
+
+**Feel free to add your name to this list when sending a Pull Request.**

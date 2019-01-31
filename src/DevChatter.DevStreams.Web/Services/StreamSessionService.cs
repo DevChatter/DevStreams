@@ -19,7 +19,8 @@ namespace DevChatter.DevStreams.Web.Services
             _context = context;
         }
 
-        public async Task<IList<StreamSession>> Get(string timeZoneId, DateTime localDateTime)
+        public async Task<IList<StreamSession>> Get(string timeZoneId, DateTime localDateTime,
+            IEnumerable<int> includedTagIds)
         {
             DateTimeZone zone = DateTimeZoneProviders.Tzdb[timeZoneId];
             LocalDate localDate = LocalDate.FromDateTime(localDateTime);
@@ -29,7 +30,9 @@ namespace DevChatter.DevStreams.Web.Services
             List<StreamSession> sessions = await _context.StreamSessions
                 .Include(x => x.ScheduledStream)
                 .ThenInclude(x => x.Channel)
-                .Where(x => x.UtcEndTime > dayStart && x.UtcStartTime < dayEnd)
+                .ThenInclude(x => x.Tags)
+                .Where(x => x.UtcEndTime > dayStart && x.UtcStartTime < dayEnd 
+                        && includedTagIds.All(t => x.ScheduledStream.Channel.Tags.Any(ct => ct.TagId == t)))
                 .ToListAsync();
 
             return sessions.ToList();

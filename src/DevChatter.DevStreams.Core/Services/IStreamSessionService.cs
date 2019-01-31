@@ -7,6 +7,6 @@ namespace DevChatter.DevStreams.Core.Services
 {
     public interface IStreamSessionService
     {
-        Task<IList<StreamSession>> Get(string timeZoneId, DateTime localDateTime);
+        Task<IList<StreamSession>> Get(string timeZoneId, DateTime localDateTime, IEnumerable<int> includedTagIds);
     }
 }

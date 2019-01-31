@@ -1,5 +1,4 @@
-﻿
-Vue.component('vue-multiselect', window.VueMultiselect.default);
+﻿Vue.component('vue-multiselect', window.VueMultiselect.default);
 
 let app = new Vue({
     components: {

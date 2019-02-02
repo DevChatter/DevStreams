@@ -42,6 +42,5 @@ namespace DevChatter.DevStreams.Web.Services
             Instant dayEnd = input.PlusDays(1).AtStartOfDayInZone(zone).ToInstant();
             return (dayStart, dayEnd);
         }
-
     }
 }

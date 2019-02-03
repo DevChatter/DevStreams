@@ -1,19 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using DevChatter.DevStreams.Core.Services;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using DevChatter.DevStreams.Web.Data;
 using DevChatter.DevStreams.Web.Services;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using NodaTime;
 
 namespace DevChatter.DevStreams.Web
 {
@@ -43,6 +39,9 @@ namespace DevChatter.DevStreams.Web
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddScoped<IStreamSessionService, StreamSessionService>();
+            services.AddScoped<IScheduledStreamService, ScheduledStreamService>();
+
+            services.AddSingleton<IClock>(SystemClock.Instance);
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }

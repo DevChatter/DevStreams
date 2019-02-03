@@ -1,31 +1,27 @@
 ﻿using DevChatter.DevStreams.Core.Model;
+using DevChatter.DevStreams.Core.Services;
+using DevChatter.DevStreams.Web.Data;
 using DevChatter.DevStreams.Web.Data.ViewModel.ScheduledStreams;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 using NodaTime;
-using NodaTime.Extensions;
-using NodaTime.Text;
 using System.Globalization;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using TimeZoneNames;
 
 namespace DevChatter.DevStreams.Web.Pages.Channels.Schedule
 {
     public class CreateModel : PageModel
     {
-        private readonly DevChatter.DevStreams.Web.Data.ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
+        private readonly IScheduledStreamService _scheduledStreamService;
 
-        public CreateModel(DevChatter.DevStreams.Web.Data.ApplicationDbContext context)
+        public CreateModel(ApplicationDbContext context, IScheduledStreamService scheduledStreamService)
         {
             _context = context;
-            _clock = SystemClock.Instance;
+            _scheduledStreamService = scheduledStreamService;
         }
-
-        public static readonly ZonedDateTimePattern ZonedDateTimePattern = 
-            ZonedDateTimePattern.CreateWithInvariantCulture("HH:mm o<G>", null);
-
-        private readonly IClock _clock;
 
         [BindProperty]
         public CreateStreamTimeViewModel StreamTime { get; set; } = new CreateStreamTimeViewModel
@@ -52,37 +48,11 @@ namespace DevChatter.DevStreams.Web.Pages.Channels.Schedule
                 .Include(x => x.ScheduledStreams)
                 .SingleAsync(x => x.Id == channelId);
 
-            channel.ScheduledStreams.Add(stream);
-
-            var zone = DateTimeZoneProviders.Tzdb[channel.TimeZoneId];
-            var version = DateTimeZoneProviders.Tzdb.VersionId;
-            ZonedClock zonedClock = _clock.InZone(zone);
-
-            LocalDate today = zonedClock.GetCurrentDate();
-            LocalDate next = today.With(DateAdjusters.Next(stream.DayOfWeek));
-
-            
-            for (int i = 0; i < 52; i++)
-            {
-                LocalDateTime nextLocalStartDateTime = next + stream.LocalStartTime;
-                LocalDateTime nextLocalEndDateTime = next + stream.LocalEndTime;
-
-                var streamSession = new StreamSession
-                {
-                    TzdbVersionId = version,
-                    UtcStartTime = nextLocalStartDateTime.InZoneLeniently(zone).ToInstant(),
-                    UtcEndTime = nextLocalEndDateTime.InZoneLeniently(zone).ToInstant(),
-                };
-
-                stream.Sessions.Add(streamSession);
-
-                next = next.PlusWeeks(1);
-            }
+            _scheduledStreamService.AddScheduledStreamToChannel(channel, stream);
 
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");
-
         }
     }
 }

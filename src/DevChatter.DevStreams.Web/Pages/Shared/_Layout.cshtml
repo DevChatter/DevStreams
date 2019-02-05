@@ -1,6 +1,6 @@
 ﻿
 @using System.IO
-@inject Microsoft.AspNetCore.Hosting.IHostingEnvironment hostingEnv
+@inject Microsoft.AspNetCore.Hosting.IHostingEnvironment HostingEnv
 
 <!DOCTYPE html>
 <html>
@@ -11,11 +11,11 @@
 
     @{
         var theme = "default";
-        var cookieTheme = "";
 
-        if (Context.Request.Cookies.TryGetValue("DevChatter.DevStreams.Theming", out cookieTheme))
+        if (Context.Request.Cookies.TryGetValue("DevChatter.DevStreams.Theming", 
+            out string cookieTheme))
         {
-            if (File.Exists($"{hostingEnv.WebRootPath}/css/themes/{cookieTheme}/{cookieTheme}.min.css"))
+            if (File.Exists($"{HostingEnv.WebRootPath}/css/themes/{cookieTheme}/{cookieTheme}.min.css"))
             {
                 theme = cookieTheme;
             }
@@ -106,33 +106,33 @@
             'use strict';
 
             function readCookie(name) {
-                var value = "; " + document.cookie;
-                var parts = value.split("; " + name + "=");
+                const value = "; " + document.cookie;
+                const parts = value.split("; " + name + "=");
 
                 if (parts.length === 2) {
                    return parts.pop().split(";").shift();
+                }
             }
-        }
 
-        var cookieName = "DevChatter.DevStreams.Theming",
-            defaultTheme = "default",
-            theme = readCookie(cookieName);
+            const cookieName = "DevChatter.DevStreams.Theming";
+            const defaultTheme = "default";
+            let theme = readCookie(cookieName);
 
-        if (theme === undefined) {
-                theme = defaultTheme;
-        }
+            if (theme === undefined) {
+                    theme = defaultTheme;
+            }
 
-        document.querySelector("#themeSelector").value = theme;
-        var selector = document.getElementById("themeSelector");
+            document.querySelector("#themeSelector").value = theme;
+            var selector = document.getElementById("themeSelector");
 
-        selector.addEventListener("change", function (evnt) {
-            document.cookie = encodeURIComponent(cookieName) + "=" + encodeURIComponent(evnt.target.value) +
-                ";Max-Age=" + (10 * 365 * 24 * 60 * 60) +
-                " ;SameSite=Strict; Path=/";
+            selector.addEventListener("change", function (evnt) {
+                document.cookie = encodeURIComponent(cookieName) + "=" + encodeURIComponent(evnt.target.value) +
+                    ";Max-Age=" + (10 * 365 * 24 * 60 * 60) +
+                    " ;SameSite=Strict; Path=/";
 
-            location.reload();
-        });
-    })();
+                location.reload();
+            });
+        })();
 </script>
 </body>
 </html>

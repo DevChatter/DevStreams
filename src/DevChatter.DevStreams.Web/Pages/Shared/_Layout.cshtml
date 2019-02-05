@@ -9,18 +9,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - DevStreams</title>
 
-	@{
-		var theme = "default";
-		var cookieTheme = "";
+    @{
+        var theme = "default";
+        var cookieTheme = "";
 
-		if (Context.Request.Cookies.TryGetValue("DevChatter.DevStreams.Theming", out cookieTheme))
-		{
-			if (File.Exists($"{hostingEnv.WebRootPath}/css/themes/{cookieTheme}/{cookieTheme}.min.css"))
-			{
-				theme = cookieTheme;
-			}
-		}
-	}
+        if (Context.Request.Cookies.TryGetValue("DevChatter.DevStreams.Theming", out cookieTheme))
+        {
+            if (File.Exists($"{hostingEnv.WebRootPath}/css/themes/{cookieTheme}/{cookieTheme}.min.css"))
+            {
+                theme = cookieTheme;
+            }
+        }
+    }
 
     <environment include="Development">
         <link rel="stylesheet" href="~/css/themes/@(theme)/@(theme).css" />
@@ -44,6 +44,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
                 </button>
                 <a asp-page="/Index" class="navbar-brand">DevStreams</a>
             </div>
@@ -52,7 +53,8 @@
                     <li><a asp-page="/Index">Home</a></li>
                     <li><a asp-page="/About">About</a></li>
                     <li><a asp-page="/Calendar">Calendar</a></li>
-                    <li><a asp-page="/Channels/Index">Channels</a></li>
+                    <li><a asp-page="/Channels/Index">All Channels</a></li>
+                    <li><a asp-page="/My/Channels/Index">My Channels</a></li>
                     <li><a asp-page="/Manage/Index">Manage Site</a></li>
                 </ul>
                 <partial name="_LoginPartial" />

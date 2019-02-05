@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TimeZoneNames;
 
-namespace DevChatter.DevStreams.Web.Pages.Channels.Schedule
+namespace DevChatter.DevStreams.Web.Pages.My.Channels.Schedule
 {
     public class CreateModel : PageModel
     {

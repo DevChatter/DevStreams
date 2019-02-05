@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using DevChatter.DevStreams.Web.Data;
 using DevChatter.DevStreams.Web.Data.ViewModel.Channels;
 
-namespace DevChatter.DevStreams.Web.Pages.Channels
+namespace DevChatter.DevStreams.Web.Pages.My.Channels
 {
     public class DetailsModel : PageModel
     {

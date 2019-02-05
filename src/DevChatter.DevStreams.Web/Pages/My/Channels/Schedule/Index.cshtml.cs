@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace DevChatter.DevStreams.Web.Pages.Channels.Schedule
+namespace DevChatter.DevStreams.Web.Pages.My.Channels.Schedule
 {
     public class IndexModel : PageModel
     {

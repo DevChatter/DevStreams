@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DevChatter.DevStreams.Web.Pages.Channels
+namespace DevChatter.DevStreams.Web.Pages.My.Channels
 {
     public class IndexModel : PageModel
     {

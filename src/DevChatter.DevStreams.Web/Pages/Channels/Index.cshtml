@@ -22,7 +22,7 @@
     @foreach (var item in Model.Channels) {
         <tr>
             <td>
-                <a asp-page="./Details" asp-route-channelId="@item.Id">@Html.DisplayFor(modelItem => item.Name)</a>
+                <a asp-page="./Details" asp-route-id="@item.Id">@Html.DisplayFor(modelItem => item.Name)</a>
             </td>
             <td>
                 @item.Tags

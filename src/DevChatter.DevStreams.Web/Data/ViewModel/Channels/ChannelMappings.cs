@@ -22,6 +22,18 @@ namespace DevChatter.DevStreams.Web.Data.ViewModel.Channels
             };
         }
 
+        public static ChannelSearchModel ToChannelSearchModel(this Channel src)
+        {
+            return new ChannelSearchModel
+            {
+                Id = src.Id,
+                Name = src.Name,
+                Uri = src.Uri,
+                Tags = string.Join(", ", src.Tags.Select(x => x.Tag.Name)),
+                IsLive = false
+            };
+        }
+
         public static ChannelViewModel ToChannelViewModel(this Channel src)
         {
             return new ChannelViewModel

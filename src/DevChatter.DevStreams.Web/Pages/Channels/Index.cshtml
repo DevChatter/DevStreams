@@ -15,7 +15,8 @@
         <th>
             @Html.DisplayNameFor(model => model.Channels[0].Tags)
         </th>
-        <th></th>
+        <th>Links</th>
+        <th>Next Stream</th>
     </tr>
     </thead>
     <tbody>
@@ -29,6 +30,9 @@
             </td>
             <td>
                 <a href="@item.Uri">@item.ChannelLinkText</a>
+            </td>
+            <td>
+                Tuesday at 2:00 PM EST
             </td>
         </tr>
     }

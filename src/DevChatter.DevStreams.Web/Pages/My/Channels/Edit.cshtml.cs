@@ -14,7 +14,7 @@ using DevChatter.DevStreams.Core;
 using DevChatter.DevStreams.Web.Controllers;
 using TimeZoneNames;
 
-namespace DevChatter.DevStreams.Web.Pages.Channels
+namespace DevChatter.DevStreams.Web.Pages.My.Channels
 {
     public class EditModel : PageModel
     {

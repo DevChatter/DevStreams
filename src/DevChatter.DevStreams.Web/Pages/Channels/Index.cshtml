@@ -1,49 +1,41 @@
 ﻿@page
 @model DevChatter.DevStreams.Web.Pages.Channels.IndexModel
-
 @{
-    ViewData["Title"] = "My Channels";
+    ViewData["Title"] = "Find Channels";
 }
 
-<h2>My Channels</h2>
+<h2>Find Channels</h2>
 
-<p>
-    <a asp-page="Edit">Create New</a>
-</p>
 <table class="table">
     <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Channels[0].Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Channels[0].Uri)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Channels[0].TimeZoneName)
-            </th>
-            <th></th>
-        </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Channels[0].Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Channels[0].Tags)
+        </th>
+        <th>Links</th>
+        <th>Next Stream</th>
+    </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.Channels) {
+    @foreach (var item in Model.Channels) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Name)
+                <a asp-page="./Details" asp-route-id="@item.Id">@Html.DisplayFor(modelItem => item.Name)</a>
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Uri)
+                @item.Tags
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.TimeZoneName)
+                <a href="@item.Uri">@item.ChannelLinkText</a>
             </td>
             <td>
-                <a asp-page="./Schedule/Index" asp-route-channelId="@item.Id">Schedule (@item.ScheduledStreamsCount)</a> |
-                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+                Tuesday at 2:00 PM EST
             </td>
         </tr>
-}
+    }
     </tbody>
 </table>
+

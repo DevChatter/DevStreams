@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Dapper" Version="1.50.5" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\DevChatter.DevStreams.Core\DevChatter.DevStreams.Core.csproj" />
   </ItemGroup>
 

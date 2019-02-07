@@ -1,4 +1,5 @@
 using DevChatter.DevStreams.Core.Services;
+using DevChatter.DevStreams.Infra.Dapper;
 using DevChatter.DevStreams.Web.Data;
 using DevChatter.DevStreams.Web.Services;
 using Microsoft.AspNetCore.Builder;
@@ -40,6 +41,7 @@ namespace DevChatter.DevStreams.Web
 
             services.AddScoped<IStreamSessionService, StreamSessionService>();
             services.AddScoped<IScheduledStreamService, ScheduledStreamService>();
+            services.AddTransient<ITagSearchService, TagSearchService>();
 
             services.AddSingleton<IClock>(SystemClock.Instance);
 

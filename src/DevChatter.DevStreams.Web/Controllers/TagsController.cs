@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DevChatter.DevStreams.Core.Model;
+using DevChatter.DevStreams.Core.Services;
 
 namespace DevChatter.DevStreams.Web.Controllers
 {
@@ -12,18 +14,22 @@ namespace DevChatter.DevStreams.Web.Controllers
     public class TagsController : Controller
     {
         private readonly ApplicationDbContext _dbContext;
+        private readonly ITagSearchService _tagSearchService;
 
-        public TagsController(ApplicationDbContext dbContext)
+        public TagsController(ApplicationDbContext dbContext, ITagSearchService tagSearchService)
         {
             _dbContext = dbContext;
+            _tagSearchService = tagSearchService;
         }
 
         [HttpGet]
         public async Task<IList<TagViewModel>> Get(string filter)
         {
-            var models = await _dbContext.Tags
-                .Where(t => t.Name.Contains(filter)) // TODO: Much better filtering
-                .ToListAsync();
+            List<Tag> models = await _tagSearchService.Find(filter);
+
+            //List<Tag> models = await _dbContext.Tags
+            //    .Where(t => t.Name.Contains(filter)) // TODO: Much better filtering
+            //    .ToListAsync();
 
             var viewModels = models
                 .Select(x => x.ToViewModel())

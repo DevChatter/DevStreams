@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DevChatter.DevStreams.Core\DevChatter.DevStreams.Core.csproj" />
+    <ProjectReference Include="..\DevChatter.DevStreams.Infra.Dapper\DevChatter.DevStreams.Infra.Dapper.csproj" />
   </ItemGroup>
 
 </Project>

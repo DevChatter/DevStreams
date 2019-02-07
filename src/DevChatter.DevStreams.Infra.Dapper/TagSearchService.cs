@@ -17,8 +17,8 @@ namespace DevChatter.DevStreams.Infra.Dapper
             const string sql = "SELECT * FROM [Tags] WHERE [Name] like @Search";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                List<Tag> output = (await connection.QueryAsync<Tag>(sql,
-                    new { Search = $"%{filter}%" })).ToList();
+                var args = new { Search = $"%{filter}%" };
+                List<Tag> output = (await connection.QueryAsync<Tag>(sql, args)).ToList();
                 return output;
 
             }

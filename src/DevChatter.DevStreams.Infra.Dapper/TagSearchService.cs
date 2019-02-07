@@ -1,6 +1,8 @@
 ﻿using Dapper;
 using DevChatter.DevStreams.Core.Model;
 using DevChatter.DevStreams.Core.Services;
+using DevChatter.DevStreams.Core.Settings;
+using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
@@ -10,12 +12,18 @@ namespace DevChatter.DevStreams.Infra.Dapper
 {
     public class TagSearchService : ITagSearchService
     {
-        private const string connectionString = "Server=(localdb)\\mssqllocaldb;Database=DevStreamsDb;Trusted_Connection=True;MultipleActiveResultSets=true";
+        private readonly DatabaseSettings _dbSettings;
+
+        public TagSearchService(IOptions<DatabaseSettings> databaseSettings)
+        {
+            _dbSettings = databaseSettings.Value;
+        }
+
 
         public async Task<List<Tag>> Find(string filter)
         {
             const string sql = "SELECT * FROM [Tags] WHERE [Name] like @Search";
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
             {
                 var args = new { Search = $"%{filter}%" };
                 List<Tag> output = (await connection.QueryAsync<Tag>(sql, args)).ToList();

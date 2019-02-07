@@ -1,4 +1,5 @@
 using DevChatter.DevStreams.Core.Services;
+using DevChatter.DevStreams.Core.Settings;
 using DevChatter.DevStreams.Infra.Dapper;
 using DevChatter.DevStreams.Web.Data;
 using DevChatter.DevStreams.Web.Services;
@@ -32,6 +33,9 @@ namespace DevChatter.DevStreams.Web
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
+
+            services.Configure<DatabaseSettings>(
+                Configuration.GetSection("ConnectionStrings"));
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(

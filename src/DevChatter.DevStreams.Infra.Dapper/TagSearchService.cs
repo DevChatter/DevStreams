@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using Dapper;
+using DevChatter.DevStreams.Core.Model;
+using DevChatter.DevStreams.Core.Services;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
-using DevChatter.DevStreams.Core.Model;
-using DevChatter.DevStreams.Core.Services;
-using Dapper;
 
 namespace DevChatter.DevStreams.Infra.Dapper
 {
@@ -20,7 +20,6 @@ namespace DevChatter.DevStreams.Infra.Dapper
                 var args = new { Search = $"%{filter}%" };
                 List<Tag> output = (await connection.QueryAsync<Tag>(sql, args)).ToList();
                 return output;
-
             }
         }
     }

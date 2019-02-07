@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevChatter.DevStreams.Core"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevChatter.DevStreams.UnitTests", "DevChatter.DevStreams.UnitTests\DevChatter.DevStreams.UnitTests.csproj", "{6F143D41-FCDB-484D-B40D-1942531E3DD9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevChatter.DevStreams.Infra.Dapper", "DevChatter.DevStreams.Infra.Dapper\DevChatter.DevStreams.Infra.Dapper.csproj", "{964F1FA2-BF2C-4EF9-872F-B5F2E01404AF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{6F143D41-FCDB-484D-B40D-1942531E3DD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F143D41-FCDB-484D-B40D-1942531E3DD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6F143D41-FCDB-484D-B40D-1942531E3DD9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{964F1FA2-BF2C-4EF9-872F-B5F2E01404AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{964F1FA2-BF2C-4EF9-872F-B5F2E01404AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{964F1FA2-BF2C-4EF9-872F-B5F2E01404AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{964F1FA2-BF2C-4EF9-872F-B5F2E01404AF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

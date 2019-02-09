@@ -1,20 +1,18 @@
-﻿using DevChatter.DevStreams.Core.Model;
-using DevChatter.DevStreams.Web.Data;
+﻿using DevChatter.DevStreams.Core.Data;
+using DevChatter.DevStreams.Core.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace DevChatter.DevStreams.Web.Pages.Manage.Tags
 {
     public class EditModel : PageModel
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ICrudRepository _repo;
 
-        public EditModel(ApplicationDbContext context)
+        public EditModel(ICrudRepository repo)
         {
-            _context = context;
+            _repo = repo;
         }
 
         [BindProperty]
@@ -27,12 +25,13 @@ namespace DevChatter.DevStreams.Web.Pages.Manage.Tags
                 return NotFound();
             }
 
-            Tag = await _context.Tags.FirstOrDefaultAsync(m => m.Id == id);
+            Tag = await _repo.Get<Tag>(id.Value);
 
             if (Tag == null)
             {
                 return NotFound();
             }
+
             return Page();
         }
 
@@ -43,30 +42,12 @@ namespace DevChatter.DevStreams.Web.Pages.Manage.Tags
                 return Page();
             }
 
-            _context.Attach(Tag).State = EntityState.Modified;
-
-            try
+            if (await _repo.Update(Tag)) // TODO: Exception Handling and Logging
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TagExists(Tag.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return RedirectToPage("./Index");
             }
 
-            return RedirectToPage("./Index");
-        }
-
-        private bool TagExists(int id)
-        {
-            return _context.Tags.Any(e => e.Id == id);
+            return NotFound();
         }
     }
 }

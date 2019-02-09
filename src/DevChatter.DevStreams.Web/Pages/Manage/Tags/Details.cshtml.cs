@@ -1,19 +1,18 @@
-﻿using DevChatter.DevStreams.Core.Model;
-using DevChatter.DevStreams.Web.Data;
+﻿using DevChatter.DevStreams.Core.Data;
+using DevChatter.DevStreams.Core.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
 namespace DevChatter.DevStreams.Web.Pages.Manage.Tags
 {
     public class DetailsModel : PageModel
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ICrudRepository _repo;
 
-        public DetailsModel(ApplicationDbContext context)
+        public DetailsModel(ICrudRepository repo)
         {
-            _context = context;
+            _repo = repo;
         }
 
         public Tag Tag { get; set; }
@@ -25,7 +24,7 @@ namespace DevChatter.DevStreams.Web.Pages.Manage.Tags
                 return NotFound();
             }
 
-            Tag = await _context.Tags.FirstOrDefaultAsync(m => m.Id == id);
+            Tag = await _repo.Get<Tag>(id.Value);
 
             if (Tag == null)
             {

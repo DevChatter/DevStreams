@@ -9,4 +9,10 @@
     <PackageReference Include="TimeZoneNames" Version="3.4.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="Dapper.Contrib">
+      <HintPath>C:\Users\Brendan\.nuget\packages\dapper.contrib\1.50.5\lib\netstandard2.0\Dapper.Contrib.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

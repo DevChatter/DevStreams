@@ -1,5 +1,8 @@
-﻿namespace DevChatter.DevStreams.Core.Model
+﻿using Dapper.Contrib.Extensions;
+
+namespace DevChatter.DevStreams.Core.Model
 {
+    [Table("Tags")]
     public class Tag : DataEntity
     {
         public string Name { get; set; }

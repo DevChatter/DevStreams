@@ -2,6 +2,7 @@ using DevChatter.DevStreams.Core.Data;
 using DevChatter.DevStreams.Core.Services;
 using DevChatter.DevStreams.Core.Settings;
 using DevChatter.DevStreams.Infra.Dapper;
+using DevChatter.DevStreams.Infra.Dapper.Services;
 using DevChatter.DevStreams.Web.Data;
 using DevChatter.DevStreams.Web.Services;
 using Microsoft.AspNetCore.Builder;
@@ -48,6 +49,7 @@ namespace DevChatter.DevStreams.Web
             services.AddScoped<IScheduledStreamService, ScheduledStreamService>();
             services.AddTransient<ITagSearchService, TagSearchService>();
             services.AddTransient<ICrudRepository, DapperCrudRepository>();
+            services.AddTransient<IChannelSearchService, ChannelSearchService>();
 
             services.AddSingleton<IClock>(SystemClock.Instance);
 

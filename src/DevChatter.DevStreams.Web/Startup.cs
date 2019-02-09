@@ -1,3 +1,4 @@
+using DevChatter.DevStreams.Core.Data;
 using DevChatter.DevStreams.Core.Services;
 using DevChatter.DevStreams.Core.Settings;
 using DevChatter.DevStreams.Infra.Dapper;
@@ -46,6 +47,7 @@ namespace DevChatter.DevStreams.Web
             services.AddScoped<IStreamSessionService, StreamSessionService>();
             services.AddScoped<IScheduledStreamService, ScheduledStreamService>();
             services.AddTransient<ITagSearchService, TagSearchService>();
+            services.AddTransient<ICrudRepository, DapperCrudRepository>();
 
             services.AddSingleton<IClock>(SystemClock.Instance);
 

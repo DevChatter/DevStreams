@@ -12,5 +12,6 @@ namespace DevChatter.DevStreams.Core.Data
         Task<bool> Update<T>(T model) where T : DataEntity;
         Task<bool> Delete<T>(int id) where T : DataEntity, new();
         Task<bool> Delete<T>(T model) where T : DataEntity;
+        Task<bool> Exists<T>(int id) where T : DataEntity;
     }
 }

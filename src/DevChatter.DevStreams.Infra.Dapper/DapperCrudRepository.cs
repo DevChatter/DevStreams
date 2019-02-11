@@ -68,5 +68,10 @@ namespace DevChatter.DevStreams.Infra.Dapper
                 return await connection.DeleteAsync(model);
             }
         }
+
+        public async Task<bool> Exists<T>(int id) where T : DataEntity
+        {
+            return (await Get<T>(id)) != null; // TODO: Actually write this.
+        }
     }
 }

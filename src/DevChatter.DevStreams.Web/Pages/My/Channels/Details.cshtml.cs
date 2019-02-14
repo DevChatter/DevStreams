@@ -1,10 +1,9 @@
-﻿using DevChatter.DevStreams.Core.Model;
+﻿using DevChatter.DevStreams.Web.Data;
+using DevChatter.DevStreams.Web.Data.ViewModel.Channels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
-using DevChatter.DevStreams.Web.Data;
-using DevChatter.DevStreams.Web.Data.ViewModel.Channels;
 
 namespace DevChatter.DevStreams.Web.Pages.My.Channels
 {

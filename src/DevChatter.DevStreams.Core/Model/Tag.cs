@@ -1,4 +1,4 @@
-﻿using Dapper.Contrib.Extensions;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DevChatter.DevStreams.Core.Model
 {

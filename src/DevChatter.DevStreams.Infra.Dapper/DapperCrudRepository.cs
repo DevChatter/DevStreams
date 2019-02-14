@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using Dapper.Contrib.Extensions;
+﻿using Dapper;
 using DevChatter.DevStreams.Core.Data;
 using DevChatter.DevStreams.Core.Model;
 using DevChatter.DevStreams.Core.Settings;
 using Microsoft.Extensions.Options;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
@@ -20,12 +20,11 @@ namespace DevChatter.DevStreams.Infra.Dapper
             _dbSettings = databaseSettings.Value;
         }
 
-        public async Task<T> Insert<T>(T model) where T : DataEntity
+        public async Task<int?> Insert<T>(T model) where T : DataEntity
         {
             using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
             {
-                int id = await connection.InsertAsync<T>(model);
-                return await connection.GetAsync<T>(id);
+                return await connection.InsertAsync(model);
             }
         }
 
@@ -41,11 +40,11 @@ namespace DevChatter.DevStreams.Infra.Dapper
         {
             using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
             {
-                return (await connection.GetAllAsync<T>()).ToList();
+                return (await connection.GetListAsync<T>()).ToList();
             }
         }
 
-        public async Task<bool> Update<T>(T model) where T : DataEntity
+        public async Task<int> Update<T>(T model) where T : DataEntity
         {
             using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
             {
@@ -53,15 +52,15 @@ namespace DevChatter.DevStreams.Infra.Dapper
             }
         }
 
-        public async Task<bool> Delete<T>(int id) where T : DataEntity, new()
+        public async Task<int> Delete<T>(int id) where T : DataEntity
         {
             using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
             {
-                return await connection.DeleteAsync(new T { Id = id });
+                return await connection.DeleteAsync(id);
             }
         }
 
-        public async Task<bool> Delete<T>(T model) where T : DataEntity
+        public async Task<int> Delete<T>(T model) where T : DataEntity
         {
             using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
             {
@@ -71,7 +70,10 @@ namespace DevChatter.DevStreams.Infra.Dapper
 
         public async Task<bool> Exists<T>(int id) where T : DataEntity
         {
-            return (await Get<T>(id)) != null; // TODO: Actually write this.
+            using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
+            {
+                return await connection.RecordCountAsync<T>("WHERE Id=@id", new {id}) > 0;
+            }
         }
     }
 }

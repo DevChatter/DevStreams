@@ -42,7 +42,7 @@ namespace DevChatter.DevStreams.Web.Pages.Manage.Tags
                 return Page();
             }
 
-            if (await _repo.Update(Tag)) // TODO: Exception Handling and Logging
+            if (await _repo.Update(Tag) == 0)
             {
                 return RedirectToPage("./Index");
             }

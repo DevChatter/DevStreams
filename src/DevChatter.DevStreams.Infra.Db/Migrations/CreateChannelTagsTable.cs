@@ -9,8 +9,8 @@ namespace DevChatter.DevStreams.Infra.Db.Migrations
         public override void Up()
         {
             Create.Table("ChannelTags")
-                .WithColumn("ChannelId").AsInt32()
-                .WithColumn("TagId").AsInt32();
+                .WithColumn("ChannelId").AsInt32().NotNullable()
+                .WithColumn("TagId").AsInt32().NotNullable();
 
             Create.PrimaryKey("PK_ChannelTags")
                 .OnTable("ChannelTags")

@@ -10,10 +10,10 @@ namespace DevChatter.DevStreams.Infra.Db.Migrations
         {
             Create.Table("ScheduledStreams")
                 .WithColumn("Id").AsInt32().PrimaryKey("PK_ScheduledStreams")
-                .WithColumn("ChannelId").AsInt32()
-                .WithColumn("DayOfWeek").AsString(255)
-                .WithColumn("LocalStartTime").AsInt64()
-                .WithColumn("LocalEndTime").AsInt64();
+                .WithColumn("ChannelId").AsInt32().NotNullable()
+                .WithColumn("DayOfWeek").AsString(255).NotNullable()
+                .WithColumn("LocalStartTime").AsInt64().NotNullable()
+                .WithColumn("LocalEndTime").AsInt64().NotNullable();
 
             Create.ForeignKey("FK_ScheduledStreams_Channels")
                 .FromTable("ScheduledStreams").ForeignColumn("ChannelId")

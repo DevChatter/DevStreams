@@ -9,7 +9,7 @@ namespace DevChatter.DevStreams.Infra.Db.Migrations
         {
             Create.Table("Tags")
                 .WithColumn("Id").AsInt32().PrimaryKey().Identity()
-                .WithColumn("Name").AsString(255)
+                .WithColumn("Name").AsString(255).NotNullable()
                 .WithColumn("Description").AsString(255).NotNullable();
 
             Create.Index("ix_Tags_Name")

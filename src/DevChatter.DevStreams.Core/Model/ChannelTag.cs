@@ -1,5 +1,8 @@
-﻿namespace DevChatter.DevStreams.Core.Model
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace DevChatter.DevStreams.Core.Model
 {
+    [Table("ChannelTags")]
     public class ChannelTag
     {
         public int ChannelId { get; set; }

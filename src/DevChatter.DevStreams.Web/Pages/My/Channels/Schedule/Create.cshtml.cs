@@ -44,7 +44,10 @@ namespace DevChatter.DevStreams.Web.Pages.My.Channels.Schedule
         {
             ScheduledStream stream = StreamTime.ToModel();
 
+            Channel channel = await _crudRepository.Get<Channel>(channelId);
+
             stream.ChannelId = channelId;
+            stream.TimeZoneId = channel.TimeZoneId;
 
             int? id = await _scheduledStreamService.AddScheduledStreamToChannel(stream);
 

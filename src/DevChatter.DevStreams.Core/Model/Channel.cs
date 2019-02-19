@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DevChatter.DevStreams.Core.Model
 {
     /// <summary>
     /// Information about a streaming channel. Example: DevChatter
     /// </summary>
+    [Table("Channels")]
     public class Channel : DataEntity
     {
         public string Name { get; set; }

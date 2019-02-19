@@ -32,11 +32,6 @@ namespace DevChatter.DevStreams.Web.Data
         {
             modelBuilder.Entity<ChannelTag>()
                 .HasKey(t => new { t.ChannelId, t.TagId });
-
-            modelBuilder.Entity<ChannelTag>()
-                .HasOne(pt => pt.Channel)
-                .WithMany(p => p.Tags)
-                .HasForeignKey(pt => pt.ChannelId);
         }
 
         private static void SetUpTags(ModelBuilder modelBuilder)

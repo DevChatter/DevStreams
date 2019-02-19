@@ -1,21 +1,22 @@
-﻿using DevChatter.DevStreams.Core.Model;
-using DevChatter.DevStreams.Web.Data;
+﻿using DevChatter.DevStreams.Core.Data;
+using DevChatter.DevStreams.Core.Model;
+using DevChatter.DevStreams.Core.Services;
 using DevChatter.DevStreams.Web.Data.ViewModel.ScheduledStreams;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace DevChatter.DevStreams.Web.Pages.My.Channels.Schedule
 {
     public class EditModel : PageModel
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IScheduledStreamService _streamService;
+        private readonly ICrudRepository _crudRepository;
 
-        public EditModel(ApplicationDbContext context)
+        public EditModel(IScheduledStreamService streamService, ICrudRepository crudRepository)
         {
-            _context = context;
+            _streamService = streamService;
+            _crudRepository = crudRepository;
         }
 
         [BindProperty]
@@ -30,17 +31,15 @@ namespace DevChatter.DevStreams.Web.Pages.My.Channels.Schedule
                 return NotFound();
             }
 
-            ScheduledStream scheduledStream = await _context.ScheduledStream
-                .Include(x => x.Channel) // Required for "Back to List" link
-                .FirstOrDefaultAsync(m => m.Id == id);
+            ScheduledStream stream = await _crudRepository.Get<ScheduledStream>(id.Value);
 
-            if (scheduledStream == null)
+            if (stream == null)
             {
                 return NotFound();
             }
 
-            ViewModel = scheduledStream.ToEditViewModel();
-            ChannelId = scheduledStream.Channel.Id;
+            ViewModel = stream.ToEditViewModel();
+            ChannelId = stream.ChannelId;
 
             return Page();
         }
@@ -52,35 +51,18 @@ namespace DevChatter.DevStreams.Web.Pages.My.Channels.Schedule
                 return Page();
             }
 
-            ScheduledStream model = await _context.ScheduledStream
-                .Include(x => x.Sessions) // Required for updating them.
-                .SingleOrDefaultAsync(x => x.Id == ViewModel.Id);
+            ScheduledStream model = await _crudRepository.Get<ScheduledStream>(ViewModel.Id);
 
             model.ApplyEditChanges(ViewModel);
 
-            // TODO: Update the Sessions
+            int updateCount = await _streamService.Update(model);
 
-            try
+            if (updateCount == 0)
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ScheduledStreamExists(ViewModel.Id))
-                {
-                    return NotFound();
-                }
-
-                throw;
+                return NotFound();
             }
 
             return RedirectToPage("./Details", new { id = ViewModel.Id });
-
-        }
-
-        private bool ScheduledStreamExists(int id)
-        {
-            return _context.ScheduledStream.Any(e => e.Id == id);
         }
     }
 }

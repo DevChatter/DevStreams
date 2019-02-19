@@ -1,25 +1,25 @@
-﻿using DevChatter.DevStreams.Core.Model;
+﻿using DevChatter.DevStreams.Core.Data;
+using DevChatter.DevStreams.Core.Model;
 using DevChatter.DevStreams.Core.Services;
-using DevChatter.DevStreams.Web.Data;
 using DevChatter.DevStreams.Web.Data.ViewModel.ScheduledStreams;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using System.Globalization;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using TimeZoneNames;
 
 namespace DevChatter.DevStreams.Web.Pages.My.Channels.Schedule
 {
     public class CreateModel : PageModel
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ICrudRepository _crudRepository;
         private readonly IScheduledStreamService _scheduledStreamService;
 
-        public CreateModel(ApplicationDbContext context, IScheduledStreamService scheduledStreamService)
+        public CreateModel(ICrudRepository crudRepository, IScheduledStreamService scheduledStreamService)
         {
-            _context = context;
+            _crudRepository = crudRepository;
             _scheduledStreamService = scheduledStreamService;
         }
 
@@ -35,8 +35,8 @@ namespace DevChatter.DevStreams.Web.Pages.My.Channels.Schedule
 
         public async Task OnGetAsync(int channelId)
         {
-            var channel = await _context.Channels.FindAsync(channelId);
-            
+            Channel channel = await _crudRepository.Get<Channel>(channelId);
+
             TimeZoneName = TZNames.GetNamesForTimeZone(channel.TimeZoneId, CultureInfo.CurrentUICulture.Name).Generic;
         }
 
@@ -44,15 +44,11 @@ namespace DevChatter.DevStreams.Web.Pages.My.Channels.Schedule
         {
             ScheduledStream stream = StreamTime.ToModel();
 
-            var channel = await _context.Channels
-                .Include(x => x.ScheduledStreams)
-                .SingleAsync(x => x.Id == channelId);
+            stream.ChannelId = channelId;
 
-            _scheduledStreamService.AddScheduledStreamToChannel(channel, stream);
+            int? id = await _scheduledStreamService.AddScheduledStreamToChannel(stream);
 
-            await _context.SaveChangesAsync();
-
-            return RedirectToPage("./Index");
+            return RedirectToPage("./Details", new { id });
         }
     }
 }

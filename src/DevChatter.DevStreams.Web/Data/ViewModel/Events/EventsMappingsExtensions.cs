@@ -4,15 +4,15 @@ namespace DevChatter.DevStreams.Web.Data.ViewModel.Events
 {
     public static class EventsMappingsExtensions
     {
-        public static EventViewModel ToViewModel(this StreamSession src)
+        public static EventViewModel ToViewModel(this StreamSession src, Channel channel)
         {
             return new EventViewModel
             {
                 Id = src.Id,
-                ScheduledStreamId = src.ScheduledStream.Id,
-                ChannelId = src.ScheduledStream.Channel.Id,
-                ChannelName = src.ScheduledStream.Channel.Name,
-                Uri = src.ScheduledStream.Channel.Uri,
+                ScheduledStreamId = src.ScheduledStreamId,
+                ChannelId = src.ChannelId,
+                ChannelName = channel.Name,
+                Uri = channel.Uri,
                 UtcStartTime = src.UtcStartTime.ToDateTimeUtc(),
                 UtcEndTime = src.UtcEndTime.ToDateTimeUtc(),
             };

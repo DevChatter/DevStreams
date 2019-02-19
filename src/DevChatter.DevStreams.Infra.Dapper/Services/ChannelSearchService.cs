@@ -24,11 +24,10 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
             const string sql = "SELECT * FROM [Channels] c INNER JOIN [ChannelTag] ct on ct.ChannelId = c.Id INNER JOIN [Tags] t on t.Id = ct.TagId";
             using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
             {
-                return connection.Query<Channel, ChannelTag, Tag, Channel>(sql,
-                    (channel, channelTag, tag) =>
+                return connection.Query<Channel, Tag, Channel>(sql,
+                    (channel, tag) =>
                     {
-                        channelTag.Tag = tag;
-                        channel.Tags.Add(channelTag);
+                        channel.Tags.Add(tag);
                         return channel;
                     }, splitOn:"ChannelId,TagId")
                     .GroupBy(channel => channel.Id)

@@ -41,12 +41,13 @@ namespace DevChatter.DevStreams.Web.Pages
                     LocalTime localStartTime = new LocalTime(9, 0).PlusHours(_random.Next(0,10));
                     var scheduledStream = new ScheduledStream
                     {
+                        ChannelId = channel.Id,
+                        TimeZoneId = channel.TimeZoneId,
                         DayOfWeek = (IsoDayOfWeek)_random.Next(1,8),
                         LocalStartTime = localStartTime,
                         LocalEndTime = localStartTime.PlusHours(_random.Next(1,6)),
                     };
-                    _scheduledStreamService.AddScheduledStreamToChannel(
-                        channel, scheduledStream);
+                    _scheduledStreamService.AddScheduledStreamToChannel(scheduledStream);
                 }
             }
 
@@ -62,12 +63,7 @@ namespace DevChatter.DevStreams.Web.Pages
                 {
                     foreach (Tag tag in PickRandom(tags, _random.Next(1, 4)))
                     {
-                        var channelTag = new ChannelTag
-                        {
-                            Channel = channel,
-                            Tag = tag
-                        };
-                        channel.Tags.Add(channelTag);
+                        channel.Tags.Add(tag);
                     }
                 }
 

@@ -9,7 +9,8 @@ namespace DevChatter.DevStreams.Core.Model
     /// </summary>
     public class StreamSession : DataEntity
     {
-        public ScheduledStream ScheduledStream { get; set; }
+        public int ChannelId { get; set; }
+        public int ScheduledStreamId { get; set; }
         public Instant UtcStartTime { get; set; }
         public Instant UtcEndTime { get; set; }
         public string TzdbVersionId { get; set; }

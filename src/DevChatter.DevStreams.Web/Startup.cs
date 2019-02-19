@@ -4,7 +4,6 @@ using DevChatter.DevStreams.Core.Settings;
 using DevChatter.DevStreams.Infra.Dapper;
 using DevChatter.DevStreams.Infra.Dapper.Services;
 using DevChatter.DevStreams.Web.Data;
-using DevChatter.DevStreams.Web.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -45,11 +44,12 @@ namespace DevChatter.DevStreams.Web
             services.AddDefaultIdentity<IdentityUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            services.AddScoped<IStreamSessionService, StreamSessionService>();
+            services.AddScoped<IStreamSessionService, DapperSessionLookup>();
             services.AddScoped<IScheduledStreamService, ScheduledStreamService>();
             services.AddTransient<ITagSearchService, TagSearchService>();
             services.AddTransient<ICrudRepository, DapperCrudRepository>();
             services.AddTransient<IChannelSearchService, ChannelSearchService>();
+            services.AddTransient<IChannelAggregateService, ChannelAggregateService>();
 
             services.AddSingleton<IClock>(SystemClock.Instance);
 

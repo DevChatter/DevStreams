@@ -9,7 +9,7 @@ namespace DevChatter.DevStreams.Infra.Db.Migrations
         public override void Up()
         {
             Create.Table("ScheduledStreams")
-                .WithColumn("Id").AsInt32().PrimaryKey("PK_ScheduledStreams")
+                .WithColumn("Id").AsInt32().PrimaryKey("PK_ScheduledStreams").Identity()
                 .WithColumn("ChannelId").AsInt32().NotNullable()
                 .WithColumn("DayOfWeek").AsString(255).NotNullable()
                 .WithColumn("LocalStartTime").AsInt64().NotNullable()

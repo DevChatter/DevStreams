@@ -23,11 +23,12 @@ namespace DevChatter.DevStreams.Infra.Dapper
 
         public async Task<List<Tag>> Find(string filter)
         {
-            const string sql = "SELECT * FROM [Tags] WHERE [Name] like @Search";
             using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
             {
                 var args = new { Search = $"%{filter}%" };
-                List<Tag> output = (await connection.QueryAsync<Tag>(sql, args)).ToList();
+                const string sql = "WHERE [Name] like @Search";
+                List<Tag> output = (await connection.GetListAsync<Tag>(sql, args)).ToList();
+                //List<Tag> output = (await connection.QueryAsync<Tag>(sql, args)).ToList();
                 return output;
             }
         }

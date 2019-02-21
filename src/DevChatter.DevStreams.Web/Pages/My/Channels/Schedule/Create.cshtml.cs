@@ -51,7 +51,7 @@ namespace DevChatter.DevStreams.Web.Pages.My.Channels.Schedule
 
             int? id = await _scheduledStreamService.AddScheduledStreamToChannel(stream);
 
-            return RedirectToPage("./Details", new { id });
+            return RedirectToPage("./Index", new { channelId });
         }
     }
 }

@@ -35,14 +35,15 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
             const string sql =
                 @"SELECT top 1 c.*, ss.Id--, t.*
                 FROM [Channels] c
-                INNER JOIN [ScheduledStream] ss on ss.ChannelId = c.Id
-                --INNER JOIN [ChannelTag] ct on ct.ChannelId = c.Id
+                INNER JOIN [StreamSessions] ss on ss.ChannelId = c.Id
+                --INNER JOIN [ChannelTags] ct on ct.ChannelId = c.Id
                 --INNER JOIN [Tags] t on t.Id = ct.TagId
                 WHERE ss.UtcEndTime > @dayStart 
                     AND ss.UtcStartTime < @dayEnd";
 
             using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
             {
+                var args = new { dayStart, dayEnd };
                 List<EventResult> events = (await connection.QueryAsync<Channel, StreamSession, EventResult>(
                         sql, (channel, session) =>
                         {
@@ -53,7 +54,7 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
                             };
                             return eventResult;
                         },
-                        new { dayStart, dayEnd }, splitOn: "ChannelId,TagId"))
+                        args))
                     .ToList();
                 return events;
             }

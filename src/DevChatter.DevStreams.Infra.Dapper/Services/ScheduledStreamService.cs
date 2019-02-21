@@ -37,12 +37,16 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
         {
             using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
             {
-                int? id = await connection.InsertAsync(stream);
+                string sql = "INSERT INTO ScheduledStreams (ChannelId, DayOfWeek, LocalStartTime, LocalEndTime, TimeZoneId) Values (@ChannelId, @DayOfWeek, @LocalStartTime, @LocalEndTime, @TimeZoneId);SELECT CAST(SCOPE_IDENTITY()  AS BIGINT) AS [id];";
 
-                var timeZone = DateTimeZoneProviders.Tzdb[stream.TimeZoneId];
-                var sessions = CreateStreamSessions(stream, timeZone);
+                int? id = (await connection.QueryAsync(sql, stream)).First().Id;
 
-                await Task.WhenAll(sessions.Select(s => connection.InsertAsync(s)));
+                //int? id = await connection.InsertAsync(stream);
+
+                //var timeZone = DateTimeZoneProviders.Tzdb[stream.TimeZoneId];
+                //var sessions = CreateStreamSessions(stream, timeZone);
+
+                //await Task.WhenAll(sessions.Select(s => connection.InsertAsync(s)));
 
                 return id;
             }

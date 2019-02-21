@@ -1,8 +1,10 @@
+using Dapper;
 using DevChatter.DevStreams.Core.Data;
 using DevChatter.DevStreams.Core.Services;
 using DevChatter.DevStreams.Core.Settings;
 using DevChatter.DevStreams.Infra.Dapper;
 using DevChatter.DevStreams.Infra.Dapper.Services;
+using DevChatter.DevStreams.Infra.Dapper.TypeHandlers;
 using DevChatter.DevStreams.Infra.Db.Migrations;
 using DevChatter.DevStreams.Web.Data;
 using FluentMigrator.Runner;
@@ -53,6 +55,9 @@ namespace DevChatter.DevStreams.Web
                         .AddSqlServer()
                         .WithGlobalConnectionString(Configuration.GetConnectionString("DefaultConnection"))
                         .ScanIn(typeof(CreateTagsTable).Assembly).For.Migrations());
+
+            SqlMapper.AddTypeHandler(InstantHandler.Default);
+
 
             services.AddScoped<IStreamSessionService, DapperSessionLookup>();
             services.AddScoped<IScheduledStreamService, ScheduledStreamService>();

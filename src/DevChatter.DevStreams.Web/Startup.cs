@@ -57,6 +57,7 @@ namespace DevChatter.DevStreams.Web
                         .ScanIn(typeof(CreateTagsTable).Assembly).For.Migrations());
 
             SqlMapper.AddTypeHandler(InstantHandler.Default);
+            SqlMapper.AddTypeHandler(LocalTimeHandler.Default);
 
 
             services.AddScoped<IStreamSessionService, DapperSessionLookup>();

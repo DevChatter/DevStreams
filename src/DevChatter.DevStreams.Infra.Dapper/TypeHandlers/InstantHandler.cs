@@ -41,8 +41,7 @@ namespace DevChatter.DevStreams.Infra.Dapper.TypeHandlers
                 return Instant.FromDateTimeOffset(dateTimeOffset);
             }
 
-            throw new DataException("Cannot convert " + value.GetType() + " to NodaTime.Instant");
-
+            throw new DataException($"Cannot convert {value.GetType()} to {typeof(Instant).FullName}");
         }
     }
 }

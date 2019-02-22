@@ -21,7 +21,7 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
 
         public List<Channel> Find()
         {
-            const string sql = "SELECT * FROM [Channels] c INNER JOIN [ChannelTag] ct on ct.ChannelId = c.Id INNER JOIN [Tags] t on t.Id = ct.TagId";
+            const string sql = "SELECT * FROM [Channels] c INNER JOIN [ChannelTags] ct on ct.ChannelId = c.Id INNER JOIN [Tags] t on t.Id = ct.TagId";
             using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
             {
                 return connection.Query<Channel, Tag, Channel>(sql,

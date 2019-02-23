@@ -23,11 +23,11 @@ namespace DevChatter.DevStreams.Infra.Db.Migrations
                 Insert.IntoTable("Tags").Row(new { Name = x, Description = $"For streams where the host speaks in {x}." });
             });
             
-            var programmingTypes = new List<string> { "Web Development", "Game Development", "User Experience",
+            var disciplines = new List<string> { "Web Development", "Game Development", "User Experience",
                 "Graphic Design", "Windows Applications", "Mac Applications", "Mobile Development",
                 "Android Applications", "iOS Applications", "IoT Devices", "Security",
             };
-            programmingTypes.ForEach(x => {
+            disciplines.ForEach(x => {
                 Insert.IntoTable("Tags").Row(new { Name = x, Description = $"For streams focusing on {x}." });
             });
             
@@ -38,7 +38,6 @@ namespace DevChatter.DevStreams.Infra.Db.Migrations
             frameworks.ForEach(x => {
                 Insert.IntoTable("Tags").Row(new { Name = x, Description = $"For streams using {x}." });
             });
-
         }
 
         public override void Down()

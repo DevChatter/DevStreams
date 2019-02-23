@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DevChatter.DevStreams.Core;
 using DevChatter.DevStreams.Web.Data.ViewModel.Tags;
 
 namespace DevChatter.DevStreams.Web.Controllers
@@ -24,11 +25,11 @@ namespace DevChatter.DevStreams.Web.Controllers
         public async Task<IList<EventViewModel>> Post([FromBody] EventsRequestModel requestModel)
         {
             var includedTagIds = requestModel.IncludedTags.Select(t => t.Id);
-            IList<StreamSession> sessions = 
-                await _streamSessionService.Get(requestModel.SelectedTimeZone, requestModel.SelectedDate, includedTagIds);
+            List<EventResult> events = await _streamSessionService
+                .Get(requestModel.SelectedTimeZone, requestModel.SelectedDate, includedTagIds);
 
-            return sessions
-                .Select(x => x.ToViewModel())
+            return events
+                .Select(x => x.StreamSession.ToViewModel(x.Channel))
                 .ToList();
         }
     }

@@ -1,42 +1,36 @@
-﻿using DevChatter.DevStreams.Core.Model;
-using DevChatter.DevStreams.Web.Data;
+﻿using DevChatter.DevStreams.Core.Data;
+using DevChatter.DevStreams.Core.Model;
 using DevChatter.DevStreams.Web.Data.ViewModel.Channels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
-using System.Linq;
 
 namespace DevChatter.DevStreams.Web.Controllers
 {
     [Route("api/[controller]")]
     public class ChannelsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IChannelAggregateService _channelService;
+        private readonly ICrudRepository _crudRepository;
 
-        public ChannelsController(ApplicationDbContext dbContext)
+        public ChannelsController(IChannelAggregateService channelService,
+            ICrudRepository crudRepository)
         {
-            _context = dbContext;
+            _channelService = channelService;
+            _crudRepository = crudRepository;
         }
 
         [HttpGet, Route("{id}")]
-        public async Task<ChannelEditModel> Get(int id)
+        public ChannelEditModel Get(int id)
         {
             if (id <= 0)
             {
                 return new ChannelEditModel();
             }
 
-            var model = await _context.Channels
-                        .Include(c => c.Tags)
-                        .ThenInclude(t => t.Tag)
-                        .FirstOrDefaultAsync(m => m.Id == id);
+            var channel = _channelService.GetAggregate(id);
 
-            if (model == null)
-            {
-                return null; // TODO: Return a NotFoundResult
-            }
-
-            var editModel = model.ToChannelEditModel();
+            var editModel = channel?.ToChannelEditModel();
 
             return editModel;
         }
@@ -49,28 +43,24 @@ namespace DevChatter.DevStreams.Web.Controllers
                 return BadRequest();
             }
 
-            Channel model;
-            if (IsNewChannel(channel))
-            {
-                model = new Channel();
-                _context.Channels.Add(model);
-            }
-            else
-            {
-                model = await _context.Channels
-                                .Include(c => c.Tags)
-                                .FirstOrDefaultAsync(c => c.Id == channel.Id);
-            }
-
-            model.ApplyEditChanges(channel);
-
             try
             {
-                await _context.SaveChangesAsync();
+                if (IsNewChannel(channel))
+                {
+                    Channel model = new Channel();
+                    model.ApplyEditChanges(channel);
+                    await _channelService.Create(model);
+                }
+                else
+                {
+                    Channel model = _channelService.GetAggregate(channel.Id);
+                    model.ApplyEditChanges(channel);
+                    await _channelService.Update(model);
+                }
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ChannelExists(channel.Id))
+                if (!await ChannelExists(channel.Id))
                 {
                     return NotFound();
                 }
@@ -80,12 +70,12 @@ namespace DevChatter.DevStreams.Web.Controllers
 
             return Ok();
 
-            bool ChannelExists(int id)
-            {
-                return _context.Channels.Any(e => e.Id == id);
-            }
-
             bool IsNewChannel(ChannelEditModel c) => c.Id <= 0;
+        }
+
+        private async Task<bool> ChannelExists(int id)
+        {
+            return await _crudRepository.Exists<Channel>(id);
         }
     }
 }

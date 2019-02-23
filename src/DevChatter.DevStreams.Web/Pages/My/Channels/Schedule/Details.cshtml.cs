@@ -1,19 +1,19 @@
-﻿using DevChatter.DevStreams.Web.Data;
+﻿using DevChatter.DevStreams.Core.Data;
+using DevChatter.DevStreams.Core.Model;
 using DevChatter.DevStreams.Web.Data.ViewModel.ScheduledStreams;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
 namespace DevChatter.DevStreams.Web.Pages.My.Channels.Schedule
 {
     public class DetailsModel : PageModel
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ICrudRepository _crudRepository;
 
-        public DetailsModel(ApplicationDbContext context)
+        public DetailsModel(ICrudRepository crudRepository)
         {
-            _context = context;
+            _crudRepository = crudRepository;
         }
 
         public ScheduledStreamViewModel ScheduledStream { get; set; }
@@ -25,13 +25,13 @@ namespace DevChatter.DevStreams.Web.Pages.My.Channels.Schedule
                 return NotFound();
             }
 
-            var model = await _context.ScheduledStream.Include(x => x.Channel).FirstOrDefaultAsync(m => m.Id == id);
+            var model = await _crudRepository.Get<ScheduledStream>(id.Value);
             if (model == null)
             {
                 return NotFound();
             }
 
-            ScheduledStream = model.ToViewModel(model.Channel);
+            ScheduledStream = model.ToViewModel();
 
             return Page();
         }

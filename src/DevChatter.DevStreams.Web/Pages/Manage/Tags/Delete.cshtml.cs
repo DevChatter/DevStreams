@@ -1,19 +1,18 @@
-﻿using DevChatter.DevStreams.Core.Model;
-using DevChatter.DevStreams.Web.Data;
+﻿using DevChatter.DevStreams.Core.Data;
+using DevChatter.DevStreams.Core.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
 namespace DevChatter.DevStreams.Web.Pages.Manage.Tags
 {
     public class DeleteModel : PageModel
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ICrudRepository _repo;
 
-        public DeleteModel(ApplicationDbContext context)
+        public DeleteModel(ICrudRepository repo)
         {
-            _context = context;
+            _repo = repo;
         }
 
         [BindProperty]
@@ -26,7 +25,7 @@ namespace DevChatter.DevStreams.Web.Pages.Manage.Tags
                 return NotFound();
             }
 
-            Tag = await _context.Tags.FirstOrDefaultAsync(m => m.Id == id);
+            Tag = await _repo.Get<Tag>(id.Value);
 
             if (Tag == null)
             {
@@ -42,12 +41,11 @@ namespace DevChatter.DevStreams.Web.Pages.Manage.Tags
                 return NotFound();
             }
 
-            Tag = await _context.Tags.FindAsync(id);
+            Tag = await _repo.Get<Tag>(id.Value); // TODO: See if we can skip this
 
             if (Tag != null)
             {
-                _context.Tags.Remove(Tag);
-                await _context.SaveChangesAsync();
+                await _repo.Delete(Tag);
             }
 
             return RedirectToPage("./Index");

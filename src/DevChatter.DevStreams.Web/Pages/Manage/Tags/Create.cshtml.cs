@@ -1,5 +1,5 @@
-﻿using DevChatter.DevStreams.Core.Model;
-using DevChatter.DevStreams.Web.Data;
+﻿using DevChatter.DevStreams.Core.Data;
+using DevChatter.DevStreams.Core.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Threading.Tasks;
@@ -8,11 +8,11 @@ namespace DevChatter.DevStreams.Web.Pages.Manage.Tags
 {
     public class CreateModel : PageModel
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ICrudRepository _repo;
 
-        public CreateModel(ApplicationDbContext context)
+        public CreateModel(ICrudRepository repo)
         {
-            _context = context;
+            _repo = repo;
         }
 
         public IActionResult OnGet()
@@ -30,8 +30,7 @@ namespace DevChatter.DevStreams.Web.Pages.Manage.Tags
                 return Page();
             }
 
-            _context.Tags.Add(Tag);
-            await _context.SaveChangesAsync();
+            await _repo.Insert(Tag);
 
             return RedirectToPage("./Index");
         }

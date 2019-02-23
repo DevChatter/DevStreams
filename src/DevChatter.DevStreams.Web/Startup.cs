@@ -1,6 +1,13 @@
+using Dapper;
+using DevChatter.DevStreams.Core.Data;
 using DevChatter.DevStreams.Core.Services;
+using DevChatter.DevStreams.Core.Settings;
+using DevChatter.DevStreams.Infra.Dapper;
+using DevChatter.DevStreams.Infra.Dapper.Services;
+using DevChatter.DevStreams.Infra.Dapper.TypeHandlers;
+using DevChatter.DevStreams.Infra.Db.Migrations;
 using DevChatter.DevStreams.Web.Data;
-using DevChatter.DevStreams.Web.Services;
+using FluentMigrator.Runner;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -32,14 +39,33 @@ namespace DevChatter.DevStreams.Web
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            services.Configure<DatabaseSettings>(
+                Configuration.GetSection("ConnectionStrings"));
+
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
+
             services.AddDefaultIdentity<IdentityUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            services.AddScoped<IStreamSessionService, StreamSessionService>();
+            services.AddFluentMigratorCore()
+                .ConfigureRunner(
+                    builder => builder
+                        .AddSqlServer()
+                        .WithGlobalConnectionString(Configuration.GetConnectionString("DefaultConnection"))
+                        .ScanIn(typeof(CreateTagsTable).Assembly).For.Migrations());
+
+            SqlMapper.AddTypeHandler(InstantHandler.Default);
+            SqlMapper.AddTypeHandler(LocalTimeHandler.Default);
+
+
+            services.AddScoped<IStreamSessionService, DapperSessionLookup>();
             services.AddScoped<IScheduledStreamService, ScheduledStreamService>();
+            services.AddTransient<ITagSearchService, TagSearchService>();
+            services.AddTransient<ICrudRepository, DapperCrudRepository>();
+            services.AddTransient<IChannelSearchService, ChannelSearchService>();
+            services.AddTransient<IChannelAggregateService, ChannelAggregateService>();
 
             services.AddSingleton<IClock>(SystemClock.Instance);
 
@@ -47,7 +73,8 @@ namespace DevChatter.DevStreams.Web
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, 
+            IMigrationRunner migrationRunner)
         {
             if (env.IsDevelopment())
             {
@@ -67,6 +94,8 @@ namespace DevChatter.DevStreams.Web
             app.UseAuthentication();
 
             app.UseMvc();
+
+            migrationRunner.MigrateUp();
         }
     }
 }

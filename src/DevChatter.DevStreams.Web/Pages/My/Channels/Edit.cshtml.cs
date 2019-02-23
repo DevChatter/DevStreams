@@ -1,28 +1,23 @@
-﻿using DevChatter.DevStreams.Core.Model;
-using DevChatter.DevStreams.Web.Data;
-using DevChatter.DevStreams.Web.Data.ViewModel.Channels;
+﻿using DevChatter.DevStreams.Core.Data;
+using DevChatter.DevStreams.Core.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using DevChatter.DevStreams.Core;
-using DevChatter.DevStreams.Web.Controllers;
 using TimeZoneNames;
 
 namespace DevChatter.DevStreams.Web.Pages.My.Channels
 {
     public class EditModel : PageModel
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ICrudRepository _repo;
 
-        public EditModel(ApplicationDbContext context)
+        public EditModel(ICrudRepository repo)
         {
-            _context = context;
+            _repo = repo;
         }
 
         public int ChannelId { get; set; }
@@ -37,7 +32,7 @@ namespace DevChatter.DevStreams.Web.Pages.My.Channels
             {
                 Title = "Edit";
                 ChannelId = id.Value;
-                bool exists = await _context.Channels.AnyAsync(m => m.Id == id);
+                bool exists = await _repo.Exists<Channel>(id.Value);
                 if (!exists)
                 {
                     return NotFound();

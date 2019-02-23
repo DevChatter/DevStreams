@@ -1,37 +1,31 @@
-﻿using DevChatter.DevStreams.Core.Model;
+﻿using DevChatter.DevStreams.Core.Data;
+using DevChatter.DevStreams.Web.Data.ViewModel.Channels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
-using DevChatter.DevStreams.Web.Data;
-using DevChatter.DevStreams.Web.Data.ViewModel.Channels;
 
 namespace DevChatter.DevStreams.Web.Pages.My.Channels
 {
     public class DetailsModel : PageModel
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ICrudRepository _repo;
+        private readonly IChannelAggregateService _channelAggregateService;
 
-        public DetailsModel(ApplicationDbContext context)
+        public DetailsModel(ICrudRepository repo, IChannelAggregateService channelAggregateService)
         {
-            _context = context;
+            _repo = repo;
+            _channelAggregateService = channelAggregateService;
         }
 
         public ChannelViewModel Channel { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public IActionResult OnGet(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var model = await _context
-                        .Channels
-                        .Include(x => x.ScheduledStreams)
-                        .Include(x => x.Tags)
-                        .ThenInclude(x => x.Tag)
-                        .FirstOrDefaultAsync(m => m.Id == id);
+            var model = _channelAggregateService.GetAggregate(id.Value);
 
             if (model == null)
             {

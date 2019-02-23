@@ -18,7 +18,7 @@ namespace DevChatter.DevStreams.Web.Data.ViewModel.Channels
                 Name = src.Name,
                 TimeZoneName = TZNames.GetNamesForTimeZone(src.TimeZoneId, CultureInfo.CurrentUICulture.Name).Generic,
                 Uri = src.Uri,
-                ScheduledStreamsCount = src.ScheduledStreams.Count
+                ScheduledStreamsCount = src.ScheduledStreamIds.Count
             };
         }
 
@@ -29,7 +29,7 @@ namespace DevChatter.DevStreams.Web.Data.ViewModel.Channels
                 Id = src.Id,
                 Name = src.Name,
                 Uri = src.Uri,
-                Tags = string.Join(", ", src.Tags.Select(x => x.Tag.Name)),
+                Tags = string.Join(", ", src.Tags.Select(x => x.Name)),
                 IsLive = false
             };
         }
@@ -42,8 +42,8 @@ namespace DevChatter.DevStreams.Web.Data.ViewModel.Channels
                 Name = src.Name,
                 Uri = src.Uri,
                 TimeZoneName = TZNames.GetNamesForTimeZone(src.TimeZoneId, CultureInfo.CurrentUICulture.Name).Generic,
-                ScheduledStreamsCount = src.ScheduledStreams.Count,
-                Tags = string.Join(", ", src.Tags.Select(x => x.Tag.Name))
+                ScheduledStreamsCount = src.ScheduledStreamIds.Count,
+                Tags = string.Join(", ", src.Tags.Select(x => x.Name))
             };
         }
 
@@ -54,23 +54,7 @@ namespace DevChatter.DevStreams.Web.Data.ViewModel.Channels
             model.Uri = editModel.Uri;
             model.CountryCode = editModel.CountryCode;
             model.TimeZoneId = editModel.TimeZoneId;
-            ApplyTagChanges(model, editModel.Tags);
-        }
-
-        private static void ApplyTagChanges(Channel model, List<TagViewModel> tags)
-        {
-            var desiredTagIds = tags.Select(t => t.Id);
-            var existingTagIds = model.Tags.Select(t=> t.TagId);
-            var tagsToAdd = desiredTagIds.Except(existingTagIds);
-            var tagsToRemove = existingTagIds.Except(desiredTagIds);
-
-            model.Tags.AddRange(tagsToAdd.Select(id => 
-                    new ChannelTag{
-                        TagId = id,
-                        ChannelId = model.Id
-                    }));
-
-            model.Tags.RemoveAll(t => tagsToRemove.Contains(t.TagId));
+            model.Tags = editModel.Tags.Select(x => new Tag { Id = x.Id }).ToList();
         }
 
         public static ChannelEditModel ToChannelEditModel(this Channel src)
@@ -82,7 +66,7 @@ namespace DevChatter.DevStreams.Web.Data.ViewModel.Channels
                 Uri = src.Uri,
                 CountryCode = src.CountryCode,
                 TimeZoneId = src.TimeZoneId,
-                Tags = src.Tags.Select(x => x.Tag.ToViewModel()).ToList()
+                Tags = src.Tags.Select(x => x.ToViewModel()).ToList()
             };
         }
     }

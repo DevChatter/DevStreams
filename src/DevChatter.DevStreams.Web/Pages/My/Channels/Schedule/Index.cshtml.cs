@@ -1,32 +1,48 @@
-﻿using DevChatter.DevStreams.Web.Data.ViewModel.ScheduledStreams;
+﻿using DevChatter.DevStreams.Core.Data;
+using DevChatter.DevStreams.Core.Model;
+using DevChatter.DevStreams.Core.Services;
+using DevChatter.DevStreams.Web.Data.ViewModel.ScheduledStreams;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DevChatter.DevStreams.Web.Pages.My.Channels.Schedule
 {
     public class IndexModel : PageModel
     {
-        private readonly DevChatter.DevStreams.Web.Data.ApplicationDbContext _context;
+        private readonly ICrudRepository _crudRepository;
+        private readonly IScheduledStreamService _scheduledStreamService;
 
-        public IndexModel(DevChatter.DevStreams.Web.Data.ApplicationDbContext context)
+        public IndexModel(ICrudRepository crudRepository, IScheduledStreamService scheduledStreamService)
         {
-            _context = context;
+            _crudRepository = crudRepository;
+            _scheduledStreamService = scheduledStreamService;
         }
 
         public List<ScheduledStreamViewModel> ScheduledStreams { get; set; }
-        public string ChannelName { get; set; }
+        public Channel Channel { get; set; }
 
-        public async Task OnGetAsync(int channelId)
+        public async Task<IActionResult> OnGetAsync(int channelId)
         {
-            var channel = await _context.Channels
-                .Include(x => x.ScheduledStreams)
-                .SingleAsync(x => x.Id == channelId);
+            if (channelId <= 0)
+            {
+                return NotFound();
+            }
 
-            ChannelName = channel.Name;
+            var streams = await _scheduledStreamService.GetChannelSchedule(channelId);
 
-            ScheduledStreams = channel.ToScheduledStreamViewModels();
+            Channel = await _crudRepository.Get<Channel>(channelId);
+
+            if (Channel == null)
+            {
+                return NotFound();
+            }
+
+            ScheduledStreams = streams.Select(x => x.ToViewModel()).ToList();
+
+            return Page();
         }
     }
 }

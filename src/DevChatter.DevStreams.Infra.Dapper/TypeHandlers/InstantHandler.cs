@@ -3,6 +3,7 @@ using NodaTime;
 using System;
 using System.Data;
 using System.Data.SqlClient;
+using NodaTime.Extensions;
 
 namespace DevChatter.DevStreams.Infra.Dapper.TypeHandlers
 {
@@ -33,7 +34,7 @@ namespace DevChatter.DevStreams.Infra.Dapper.TypeHandlers
 
             if (value is DateTime dateTime)
             {
-                return Instant.FromDateTimeUtc(dateTime);
+                return DateTime.SpecifyKind(dateTime, DateTimeKind.Utc).ToInstant();
             }
 
             if (value is DateTimeOffset dateTimeOffset)

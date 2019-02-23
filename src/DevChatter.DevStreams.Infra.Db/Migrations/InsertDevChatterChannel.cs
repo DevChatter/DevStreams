@@ -9,11 +9,11 @@ namespace DevChatter.DevStreams.Infra.Db.Migrations
         public override void Up()
         {
             var channel = new
-            { 
-                Name = "DevChatter", 
-                Uri = "https://www.twitch.tv/devchatter", 
-                CountryCode = "US", 
-                TimeZoneId = "America/New_York" 
+            {
+                Name = "DevChatter",
+                Uri = "https://www.twitch.tv/devchatter",
+                CountryCode = "US",
+                TimeZoneId = "America/New_York"
             };
             Insert.IntoTable("Channels").Row(channel);
         }

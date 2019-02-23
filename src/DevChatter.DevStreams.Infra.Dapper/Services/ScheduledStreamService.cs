@@ -32,10 +32,14 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
 
         public async Task<List<ScheduledStream>> GetChannelSchedule(int channelId)
         {
+            const string sql = "SELECT * FROM ScheduledStreams WHERE ChannelId = @ChannelId";
             using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
             {
                 var where = new { ChannelId = channelId };
-                return (await connection.GetListAsync<ScheduledStream>(where)).ToList();
+                return (await connection.QueryAsync<ScheduledStream>(sql, where)).ToList();
+
+                // TODO: Use this when SimpleCRUD is fixed.
+                //return (await connection.GetListAsync<ScheduledStream>(where)).ToList();
             }
         }
 

@@ -30,17 +30,22 @@ namespace DevChatter.DevStreams.Infra.Dapper
 
         public async Task<T> Get<T>(int id) where T : DataEntity
         {
+            string tableName = GetTableName<T>();
+            string sql = $"SELECT * FROM {tableName} WHERE Id = @id";
             using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
             {
-                return await connection.GetAsync<T>(id);
+                return await connection.QuerySingleAsync<T>(sql, new {id});
             }
         }
 
         public async Task<List<T>> GetAll<T>() where T : DataEntity
         {
+            string tableName = GetTableName<T>();
+            string sql = $"SELECT * FROM {tableName}";
+
             using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
             {
-                return (await connection.GetListAsync<T>()).ToList();
+                return (await connection.QueryAsync<T>(sql)).ToList();
             }
         }
 
@@ -74,6 +79,14 @@ namespace DevChatter.DevStreams.Infra.Dapper
             {
                 return await connection.RecordCountAsync<T>("WHERE Id=@id", new {id}) > 0;
             }
+        }
+
+        private static string GetTableName<T>() where T : DataEntity
+        {
+            var tableAttrib = typeof(T).GetCustomAttributes(true)
+                .SingleOrDefault(attr => attr.GetType().Name == typeof(TableAttribute).Name) as dynamic;
+            string tableName = tableAttrib?.Name ?? typeof(T).Name + "s";
+            return tableName;
         }
     }
 }

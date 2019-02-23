@@ -47,6 +47,8 @@ namespace DevChatter.DevStreams.Web.Pages.My.Channels.Schedule
                 return NotFound();
             }
 
+            var stream = await _crudRepository.Get<ScheduledStream>(id.Value);
+
             int deleteCount = await _streamService.Delete(id.Value);
 
             if (deleteCount == 0)
@@ -54,8 +56,7 @@ namespace DevChatter.DevStreams.Web.Pages.My.Channels.Schedule
                 return NotFound();
             }
 
-            return RedirectToPage("./Index",
-                new { channelId = ScheduledStream.ChannelId });
+            return RedirectToPage("./Index", new { channelId = stream.ChannelId });
         }
     }
 }

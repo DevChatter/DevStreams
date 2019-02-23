@@ -14,4 +14,23 @@
     <ProjectReference Include="..\DevChatter.DevStreams.Core\DevChatter.DevStreams.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Crud\Crud.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Crud.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Crud\Crud.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Crud.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
 </Project>

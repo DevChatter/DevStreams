@@ -1,0 +1,216 @@
+﻿<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#
+var tables = new []
+{
+  new Table
+  {
+    Name    = "ScheduledStreams",
+    Columns = new []
+    {
+      C("int"         , "Id"        , isPrimaryKey: true),
+      C("int"         , "ChannelId"                     ),
+      C("string"      , "TimeZoneId"                    ),
+      C("IsoDayOfWeek", "DayOfWeek"                     ),
+      C("LocalTime"   , "LocalStartTime"                ),
+      C("LocalTime"   , "LocalEndTime"                  ),
+    },
+  },
+  new Table
+  {
+    Name    = "StreamSession",
+    Columns = new []
+    {
+      C("int"         , "Id"        , isPrimaryKey: true),
+      C("int"         , "ChannelId"                     ),
+      C("int"         , "ScheduledStreamId"             ),
+      C("Instant"     , "UtcStartTime"                  ),
+      C("Instant"     , "UtcEndTime"                    ),
+      C("string"      , "TzdbVersionId"                 ),
+    },
+  },
+};
+#>
+
+namespace DevChatter.DevStreams.Infra.Dapper.Crud
+{
+  using global::Dapper;
+  using NodaTime;
+
+  using System.Data;
+  using System.Linq;
+  using System.Threading.Tasks;
+
+  static partial class Crud
+  {
+<#
+foreach (var table in tables)
+{
+#>
+    public class <#=table.Name#>
+    {
+      public static async Task Create(
+          IDbConnection connection
+<#
+var keyColumns = table.Columns.Where(c => c.IsPrimaryKey).ToArray();
+var nonkeyColumns = table.Columns.Where(c => !c.IsPrimaryKey).ToArray();
+
+var columns = string.Join(", ", table.Columns.Select(c => c.Name));
+var columnValues = string.Join(", ", table.Columns.Select(c => "@" + c.Name));
+
+var setColumns = string.Join(", ", nonkeyColumns.Select(c => $"{c.Name} = @{c.Name}"));
+var whereColumns = string.Join(" AND ", keyColumns.Select(c => $"{c.Name} = @{c.Name}"));
+
+foreach (var column in table.Columns)
+{
+#>
+        , <#=column.Type#> <#=LowerCaseFirst(column.Name)#>
+<#
+}
+#>
+        )
+      {
+        var sql = @"INSERT INTO <#=table.Name#>(<#=columns#>) VALUES(<#=columnValues#>)";
+        await connection.ExecuteAsync(
+            sql
+          , new <#=table.Name#>
+            {
+<#
+foreach (var column in table.Columns)
+{
+#>
+              <#=column.Name#> = <#=LowerCaseFirst(column.Name)#>,
+<#
+}
+#>
+            });
+      }
+
+      public static async Task<<#=table.Name#>[]> Read(
+          IDbConnection connection
+<#
+foreach (var column in keyColumns)
+{
+#>
+        , <#=column.Type#> <#=LowerCaseFirst(column.Name)#>
+<#
+}
+#>
+        )
+      {
+        var sql = @"SELECT <#=columns#> FROM <#=table.Name#> WHERE <#=whereColumns#>";
+        return (await connection.QueryAsync<<#=table.Name#>>(
+            sql
+          , new 
+            {
+<#
+foreach (var column in keyColumns)
+{
+#>
+              <#=column.Name#> = <#=LowerCaseFirst(column.Name)#>,
+<#
+}
+#>
+            })).ToArray();
+      }
+
+      public static async Task Update(
+          IDbConnection connection
+<#
+foreach (var column in table.Columns)
+{
+#>
+        , <#=column.Type#> <#=LowerCaseFirst(column.Name)#>
+<#
+}
+#>
+        )
+      {
+        var sql = @"UPDATE <#=table.Name#> SET <#=setColumns#> WHERE <#=whereColumns#>";
+        await connection.ExecuteAsync(
+            sql
+          , new <#=table.Name#>
+            {
+<#
+foreach (var column in table.Columns)
+{
+#>
+              <#=column.Name#> = <#=LowerCaseFirst(column.Name)#>,
+<#
+}
+#>
+            });
+      }
+
+      public static async Task Delete(
+          IDbConnection connection
+<#
+foreach (var column in keyColumns)
+{
+#>
+        , <#=column.Type#> <#=LowerCaseFirst(column.Name)#>
+<#
+}
+#>
+        )
+      {
+        var sql = @"DELETE <#=table.Name#> WHERE <#=whereColumns#>";
+        await connection.ExecuteAsync(
+            sql
+          , new 
+            {
+<#
+foreach (var column in keyColumns)
+{
+#>
+              <#=column.Name#> = <#=LowerCaseFirst(column.Name)#>,
+<#
+}
+#>
+            });
+      }
+
+<#
+foreach (var column in table.Columns)
+{
+#>
+      public <#=column.Type#> <#=column.Name#> { get; set; }
+<#
+}
+#>
+    }
+
+<#
+}
+#>
+  }
+}
+
+<#+
+const string NoName = "<NoName>";
+const string NoType = "<NoType>";
+
+static string LowerCaseFirst(string s)
+{
+  var ss = s ?? "";
+  return ss.Length > 0 ? Char.ToLowerInvariant(ss[0]).ToString() + ss.Substring(1) : ""; 
+}
+
+class Column
+{
+  public string Type          = NoType;
+  public string Name          = NoName;
+  public bool   IsPrimaryKey  = false ;
+}
+
+static Column C(string type_, string name, bool isPrimaryKey = false)
+{
+  return new Column { Type = type_ ?? NoType, Name = name ?? NoName, IsPrimaryKey = isPrimaryKey };
+}
+
+class Table
+{
+  public string Name        = NoName;
+  public Column[] Columns   = new Column[0];
+}
+#>

@@ -18,7 +18,8 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
         private readonly DatabaseSettings _dbSettings;
         private readonly IClock _clock;
 
-        private const string scheduledSql = "INSERT INTO ScheduledStreams (ChannelId, DayOfWeek, LocalStartTime, LocalEndTime, TimeZoneId) Values (@ChannelId, @DayOfWeek, @LocalStartTime, @LocalEndTime, @TimeZoneId); SELECT CAST(SCOPE_IDENTITY() AS BIGINT);";
+        private const string insertScheduledSql = "INSERT INTO ScheduledStreams (ChannelId, DayOfWeek, LocalStartTime, LocalEndTime, TimeZoneId) Values (@ChannelId, @DayOfWeek, @LocalStartTime, @LocalEndTime, @TimeZoneId); SELECT CAST(SCOPE_IDENTITY() AS BIGINT);";
+        private const string updateScheduledSql = "UPDATE ScheduledStreams SET ChannelId = @ChannelId, DayOfWeek = @DayOfWeek, LocalStartTime = @LocalStartTime, LocalEndTime = @LocalEndTime, TimeZoneId = @TimeZoneId WHERE Id = @id";
 
 
         private const string sessionSql = "INSERT INTO StreamSessions (ChannelId, ScheduledStreamId, UtcStartTime, UtcEndTime, TzdbVersionId) Values (@ChannelId, @ScheduledStreamId, @UtcStartTime, @UtcEndTime, @TzdbVersionId); SELECT CAST(SCOPE_IDENTITY() AS BIGINT);";
@@ -47,7 +48,7 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
         {
             using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
             {
-                int id = (await connection.QuerySingleAsync<int>(scheduledSql, stream));
+                int id = (await connection.QuerySingleAsync<int>(insertScheduledSql, stream));
 
                 // TODO: Use this once issue fixed in SimpleCRUD
                 //int? id = await connection.InsertAsync(stream);
@@ -86,7 +87,10 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
         {
             using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
             {
-                int updateCount = await connection.UpdateAsync(stream);
+                int updateCount = (await connection.ExecuteAsync(updateScheduledSql, stream));
+
+                // TODO: Use this once issue fixed in SimpleCRUD
+                //int updateCount = await connection.UpdateAsync(stream);
 
                 if (updateCount > 0)
                 {
@@ -96,7 +100,13 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
                     var timeZone = DateTimeZoneProviders.Tzdb[stream.TimeZoneId];
                     var sessions = CreateStreamSessions(stream, timeZone);
 
-                    await Task.WhenAll(sessions.Select(s => connection.InsertAsync(s)));
+                    foreach (var session in sessions)
+                    {
+                        connection.QuerySingle<int>(sessionSql, session);
+                    }
+
+                    // TODO: Use this once issue fixed in SimpleCRUD
+                    // await Task.WhenAll(sessions.Select(s => connection.InsertAsync(s)));
                 }
 
                 return updateCount;

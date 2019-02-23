@@ -1,0 +1,199 @@
+﻿<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#
+// The model of tables, is used to generate Data classes and CRUD ops
+//  Sometimes the model and the templates are extracted into separate files
+var tables = new []
+{
+  new Table
+  {
+    Name    = "ScheduledStreams",
+    Columns = new []
+    {
+      PK("int"         , "Id"                         ), // Implicitly isPrimaryKey: true, isReadonly: true
+      FK("int"         , "ChannelId"       , "Channel"),
+      C ("string"      , "TimeZoneId"                 ),
+      C ("IsoDayOfWeek", "DayOfWeek"                  ),
+      C ("LocalTime"   , "LocalStartTime"             ),
+      C ("LocalTime"   , "LocalEndTime"               ),
+    },
+  },
+  new Table
+  {
+    Name    = "StreamSession",
+    Columns = new []
+    {
+      PK("int"         , "Id"                                     ),
+      FK("int"         , "ChannelId"          , "Channel"         ),
+      FK("int"         , "ScheduledStreamId"  , "ScheduledStream" ),
+      C ("Instant"     , "UtcStartTime"                           ),
+      C ("Instant"     , "UtcEndTime"                             ),
+      C ("string"      , "TzdbVersionId"                          ),
+    },
+  },
+};
+#>
+
+namespace DevChatter.DevStreams.Infra.Dapper.Crud
+{
+  using global::Dapper;
+  using NodaTime;
+
+  using System.Data;
+  using System.Linq;
+  using System.Threading.Tasks;
+
+  static partial class Crud
+  {
+<#
+string WhereClause(Column[] columns)      => string.Join(" AND ", columns.Select(c => $"{c.Name} = @{c.Name}"));
+string ArgumentList(Column[] columns)     => string.Join(", ", columns.Select(c => $"{c.Type} {LowerCaseFirst(c.Name)}"));
+string Param(Column[] columns, string typeName = null)
+{
+  typeName = typeName ?? "";
+  typeName = typeName.Length > 0 ? typeName + " " : typeName;
+  var initializers = string.Join(", ", columns.Select(c => $"{c.Name} = {LowerCaseFirst(c.Name)}"));
+  return $"new {typeName}{{ {initializers} }}";
+}
+
+// The template iterates over the model to generate Data classes and CRUD ops
+foreach (var table in tables)
+{
+var allColumns          = table.Columns;
+var keyColumns          = allColumns.Where(c => c.IsPrimaryKey).ToArray();
+var writeableColumns    = allColumns.Where(c => !c.IsPrimaryKey && !c.IsReadonly).ToArray();
+
+// INSERT columns
+var insertColumns       = string.Join(", ", writeableColumns.Select(c => c.Name));
+var insertColumnValues  = string.Join(", ", writeableColumns.Select(c => "@" + c.Name));
+
+// SELECT columns
+var selectColumns       = string.Join(", ", allColumns.Select(c => c.Name));
+
+// UPDATE columns
+var updateColumns       = string.Join(", ", writeableColumns.Select(c => $"{c.Name} = @{c.Name}"));
+
+// WHERE clause columns
+var whereColumns        = WhereClause(keyColumns);
+
+// Arguments lists for CRUD functions
+var allArguments        = ArgumentList(allColumns);
+var keyArguments        = ArgumentList(keyColumns);
+
+// Param objects for CRUD ops
+var allParam            = Param(allColumns, table.Name);
+var keyParam            = Param(keyColumns);
+
+var foreignKeys         = allColumns
+  .Where(c => c.ForeignKeyGroup != null)
+  .GroupBy(c => c.ForeignKeyGroup)
+  .ToArray()
+  ;
+#>
+    public partial class <#=table.Name#>
+    {
+      public static async Task Create(IDbConnection connection, <#=allArguments#>)
+      {
+        const string sql = @"INSERT INTO <#=table.Name#>(<#=insertColumns#>) VALUES(<#=insertColumnValues#>)";
+        await connection.ExecuteAsync(
+            sql
+          , <#=allParam#>);
+      }
+
+      public static async Task<<#=table.Name#>[]> Read(IDbConnection connection, <#=keyArguments#>)
+      {
+        const string sql = @"SELECT <#=selectColumns#> FROM <#=table.Name#> WHERE <#=whereColumns#>";
+        return (await connection.QueryAsync<<#=table.Name#>>(
+            sql
+          , <#=keyParam#>)).ToArray();
+      }
+
+<#
+foreach (var foreignKey in foreignKeys)
+{
+  var foreignKeyColumns       = foreignKey.ToArray();
+  var foreignKeyArguments     = ArgumentList(foreignKeyColumns);
+  var foreignKeyWhereColumns  = WhereClause(foreignKeyColumns);
+  var foreignKeyParam         = Param(foreignKeyColumns);
+#>
+      public static async Task<<#=table.Name#>[]> ForeignRead_<#=foreignKey.Key#>(IDbConnection connection, <#=foreignKeyArguments#>)
+      {
+        const string sql = @"SELECT <#=selectColumns#> FROM <#=table.Name#> WHERE <#=foreignKeyWhereColumns#>";
+        return (await connection.QueryAsync<<#=table.Name#>>(
+            sql
+          , <#=foreignKeyParam#>)).ToArray();
+      }
+
+<#
+}
+#>
+      public static async Task Update(IDbConnection connection, <#=allArguments#>)
+      {
+        const string sql = @"UPDATE <#=table.Name#> SET <#=updateColumns#> WHERE <#=whereColumns#>";
+        await connection.ExecuteAsync(
+            sql
+          , <#=allParam#>);
+      }
+
+      public static async Task Delete(IDbConnection connection, <#=keyArguments#>)
+      {
+        const string sql = @"DELETE <#=table.Name#> WHERE <#=whereColumns#>";
+        await connection.ExecuteAsync(
+            sql
+          , <#=keyParam#>);
+      }
+
+<#
+foreach (var column in allColumns)
+{
+#>
+      public <#=column.Type#> <#=column.Name#> { get; set; }
+<#
+}
+#>
+    }
+
+<#
+}
+#>
+  }
+}
+
+<#+
+const string NoName = "<NoName>";
+const string NoType = "<NoType>";
+
+static string LowerCaseFirst(string s)
+{
+  var ss = s ?? "";
+  return ss.Length > 0 ? Char.ToLowerInvariant(ss[0]).ToString() + ss.Substring(1) : ""; 
+}
+
+class Column
+{
+  public string Type            = NoType;
+  public string Name            = NoName;
+  public string ForeignKeyGroup = null  ;
+  public bool   IsPrimaryKey    = false ;
+  public bool   IsReadonly      = false ;
+}
+
+static Column C(string type_, string name, string foreignKeyGroup =null, bool isPrimaryKey = false, bool isReadonly = false) =>
+  new Column 
+  { 
+    Type            = type_ ?? NoType ,
+    Name            = name ?? NoName  ,
+    ForeignKeyGroup = foreignKeyGroup ,
+    IsPrimaryKey    = isPrimaryKey    ,
+    IsReadonly      = isReadonly      ,
+  };
+
+static Column PK(string type_, string name) => C(type_, name, isPrimaryKey: true, isReadonly: true);
+static Column FK(string type_, string name, string foreignKeyGroup) => C(type_, name, foreignKeyGroup: foreignKeyGroup);
+
+class Table
+{
+  public string Name        = NoName        ;
+  public Column[] Columns   = new Column[0] ;
+}
+#>

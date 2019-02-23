@@ -31,6 +31,11 @@ namespace DevChatter.DevStreams.Infra.Dapper.TypeHandlers
                 return LocalTime.FromTicksSinceMidnight(timeSpan.Ticks);
             }
 
+            if (value is DateTime dateTime)
+            {
+                return LocalTime.FromTicksSinceMidnight(dateTime.TimeOfDay.Ticks);
+            }
+
             throw new DataException($"Cannot convert {value.GetType()} to {typeof(LocalTime).FullName}");
         }
     }

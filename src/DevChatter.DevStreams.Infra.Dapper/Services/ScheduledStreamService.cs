@@ -18,6 +18,12 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
         private readonly DatabaseSettings _dbSettings;
         private readonly IClock _clock;
 
+        private const string scheduledSql = "INSERT INTO ScheduledStreams (ChannelId, DayOfWeek, LocalStartTime, LocalEndTime, TimeZoneId) Values (@ChannelId, @DayOfWeek, @LocalStartTime, @LocalEndTime, @TimeZoneId); SELECT CAST(SCOPE_IDENTITY() AS BIGINT);";
+
+
+        private const string sessionSql = "INSERT INTO StreamSessions (ChannelId, ScheduledStreamId, UtcStartTime, UtcEndTime, TzdbVersionId) Values (@ChannelId, @ScheduledStreamId, @UtcStartTime, @UtcEndTime, @TzdbVersionId); SELECT CAST(SCOPE_IDENTITY() AS BIGINT);";
+
+
         public ScheduledStreamService(IOptions<DatabaseSettings> dbSettings, IClock clock)
         {
             _dbSettings = dbSettings.Value;
@@ -37,15 +43,21 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
         {
             using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
             {
-                string sql = "INSERT INTO ScheduledStreams (ChannelId, DayOfWeek, LocalStartTime, LocalEndTime, TimeZoneId) Values (@ChannelId, @DayOfWeek, @LocalStartTime, @LocalEndTime, @TimeZoneId);SELECT CAST(SCOPE_IDENTITY()  AS BIGINT) AS [id];";
+                int id = (await connection.QuerySingleAsync<int>(scheduledSql, stream));
 
-                int? id = (await connection.QueryAsync(sql, stream)).First().Id;
-
+                // TODO: Use this once issue fixed in SimpleCRUD
                 //int? id = await connection.InsertAsync(stream);
 
-                //var timeZone = DateTimeZoneProviders.Tzdb[stream.TimeZoneId];
-                //var sessions = CreateStreamSessions(stream, timeZone);
+                stream.Id = id;
+                var timeZone = DateTimeZoneProviders.Tzdb[stream.TimeZoneId];
+                var sessions = CreateStreamSessions(stream, timeZone);
 
+                foreach (var session in sessions)
+                {
+                    connection.QuerySingle<int>(sessionSql, session);
+                }
+
+                // TODO: Use this once issue fixed in SimpleCRUD
                 //await Task.WhenAll(sessions.Select(s => connection.InsertAsync(s)));
 
                 return id;
@@ -103,6 +115,7 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
 
                 var streamSession = new StreamSession
                 {
+                    ChannelId = stream.ChannelId,
                     ScheduledStreamId = stream.Id,
                     TzdbVersionId = DateTimeZoneProviders.Tzdb.VersionId,
                     UtcStartTime = nextLocalStartDateTime

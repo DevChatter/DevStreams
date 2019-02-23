@@ -24,8 +24,8 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
             const string sql =
                 @"SELECT top 1 c.*, ss.Id, t.*
                 FROM [Channels] c
-                INNER JOIN [ScheduledStream] ss on ss.ChannelId = c.Id
-                INNER JOIN [ChannelTag] ct on ct.ChannelId = c.Id
+                INNER JOIN [ScheduledStreams] ss on ss.ChannelId = c.Id
+                INNER JOIN [ChannelTags] ct on ct.ChannelId = c.Id
                 INNER JOIN [Tags] t on t.Id = ct.TagId
                 WHERE c.Id = @id";
 

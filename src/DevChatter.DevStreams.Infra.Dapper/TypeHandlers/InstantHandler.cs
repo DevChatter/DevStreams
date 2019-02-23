@@ -16,11 +16,11 @@ namespace DevChatter.DevStreams.Infra.Dapper.TypeHandlers
 
         public override void SetValue(IDbDataParameter parameter, Instant value)
         {
-            parameter.Value = value.ToUnixTimeTicks();
+            parameter.Value = value.ToDateTimeUtc();
 
             if (parameter is SqlParameter sqlParameter)
             {
-                sqlParameter.SqlDbType = SqlDbType.BigInt;
+                sqlParameter.SqlDbType = SqlDbType.DateTime;
             }
         }
 

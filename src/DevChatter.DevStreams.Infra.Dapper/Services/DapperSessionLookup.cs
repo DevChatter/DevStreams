@@ -29,43 +29,47 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
             DateTimeZone zone = DateTimeZoneProviders.Tzdb[timeZoneId];
             LocalDate localDate = LocalDate.FromDateTime(localDateTime);
 
-            (Instant dayStart, Instant dayEnd) = ResolveDayRange(localDate, zone);
+            (DateTime dayStart, DateTime dayEnd) = ResolveDayRange(localDate, zone);
 
+            const string sessionSql = @"SELECT * FROM [StreamSessions]
+                WHERE UtcEndTime > @dayStart 
+                    AND UtcStartTime < @dayEnd";
 
-            const string sql =
-                @"SELECT top 1 c.*, ss.Id--, t.*
-                FROM [Channels] c
-                INNER JOIN [StreamSessions] ss on ss.ChannelId = c.Id
-                --INNER JOIN [ChannelTags] ct on ct.ChannelId = c.Id
-                --INNER JOIN [Tags] t on t.Id = ct.TagId
-                WHERE ss.UtcEndTime > @dayStart 
-                    AND ss.UtcStartTime < @dayEnd";
+            const string channelSql = "SELECT * FROM Channels WHERE Id IN @ids";
+
 
             using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
             {
-                var args = new { dayStart, dayEnd };
-                List<EventResult> events = (await connection.QueryAsync<Channel, StreamSession, EventResult>(
-                        sql, (channel, session) =>
+                try
+                {
+                    var args = new { dayStart, dayEnd };
+                    var sessions = (await connection.QueryAsync<StreamSession>(sessionSql, args))
+                        .ToList();
+                    var channelArgs = new { ids = sessions.Select(x => x.ChannelId).ToArray() };
+                    var channels = connection.Query<Channel>(channelSql, channelArgs);
+
+                    return sessions
+                        .Select(s => new EventResult
                         {
-                            var eventResult = new EventResult
-                            {
-                                Channel = channel,
-                                StreamSession = session
-                            };
-                            return eventResult;
-                        },
-                        args))
-                    .ToList();
-                return events;
+                            StreamSession = s,
+                            Channel = channels.Single(c => c.Id == s.ChannelId)
+                        })
+                        .ToList();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    throw;
+                }
             }
         }
 
-        private static (Instant start, Instant end) ResolveDayRange(LocalDate input,
+        private static (DateTime start, DateTime end) ResolveDayRange(LocalDate input,
             DateTimeZone zone)
         {
             Instant dayStart = input.AtStartOfDayInZone(zone).ToInstant();
             Instant dayEnd = input.PlusDays(1).AtStartOfDayInZone(zone).ToInstant();
-            return (dayStart, dayEnd);
+            return (dayStart.ToDateTimeUtc(), dayEnd.ToDateTimeUtc());
         }
 
     }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using NodaTime;
 
@@ -16,7 +17,9 @@ namespace DevChatter.DevStreams.Core.Model
         public int ChannelId { get; set; }
         public string TimeZoneId { get; set; }
         public IsoDayOfWeek DayOfWeek { get; set; }
+        [Editable(true)]
         public LocalTime LocalStartTime { get; set; }
+        [Editable(true)]
         public LocalTime LocalEndTime { get; set; }
     }
 }

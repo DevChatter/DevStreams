@@ -18,13 +18,6 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
         private readonly DatabaseSettings _dbSettings;
         private readonly IClock _clock;
 
-        private const string insertScheduledSql = "INSERT INTO ScheduledStreams (ChannelId, DayOfWeek, LocalStartTime, LocalEndTime, TimeZoneId) Values (@ChannelId, @DayOfWeek, @LocalStartTime, @LocalEndTime, @TimeZoneId); SELECT CAST(SCOPE_IDENTITY() AS BIGINT);";
-        private const string updateScheduledSql = "UPDATE ScheduledStreams SET ChannelId = @ChannelId, DayOfWeek = @DayOfWeek, LocalStartTime = @LocalStartTime, LocalEndTime = @LocalEndTime, TimeZoneId = @TimeZoneId WHERE Id = @id";
-
-
-        private const string sessionSql = "INSERT INTO StreamSessions (ChannelId, ScheduledStreamId, UtcStartTime, UtcEndTime, TzdbVersionId) Values (@ChannelId, @ScheduledStreamId, @UtcStartTime, @UtcEndTime, @TzdbVersionId); SELECT CAST(SCOPE_IDENTITY() AS BIGINT);";
-
-
         public ScheduledStreamService(IOptions<DatabaseSettings> dbSettings, IClock clock)
         {
             _dbSettings = dbSettings.Value;
@@ -33,14 +26,9 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
 
         public async Task<List<ScheduledStream>> GetChannelSchedule(int channelId)
         {
-            const string sql = "SELECT * FROM ScheduledStreams WHERE ChannelId = @ChannelId";
             using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
             {
-                var where = new { ChannelId = channelId };
-                return (await connection.QueryAsync<ScheduledStream>(sql, where)).ToList();
-
-                // TODO: Use this when SimpleCRUD is fixed.
-                //return (await connection.GetListAsync<ScheduledStream>(where)).ToList();
+                return (await connection.GetListAsync<ScheduledStream>(new { ChannelId = channelId })).ToList();
             }
         }
 
@@ -48,22 +36,13 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
         {
             using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
             {
-                int id = (await connection.QuerySingleAsync<int>(insertScheduledSql, stream));
+                int? id = await connection.InsertAsync(stream);
 
-                // TODO: Use this once issue fixed in SimpleCRUD
-                //int? id = await connection.InsertAsync(stream);
-
-                stream.Id = id;
+                stream.Id = id.Value;
                 var timeZone = DateTimeZoneProviders.Tzdb[stream.TimeZoneId];
                 var sessions = CreateStreamSessions(stream, timeZone);
 
-                foreach (var session in sessions)
-                {
-                    connection.QuerySingle<int>(sessionSql, session);
-                }
-
-                // TODO: Use this once issue fixed in SimpleCRUD
-                //await Task.WhenAll(sessions.Select(s => connection.InsertAsync(s)));
+                await Task.WhenAll(sessions.Select(s => connection.InsertAsync(s)));
 
                 return id;
             }
@@ -87,10 +66,7 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
         {
             using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
             {
-                int updateCount = (await connection.ExecuteAsync(updateScheduledSql, stream));
-
-                // TODO: Use this once issue fixed in SimpleCRUD
-                //int updateCount = await connection.UpdateAsync(stream);
+                int updateCount = await connection.UpdateAsync(stream);
 
                 if (updateCount > 0)
                 {
@@ -100,13 +76,7 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
                     var timeZone = DateTimeZoneProviders.Tzdb[stream.TimeZoneId];
                     var sessions = CreateStreamSessions(stream, timeZone);
 
-                    foreach (var session in sessions)
-                    {
-                        connection.QuerySingle<int>(sessionSql, session);
-                    }
-
-                    // TODO: Use this once issue fixed in SimpleCRUD
-                    // await Task.WhenAll(sessions.Select(s => connection.InsertAsync(s)));
+                    await Task.WhenAll(sessions.Select(s => connection.InsertAsync(s)));
                 }
 
                 return updateCount;

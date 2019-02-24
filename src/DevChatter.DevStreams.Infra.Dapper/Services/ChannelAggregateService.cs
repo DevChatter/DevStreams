@@ -3,6 +3,7 @@ using DevChatter.DevStreams.Core.Data;
 using DevChatter.DevStreams.Core.Model;
 using DevChatter.DevStreams.Core.Settings;
 using Microsoft.Extensions.Options;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
@@ -19,12 +20,36 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
             _dbSettings = databaseSettings.Value;
         }
 
+        public List<Channel> GetAll()
+        {
+            const string channelSql = "SELECT * FROM Channels";
+            const string extraSql =
+                @"SELECT Id FROM ScheduledStreams WHERE ChannelId = @id;
+                  SELECT t.* FROM ChannelTags ct INNER JOIN Tags t ON t.Id = ct.TagId WHERE ct.ChannelId = @id";
+
+            using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
+            {
+                var channels = connection.Query<Channel>(channelSql).ToList();
+
+                foreach (var channel in channels)
+                {
+                    using (var multi = connection.QueryMultiple(extraSql, new { channel.Id }))
+                    {
+                        channel.ScheduledStreamIds = multi.Read<int>().ToList();
+                        channel.Tags = multi.Read<Tag>().ToList();
+                    }
+                }
+
+                return channels;
+            }
+        }
+
         public Channel GetAggregate(int id)
         {
             const string sql =
                 @"SELECT * FROM Channels WHERE Id = @id;
                   SELECT Id FROM ScheduledStreams WHERE ChannelId = @id;
-                  SELECT * FROM ChannelTags ct INNER JOIN Tags t ON t.Id = ct.TagId WHERE ct.ChannelId = @id";
+                  SELECT t.* FROM ChannelTags ct INNER JOIN Tags t ON t.Id = ct.TagId WHERE ct.ChannelId = @id";
 
             using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
             {

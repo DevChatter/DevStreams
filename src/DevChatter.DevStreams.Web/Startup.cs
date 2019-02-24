@@ -95,6 +95,16 @@ namespace DevChatter.DevStreams.Web
 
             app.UseMvc();
 
+            InitializeDatabase(app, migrationRunner);
+
+        }
+
+        private void InitializeDatabase(IApplicationBuilder app, IMigrationRunner migrationRunner)
+        {
+            using (var scope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            {
+                scope.ServiceProvider.GetRequiredService<ApplicationDbContext>().Database.Migrate();
+            }
             migrationRunner.MigrateUp();
         }
     }

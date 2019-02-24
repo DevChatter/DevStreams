@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using NodaTime;
 
 namespace DevChatter.DevStreams.Core.Model
@@ -13,7 +14,9 @@ namespace DevChatter.DevStreams.Core.Model
     {
         public int ChannelId { get; set; }
         public int ScheduledStreamId { get; set; }
+        [Editable(true)]
         public Instant UtcStartTime { get; set; }
+        [Editable(true)]
         public Instant UtcEndTime { get; set; }
         public string TzdbVersionId { get; set; }
     }

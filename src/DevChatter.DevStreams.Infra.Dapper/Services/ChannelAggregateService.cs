@@ -3,6 +3,7 @@ using DevChatter.DevStreams.Core.Data;
 using DevChatter.DevStreams.Core.Model;
 using DevChatter.DevStreams.Core.Settings;
 using Microsoft.Extensions.Options;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
@@ -19,24 +20,46 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
             _dbSettings = databaseSettings.Value;
         }
 
-        public Channel GetAggregate(int id)
+        public List<Channel> GetAll()
         {
-            const string sql =
-                @"SELECT top 1 c.*, ss.Id, t.*
-                FROM [Channels] c
-                INNER JOIN [ScheduledStreams] ss on ss.ChannelId = c.Id
-                INNER JOIN [ChannelTags] ct on ct.ChannelId = c.Id
-                INNER JOIN [Tags] t on t.Id = ct.TagId
-                WHERE c.Id = @id";
+            const string channelSql = "SELECT * FROM Channels";
+            const string extraSql =
+                @"SELECT Id FROM ScheduledStreams WHERE ChannelId = @id;
+                  SELECT t.* FROM ChannelTags ct INNER JOIN Tags t ON t.Id = ct.TagId WHERE ct.ChannelId = @id";
 
             using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
             {
-                Channel channels = connection.Query<Channel, int, Tag, Channel>(
-                        sql, MapFullChannel, new {id}, splitOn: "ChannelId,TagId")
-                    .GroupBy(channel => channel.Id)
-                    .Select(ChannelGroupSelector)
-                    .SingleOrDefault();
+                var channels = connection.Query<Channel>(channelSql).ToList();
+
+                foreach (var channel in channels)
+                {
+                    using (var multi = connection.QueryMultiple(extraSql, new { channel.Id }))
+                    {
+                        channel.ScheduledStreamIds = multi.Read<int>().ToList();
+                        channel.Tags = multi.Read<Tag>().ToList();
+                    }
+                }
+
                 return channels;
+            }
+        }
+
+        public Channel GetAggregate(int id)
+        {
+            const string sql =
+                @"SELECT * FROM Channels WHERE Id = @id;
+                  SELECT Id FROM ScheduledStreams WHERE ChannelId = @id;
+                  SELECT t.* FROM ChannelTags ct INNER JOIN Tags t ON t.Id = ct.TagId WHERE ct.ChannelId = @id";
+
+            using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
+            {
+                using (var multi = connection.QueryMultiple(sql, new {id}))
+                {
+                    var channel = multi.Read<Channel>().First();
+                    channel.ScheduledStreamIds = multi.Read<int>().ToList();
+                    channel.Tags = multi.Read<Tag>().ToList();
+                    return channel;
+                }
             }
         }
 
@@ -83,20 +106,6 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
 
                 return await connection.DeleteAsync<Channel>(id);
             }
-        }
-
-        private Channel ChannelGroupSelector(IGrouping<int, Channel> grp)
-        {
-            Channel channel = grp.First();
-            channel.Tags = grp.SelectMany(each => each.Tags).ToList();
-            return channel;
-        }
-
-        private Channel MapFullChannel(Channel channel, int scheduledStreamId, Tag tag)
-        {
-            channel.ScheduledStreamIds.Add(scheduledStreamId);
-            channel.Tags.Add(tag);
-            return channel;
         }
     }
 }

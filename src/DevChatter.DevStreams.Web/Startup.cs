@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Dapper;
 using DevChatter.DevStreams.Core.Data;
 using DevChatter.DevStreams.Core.Services;
@@ -47,6 +50,7 @@ namespace DevChatter.DevStreams.Web
                     Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddDefaultIdentity<IdentityUser>()
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddFluentMigratorCore()
@@ -74,7 +78,7 @@ namespace DevChatter.DevStreams.Web
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, 
-            IMigrationRunner migrationRunner)
+            IMigrationRunner migrationRunner, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             if (env.IsDevelopment())
             {
@@ -91,12 +95,42 @@ namespace DevChatter.DevStreams.Web
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
+            InitializeDatabase(app, migrationRunner);
+
+            SetUpDefaultUsersAndRoles(userManager, roleManager).Wait();
+
             app.UseAuthentication();
 
             app.UseMvc();
 
-            InitializeDatabase(app, migrationRunner);
+        }
 
+        private async Task SetUpDefaultUsersAndRoles(UserManager<IdentityUser> userManager,
+            RoleManager<IdentityRole> roleManager)
+        {
+            const string roleName = "Administrator";
+            if (!await roleManager.RoleExistsAsync(roleName))
+            {
+                var identityRole = new IdentityRole(roleName);
+                var roleCreateResult = await roleManager.CreateAsync(identityRole);
+            }
+
+            const string defaultUserAccountName = "chatter1"; // TODO: Pull from Config
+            const string defaultUserPassword = "Passw0rd!"; // TODO: Pull from Config
+            var usersInRole = (await userManager.GetUsersInRoleAsync(roleName));
+            if (!usersInRole.Any() 
+                && await userManager.FindByNameAsync(defaultUserAccountName) == null)
+            {
+                var user = new IdentityUser(defaultUserAccountName);
+                user.Email = "chatter1@example.com";
+                
+                var result = await userManager.CreateAsync(user, defaultUserPassword);
+
+                if (result.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(user, roleName);
+                }
+            }
         }
 
         private void InitializeDatabase(IApplicationBuilder app, IMigrationRunner migrationRunner)

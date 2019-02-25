@@ -11,5 +11,6 @@ namespace DevChatter.DevStreams.Core.Data
         Task<int?> Create(Channel model);
         Task<int> Update(Channel model);
         Task<int> Delete(int id);
+        Task<string> LuckySearch();
     }
 }

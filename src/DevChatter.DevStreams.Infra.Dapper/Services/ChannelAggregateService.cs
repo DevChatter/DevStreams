@@ -53,7 +53,7 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
 
             using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
             {
-                using (var multi = connection.QueryMultiple(sql, new {id}))
+                using (var multi = connection.QueryMultiple(sql, new { id }))
                 {
                     var channel = multi.Read<Channel>().First();
                     channel.ScheduledStreamIds = multi.Read<int>().ToList();
@@ -70,7 +70,7 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
                 int? id = await connection.InsertAsync(model);
 
                 var channelTags = model.Tags
-                    .Select(tag => new ChannelTag {ChannelId = model.Id, TagId = tag.Id});
+                    .Select(tag => new ChannelTag { ChannelId = model.Id, TagId = tag.Id });
 
                 await Task.WhenAll(channelTags.Select(ct => connection.InsertAsync(ct)));
 
@@ -87,7 +87,7 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
                 var channelTags = model.Tags
                     .Select(tag => new ChannelTag { ChannelId = model.Id, TagId = tag.Id });
 
-                await connection.DeleteListAsync<ChannelTag>(new {ChannelId = model.Id});
+                await connection.DeleteListAsync<ChannelTag>(new { ChannelId = model.Id });
 
                 await Task.WhenAll(channelTags.Select(ct => connection.InsertAsync(ct)));
 
@@ -105,6 +105,24 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
                 await connection.DeleteListAsync<ScheduledStream>(conditions);
 
                 return await connection.DeleteAsync<Channel>(id);
+            }
+        }
+
+        public async Task<string> LuckySearch()
+        {
+            /*const string sql =
+                @"select c.Name from Channels c
+                  inner join ScheduledStreams ss on ss.ChannelId = c.Id
+                  where CURRENT_TIMESTAMP between ss.LocalStartTime and ss.LocalEndTime
+                  ORDER BY RAND() LIMIT 1";*/
+
+            const string sql = @"select TOP 1 Name from Channels ORDER BY RAND()";
+
+            using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
+            {
+                var uri = connection.Query<string>(sql).FirstOrDefault();
+
+                return uri;
             }
         }
     }

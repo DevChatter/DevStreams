@@ -131,14 +131,14 @@ namespace DevChatter.DevStreams.Web
                 var roleCreateResult = await roleManager.CreateAsync(identityRole);
             }
 
-            const string defaultUserAccountName = "chatter1"; // TODO: Pull from Config
+            const string defaultUserAccountName = "chatter1@example.com"; // TODO: Pull from Config
             const string defaultUserPassword = "Passw0rd!"; // TODO: Pull from Config
             var usersInRole = (await userManager.GetUsersInRoleAsync(roleName));
             if (!usersInRole.Any() 
-                && await userManager.FindByNameAsync(defaultUserAccountName) == null)
+                && await userManager.FindByEmailAsync(defaultUserAccountName) == null)
             {
                 var user = new IdentityUser(defaultUserAccountName);
-                user.Email = "chatter1@example.com";
+                user.Email = defaultUserAccountName;
                 
                 var result = await userManager.CreateAsync(user, defaultUserPassword);
 

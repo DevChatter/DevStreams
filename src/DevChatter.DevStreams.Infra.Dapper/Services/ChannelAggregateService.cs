@@ -63,7 +63,7 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
             }
         }
 
-        public async Task<int?> Create(Channel model)
+        public async Task<int?> Create(Channel model, string userId)
         {
             using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
             {
@@ -72,7 +72,18 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
                 var channelTags = model.Tags
                     .Select(tag => new ChannelTag {ChannelId = model.Id, TagId = tag.Id});
 
-                await Task.WhenAll(channelTags.Select(ct => connection.InsertAsync(ct)));
+                var channelPermission = new ChannelPermission
+                {
+                    ChannelId = id.Value,
+                    UserId = userId,
+                    ChannelRole = ChannelRole.Owner
+                };
+                const string insertPermissionsSql = "INSERT INTO [ChannelPermissions] (ChannelId, UserId, ChannelRole) VALUES (@ChannelId, @UserId, @ChannelRole)";
+                await connection.ExecuteAsync(insertPermissionsSql, channelPermission);
+
+                const string insertChannelTagSql = "INSERT INTO [ChannelTags] (ChannelId, TagId) VALUES (@ChannelId, @TagId)";
+                await Task.WhenAll(channelTags.Select(ct 
+                    => connection.ExecuteAsync(insertChannelTagSql, ct)));
 
                 return id;
             }

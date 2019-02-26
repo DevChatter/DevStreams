@@ -4,6 +4,7 @@ using DevChatter.DevStreams.Web.Data.ViewModel.Channels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 
 namespace DevChatter.DevStreams.Web.Controllers
 {
@@ -12,12 +13,14 @@ namespace DevChatter.DevStreams.Web.Controllers
     {
         private readonly IChannelAggregateService _channelService;
         private readonly ICrudRepository _crudRepository;
+        private readonly UserManager<IdentityUser> _userManager;
 
         public ChannelsController(IChannelAggregateService channelService,
-            ICrudRepository crudRepository)
+            ICrudRepository crudRepository, UserManager<IdentityUser> userManager)
         {
             _channelService = channelService;
             _crudRepository = crudRepository;
+            _userManager = userManager;
         }
 
         [HttpGet, Route("{id}")]
@@ -49,7 +52,11 @@ namespace DevChatter.DevStreams.Web.Controllers
                 {
                     Channel model = new Channel();
                     model.ApplyEditChanges(channel);
-                    await _channelService.Create(model);
+
+                    // Pull into Authorize Attribute
+                    string userId = (await _userManager.GetUserAsync(User)).Id;
+
+                    await _channelService.Create(model, userId);
                 }
                 else
                 {

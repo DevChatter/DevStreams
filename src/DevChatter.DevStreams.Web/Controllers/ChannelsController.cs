@@ -6,8 +6,9 @@ using DevChatter.DevStreams.Core.Services;
 using DevChatter.DevStreams.Web.Data.ViewModel.Channels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
 
 namespace DevChatter.DevStreams.Web.Controllers
 {
@@ -17,15 +18,13 @@ namespace DevChatter.DevStreams.Web.Controllers
         private readonly IChannelAggregateService _channelService;
         private readonly ITwitchService _twitchService;
         private readonly ICrudRepository _crudRepository;
-        private readonly UserManager<IdentityUser> _userManager;
 
         public ChannelsController(IChannelAggregateService channelService,
-            ICrudRepository crudRepository, ITwitchService twitchService, UserManager<IdentityUser> userManager)
+            ICrudRepository crudRepository, ITwitchService twitchService)
         {
             _channelService = channelService;
             _crudRepository = crudRepository;
             _twitchService = twitchService;
-            _userManager = userManager;
         }
 
         [HttpGet, Route("{id}")]
@@ -67,8 +66,7 @@ namespace DevChatter.DevStreams.Web.Controllers
                     Channel model = new Channel();
                     model.ApplyEditChanges(channel);
 
-                    // Pull into Authorize Attribute
-                    string userId = (await _userManager.GetUserAsync(User)).Id;
+                    var userId = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
 
                     await _channelService.Create(model, userId);
                 }

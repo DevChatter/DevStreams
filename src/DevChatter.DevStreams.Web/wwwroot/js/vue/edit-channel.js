@@ -74,7 +74,7 @@ let app = new Vue({
             axios.post(`/api/Channels/`, this.model)
                 .then(response => {
                     console.log("Saved it!");
-                    window.location="/Channels";
+                    window.location="/My/Channels";
                     //TODO: Show a success toast or do a redirect;
                 })
                 .catch(error => {

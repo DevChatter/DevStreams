@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Security.Claims;
 
 namespace DevChatter.DevStreams.Web.Pages.My.Channels
 {
@@ -20,9 +20,11 @@ namespace DevChatter.DevStreams.Web.Pages.My.Channels
 
         public IList<ChannelIndexModel> Channels { get;set; }
 
-        public IActionResult OnGetAsync()
+        public IActionResult OnGet()
         {
-            List<Channel> models = _channelAggregateService.GetAll();
+            var userId = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+
+            List<Channel> models = _channelAggregateService.GetAll(userId);
             Channels = models.Select(model => model.ToChannelIndexModel()).ToList();
 
             return Page();

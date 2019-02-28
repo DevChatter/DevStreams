@@ -11,13 +11,17 @@ using DevChatter.DevStreams.Infra.Dapper.Services;
 using DevChatter.DevStreams.Infra.Dapper.TypeHandlers;
 using DevChatter.DevStreams.Infra.Db.Migrations;
 using DevChatter.DevStreams.Infra.Twitch;
+using DevChatter.DevStreams.Web.AuthorizationHandlers;
+using DevChatter.DevStreams.Web.AuthorizationHandlers.Requirements;
 using DevChatter.DevStreams.Web.Data;
 using FluentMigrator.Runner;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -94,7 +98,28 @@ namespace DevChatter.DevStreams.Web
 
             services.AddSingleton<IClock>(SystemClock.Instance);
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddTransient<IChannelPermissionsService, ChannelPermissionsService>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+
+
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("CanAccessChannel", policy =>
+                    policy.Requirements.Add(new ChannelOwnerRequirement()));
+            });
+
+            services
+                .AddMvc()
+                .AddRazorPagesOptions(options =>
+                {
+                    options.Conventions.AuthorizeFolder("/My");
+                    options.Conventions.AuthorizeFolder("/My/Channels", "CanAccessChannel");
+                })
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            services.AddTransient<IAuthorizationHandler, ChannelPermissionsHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

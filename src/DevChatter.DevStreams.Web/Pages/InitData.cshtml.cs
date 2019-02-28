@@ -102,24 +102,5 @@ namespace DevChatter.DevStreams.Web.Pages
         //        _db.SaveChanges();
         //    }
         //}
-
-        /// <summary>
-        /// Pull random items from set
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="items"></param>
-        /// <param name="count">number of unique items to pull</param>
-        /// <returns></returns>
-        private List<T> PickRandom<T>(List<T> items, int count)
-        {
-            var result = new List<T>();
-            int index = _random.Next(0, items.Count);
-            for (int i = 0; i < count; i++)
-            {
-                int moddedIndex = (index + i) % items.Count;
-                result.Add(items[moddedIndex]);
-            }
-            return result;
-        }
     }
 }

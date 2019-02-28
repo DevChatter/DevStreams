@@ -2,6 +2,7 @@ using Dapper;
 using DevChatter.DevStreams.Core.Data;
 using DevChatter.DevStreams.Core.Services;
 using DevChatter.DevStreams.Core.Settings;
+using DevChatter.DevStreams.Core.TwitchHelper;
 using DevChatter.DevStreams.Infra.Dapper;
 using DevChatter.DevStreams.Infra.Dapper.Services;
 using DevChatter.DevStreams.Infra.Dapper.TypeHandlers;
@@ -66,6 +67,7 @@ namespace DevChatter.DevStreams.Web
             services.AddTransient<ICrudRepository, DapperCrudRepository>();
             services.AddTransient<IChannelSearchService, ChannelSearchService>();
             services.AddTransient<IChannelAggregateService, ChannelAggregateService>();
+            services.AddTransient<ITwitchService, TwitchService>();
 
             services.AddSingleton<IClock>(SystemClock.Instance);
 

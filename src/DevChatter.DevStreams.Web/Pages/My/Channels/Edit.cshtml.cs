@@ -1,5 +1,6 @@
 ﻿using DevChatter.DevStreams.Core.Data;
 using DevChatter.DevStreams.Core.Model;
+using DevChatter.DevStreams.Web.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -11,6 +12,7 @@ using TimeZoneNames;
 
 namespace DevChatter.DevStreams.Web.Pages.My.Channels
 {
+    [ChannelAuthorize("id")]
     public class EditModel : PageModel
     {
         private readonly ICrudRepository _repo;

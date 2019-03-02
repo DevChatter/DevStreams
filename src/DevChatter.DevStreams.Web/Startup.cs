@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Dapper;
 using DevChatter.DevStreams.Core.Data;
 using DevChatter.DevStreams.Core.Services;
@@ -25,6 +21,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using DevChatter.DevStreams.Core.Authorization;
 
 namespace DevChatter.DevStreams.Web
 {
@@ -98,10 +98,9 @@ namespace DevChatter.DevStreams.Web
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 
 
-
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("CanAccessChannel", policy =>
+                options.AddPolicy(AuthPolicies.CanAccessChannel, policy =>
                     policy.Requirements.Add(new ChannelOwnerRequirement()));
             });
 
@@ -110,7 +109,7 @@ namespace DevChatter.DevStreams.Web
                 .AddRazorPagesOptions(options =>
                 {
                     options.Conventions.AuthorizeFolder("/My");
-                    options.Conventions.AuthorizeFolder("/My/Channels", "CanAccessChannel");
+                    options.Conventions.AuthorizeFolder("/My/Channels", AuthPolicies.CanAccessChannel);
                 })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 

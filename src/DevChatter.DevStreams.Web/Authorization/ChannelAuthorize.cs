@@ -36,8 +36,8 @@ namespace DevChatter.DevStreams.Web.Authorization
                 return;
             }
 
-            context.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-            context.Result = new JsonResult(nameof(HttpStatusCode.Unauthorized));
+            context.HttpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+            context.Result = new ForbidResult();
         }
 
         public void OnPageHandlerExecuting(PageHandlerExecutingContext context)
@@ -47,9 +47,8 @@ namespace DevChatter.DevStreams.Web.Authorization
                 return;
             }
 
-            context.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-            context.Result = new JsonResult(nameof(HttpStatusCode.Unauthorized));
-
+            context.HttpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+            context.Result = new ForbidResult();
         }
 
         private bool IsAuthorized(HttpContext httpContext, 

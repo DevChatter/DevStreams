@@ -1,4 +1,5 @@
 using Dapper;
+using DevChatter.DevStreams.Core.Authorization;
 using DevChatter.DevStreams.Core.Data;
 using DevChatter.DevStreams.Core.Services;
 using DevChatter.DevStreams.Core.Settings;
@@ -7,8 +8,8 @@ using DevChatter.DevStreams.Infra.Dapper.Services;
 using DevChatter.DevStreams.Infra.Dapper.TypeHandlers;
 using DevChatter.DevStreams.Infra.Db.Migrations;
 using DevChatter.DevStreams.Infra.Twitch;
-using DevChatter.DevStreams.Web.AuthorizationHandlers;
-using DevChatter.DevStreams.Web.AuthorizationHandlers.Requirements;
+using DevChatter.DevStreams.Web.Authorization;
+using DevChatter.DevStreams.Web.Authorization.Requirements;
 using DevChatter.DevStreams.Web.Data;
 using FluentMigrator.Runner;
 using Microsoft.AspNetCore.Authorization;
@@ -25,7 +26,6 @@ using NodaTime;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using DevChatter.DevStreams.Core.Authorization;
 
 namespace DevChatter.DevStreams.Web
 {

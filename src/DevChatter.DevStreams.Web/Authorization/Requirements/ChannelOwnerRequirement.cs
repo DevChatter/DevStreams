@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 
-namespace DevChatter.DevStreams.Web.AuthorizationHandlers.Requirements
+namespace DevChatter.DevStreams.Web.Authorization.Requirements
 {
     public class ChannelOwnerRequirement : IAuthorizationRequirement
     {

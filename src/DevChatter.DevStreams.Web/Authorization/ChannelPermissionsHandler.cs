@@ -1,12 +1,12 @@
 ﻿using DevChatter.DevStreams.Core.Services;
-using DevChatter.DevStreams.Web.AuthorizationHandlers.Requirements;
+using DevChatter.DevStreams.Web.Authorization.Requirements;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace DevChatter.DevStreams.Web.AuthorizationHandlers
+namespace DevChatter.DevStreams.Web.Authorization
 {
     public class ChannelPermissionsHandler : AuthorizationHandler<ChannelOwnerRequirement>
     {

@@ -1,6 +1,8 @@
 ﻿using DevChatter.DevStreams.Core.Data;
 using DevChatter.DevStreams.Core.Model;
+using DevChatter.DevStreams.Web.Authorization;
 using DevChatter.DevStreams.Web.Data.ViewModel.Channels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
@@ -22,6 +24,7 @@ namespace DevChatter.DevStreams.Web.Controllers
             _crudRepository = crudRepository;
         }
 
+        [Authorize, ChannelAuthorize("id")]
         [HttpGet, Route("{id}")]
         public ChannelEditModel Get(int id)
         {
@@ -37,6 +40,7 @@ namespace DevChatter.DevStreams.Web.Controllers
             return editModel;
         }
 
+        [Authorize, ChannelAuthorize("channel")]
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] ChannelEditModel channel)
         {

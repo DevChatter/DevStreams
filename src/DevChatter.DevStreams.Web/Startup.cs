@@ -2,11 +2,11 @@ using Dapper;
 using DevChatter.DevStreams.Core.Data;
 using DevChatter.DevStreams.Core.Services;
 using DevChatter.DevStreams.Core.Settings;
-using DevChatter.DevStreams.Core.TwitchHelper;
 using DevChatter.DevStreams.Infra.Dapper;
 using DevChatter.DevStreams.Infra.Dapper.Services;
 using DevChatter.DevStreams.Infra.Dapper.TypeHandlers;
 using DevChatter.DevStreams.Infra.Db.Migrations;
+using DevChatter.DevStreams.Infra.Twitch;
 using DevChatter.DevStreams.Web.Data;
 using FluentMigrator.Runner;
 using Microsoft.AspNetCore.Builder;
@@ -42,6 +42,9 @@ namespace DevChatter.DevStreams.Web
 
             services.Configure<DatabaseSettings>(
                 Configuration.GetSection("ConnectionStrings"));
+
+            services.Configure<TwitchSettings>(
+                Configuration.GetSection("TwitchSettings"));
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(

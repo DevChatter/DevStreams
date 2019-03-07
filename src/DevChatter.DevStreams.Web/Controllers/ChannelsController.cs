@@ -2,11 +2,11 @@
 using System.Linq;
 using DevChatter.DevStreams.Core.Data;
 using DevChatter.DevStreams.Core.Model;
+using DevChatter.DevStreams.Core.Services;
 using DevChatter.DevStreams.Web.Data.ViewModel.Channels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
-using DevChatter.DevStreams.Core.TwitchHelper;
 
 namespace DevChatter.DevStreams.Web.Controllers
 {
@@ -43,7 +43,9 @@ namespace DevChatter.DevStreams.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> GetLive()
         {
-            var liveChannels = await _twitchService.GetLiveChannels();
+            List<Channel> channels = await _crudRepository.GetAll<Channel>();
+            List<string> channelNames = channels.Select(x => x.Name).ToList();
+            var liveChannels = await _twitchService.GetLiveChannels(channelNames);
             return Ok(liveChannels);
         }
 

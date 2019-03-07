@@ -1,37 +1,40 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using DevChatter.DevStreams.Core;
 using DevChatter.DevStreams.Core.Data;
-using DevChatter.DevStreams.Core.TwitchHelper;
+using DevChatter.DevStreams.Core.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Linq;
+using System.Threading.Tasks;
+using DevChatter.DevStreams.Core.Model;
 
 namespace DevChatter.DevStreams.Web.Pages
 {
     public class IndexModel : PageModel
     {
-        private readonly IChannelAggregateService _channelAggregateService;
+        private readonly ICrudRepository _repo;
         private readonly ITwitchService _twitchService;
 
-        public IndexModel(IChannelAggregateService channelAggregateService, ITwitchService twitchService)
+        public IndexModel(ICrudRepository repo, ITwitchService twitchService)
         {
-            _channelAggregateService = channelAggregateService;
+            _repo = repo;
             _twitchService = twitchService;
         }
+
         public async Task<IActionResult> OnGetLuckyAsync()
         {
-            var liveChannels = await _twitchService.GetLiveChannels();
+            List<Channel> channels = await _repo.GetAll<Channel>();
+            List<string> channelNames = channels.Select(x => x.Name).ToList();
+            var liveChannels = await _twitchService.GetLiveChannels(channelNames);
             var result = new Result();
 
-            if (liveChannels.Count == 0)
+            if (liveChannels.Any())
             {
-                result.Error = "No live channels available right now, try again later!";
+                result.ChannelName = liveChannels.PickOneRandomElement();
             }
             else
             {
-                result.ChannelName = liveChannels.PickOneRandomElement();
+                result.Error = "No live channels available right now, try again later!";
             }
 
             return new JsonResult(result);

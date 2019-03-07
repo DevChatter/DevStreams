@@ -95,14 +95,16 @@ namespace DevChatter.DevStreams.Web
 
             services.AddSingleton<IClock>(SystemClock.Instance);
 
-            services.AddTransient<IChannelPermissionsService, ChannelPermissionsService>();
+            services.AddTransient<IChannelPermissionsService,
+                ChannelPermissionsService>();
 
             services
                 .AddMvc()
                 .AddRazorPagesOptions(options =>
                 {
                     options.Conventions.AuthorizeFolder("/My");
-                    options.Conventions.AuthorizeFolder("/Manage", "RequireAdministratorRole");
+                    options.Conventions.AuthorizeFolder("/Manage",
+                        "RequireAdministratorRole");
                 })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 

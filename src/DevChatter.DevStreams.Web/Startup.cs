@@ -72,6 +72,8 @@ namespace DevChatter.DevStreams.Web
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
+            services.AddScoped<IUserClaimsPrincipalFactory<IdentityUser>, UserClaimsPrincipalFactory<IdentityUser, IdentityRole>>();
+
             services.AddFluentMigratorCore()
                 .ConfigureRunner(
                     builder => builder

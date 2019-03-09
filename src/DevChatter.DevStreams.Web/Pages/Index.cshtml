@@ -1,4 +1,5 @@
 ﻿@page
+@using Data.ViewModel.Channels
 @model IndexModel
 @{
     ViewData["Title"] = "Home page";
@@ -7,10 +8,10 @@
     <div class="col-md-3">
         <h2>Live Now</h2> @*TODO: Show channels that are live right now.*@
         <ul>
-            <li><a href="https://www.Twitch.tv/DevChatter">DevChatter</a></li>
-            <li><a href="https://www.Twitch.tv/CSharpFritz">CSharpFritz</a></li>
-            <li><a href="https://www.Twitch.tv/CodeRushed">CodeRushed</a></li>
-            <li><a href="https://www.Twitch.tv/RobertTables">RobertTables</a></li>
+            @foreach (var liveChannel in Model.LiveChannels)
+            {
+                <li><a href="@liveChannel.Uri">@liveChannel.Name</a></li>
+            }
         </ul>
     </div>
     <div class="col-md-5">
@@ -25,9 +26,10 @@
     <div class="col-md-4">
         <h2>Newly Added Channels</h2> @*TODO: Show recently added channels.*@
         <ul>
-            <li>CodeBaseAlpha</li>
-            <li>Ardalis</li>
-            <li>BrandonSatrom</li>
+            @foreach (var addedChannel in Model.NewlyAddedChannels)
+            {
+                <li><a href="@addedChannel.Uri">@addedChannel.Name</a></li>
+            }
         </ul>
     </div>
     <div class="col-md-12 text-center">

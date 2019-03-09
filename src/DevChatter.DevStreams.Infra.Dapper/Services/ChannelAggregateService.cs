@@ -44,6 +44,32 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
             }
         }
 
+        public List<Channel> GetAll(string userId)
+        {
+            const string channelSql = "SELECT * FROM Channels c INNER JOIN ChannelPermissions cp on cp.ChannelId = c.Id WHERE cp.UserId = @userId";
+            const string extraSql =
+                @"SELECT Id FROM ScheduledStreams WHERE ChannelId = @id;
+                  SELECT t.* FROM ChannelTags ct INNER JOIN Tags t ON t.Id = ct.TagId WHERE ct.ChannelId = @id";
+
+            using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
+            {
+                var channels = connection
+                    .Query<Channel>(channelSql, new { userId })
+                    .ToList();
+
+                foreach (var channel in channels)
+                {
+                    using (var multi = connection.QueryMultiple(extraSql, new { channel.Id }))
+                    {
+                        channel.ScheduledStreamIds = multi.Read<int>().ToList();
+                        channel.Tags = multi.Read<Tag>().ToList();
+                    }
+                }
+
+                return channels;
+            }
+        }
+
         public Channel GetAggregate(int id)
         {
             const string sql =
@@ -63,7 +89,7 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
             }
         }
 
-        public async Task<int?> Create(Channel model)
+        public async Task<int?> Create(Channel model, string userId)
         {
             using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
             {
@@ -72,7 +98,18 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
                 var channelTags = model.Tags
                     .Select(tag => new ChannelTag {ChannelId = model.Id, TagId = tag.Id});
 
-                await Task.WhenAll(channelTags.Select(ct => connection.InsertAsync(ct)));
+                var channelPermission = new ChannelPermission
+                {
+                    ChannelId = id.Value,
+                    UserId = userId,
+                    ChannelRole = ChannelRole.Owner
+                };
+                const string insertPermissionsSql = "INSERT INTO [ChannelPermissions] (ChannelId, UserId, ChannelRole) VALUES (@ChannelId, @UserId, @ChannelRole)";
+                await connection.ExecuteAsync(insertPermissionsSql, channelPermission);
+
+                const string insertChannelTagSql = "INSERT INTO [ChannelTags] (ChannelId, TagId) VALUES (@ChannelId, @TagId)";
+                await Task.WhenAll(channelTags.Select(ct 
+                    => connection.ExecuteAsync(insertChannelTagSql, ct)));
 
                 return id;
             }

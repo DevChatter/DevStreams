@@ -1,11 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using DevChatter.DevStreams.Core.Data;
+﻿using DevChatter.DevStreams.Core.Data;
 using DevChatter.DevStreams.Core.Model;
 using DevChatter.DevStreams.Core.Services;
+using DevChatter.DevStreams.Web.Authorization;
 using DevChatter.DevStreams.Web.Data.ViewModel.Channels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace DevChatter.DevStreams.Web.Controllers
@@ -25,6 +28,7 @@ namespace DevChatter.DevStreams.Web.Controllers
             _twitchService = twitchService;
         }
 
+        [Authorize, ChannelAuthorize("id")]
         [HttpGet, Route("{id}")]
         public ChannelEditModel Get(int id)
         {
@@ -49,6 +53,7 @@ namespace DevChatter.DevStreams.Web.Controllers
             return Ok(liveChannels);
         }
 
+        [Authorize, ChannelAuthorize("channel")]
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] ChannelEditModel channel)
         {
@@ -63,7 +68,10 @@ namespace DevChatter.DevStreams.Web.Controllers
                 {
                     Channel model = new Channel();
                     model.ApplyEditChanges(channel);
-                    await _channelService.Create(model);
+
+                    var userId = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+
+                    await _channelService.Create(model, userId);
                 }
                 else
                 {

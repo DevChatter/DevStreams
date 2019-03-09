@@ -18,6 +18,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DevChatter.DevStreams.Web
 {
@@ -50,8 +53,26 @@ namespace DevChatter.DevStreams.Web
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddDefaultIdentity<IdentityUser>()
+            services.AddDefaultIdentity<IdentityUser>(options =>
+                {
+                    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                    options.Lockout.MaxFailedAccessAttempts = 5;
+                    options.Lockout.AllowedForNewUsers = true;
+
+                    options.Password.RequireDigit = false;
+                    options.Password.RequireLowercase = false;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequiredLength = 8;
+                    options.Password.RequiredUniqueChars = 1;
+
+                    options.SignIn.RequireConfirmedEmail = false;
+                    options.SignIn.RequireConfirmedPhoneNumber = false;
+                })
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            services.AddScoped<IUserClaimsPrincipalFactory<IdentityUser>, UserClaimsPrincipalFactory<IdentityUser, IdentityRole>>();
 
             services.AddFluentMigratorCore()
                 .ConfigureRunner(
@@ -74,12 +95,29 @@ namespace DevChatter.DevStreams.Web
 
             services.AddSingleton<IClock>(SystemClock.Instance);
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddTransient<IChannelPermissionsService,
+                ChannelPermissionsService>();
+
+            services
+                .AddMvc()
+                .AddRazorPagesOptions(options =>
+                {
+                    options.Conventions.AuthorizeFolder("/My");
+                    options.Conventions.AuthorizeFolder("/Manage",
+                        "RequireAdministratorRole");
+                })
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("RequireAdministratorRole",
+                    policy => policy.RequireRole("Administrator"));
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, 
-            IMigrationRunner migrationRunner)
+            IMigrationRunner migrationRunner, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             if (env.IsDevelopment())
             {
@@ -96,12 +134,42 @@ namespace DevChatter.DevStreams.Web
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
+            InitializeDatabase(app, migrationRunner);
+
+            SetUpDefaultUsersAndRoles(userManager, roleManager).Wait();
+
             app.UseAuthentication();
 
             app.UseMvc();
 
-            InitializeDatabase(app, migrationRunner);
+        }
 
+        private async Task SetUpDefaultUsersAndRoles(UserManager<IdentityUser> userManager,
+            RoleManager<IdentityRole> roleManager)
+        {
+            const string roleName = "Administrator";
+            if (!await roleManager.RoleExistsAsync(roleName))
+            {
+                var identityRole = new IdentityRole(roleName);
+                var roleCreateResult = await roleManager.CreateAsync(identityRole);
+            }
+
+            const string defaultUserAccountName = "chatter1@example.com"; // TODO: Pull from Config
+            const string defaultUserPassword = "Passw0rd!"; // TODO: Pull from Config
+            var usersInRole = (await userManager.GetUsersInRoleAsync(roleName));
+            if (!usersInRole.Any() 
+                && await userManager.FindByEmailAsync(defaultUserAccountName) == null)
+            {
+                var user = new IdentityUser(defaultUserAccountName);
+                user.Email = defaultUserAccountName;
+                
+                var result = await userManager.CreateAsync(user, defaultUserPassword);
+
+                if (result.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(user, roleName);
+                }
+            }
         }
 
         private void InitializeDatabase(IApplicationBuilder app, IMigrationRunner migrationRunner)

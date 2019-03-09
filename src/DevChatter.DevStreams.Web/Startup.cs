@@ -6,6 +6,7 @@ using DevChatter.DevStreams.Infra.Dapper;
 using DevChatter.DevStreams.Infra.Dapper.Services;
 using DevChatter.DevStreams.Infra.Dapper.TypeHandlers;
 using DevChatter.DevStreams.Infra.Db.Migrations;
+using DevChatter.DevStreams.Infra.Twitch;
 using DevChatter.DevStreams.Web.Data;
 using FluentMigrator.Runner;
 using Microsoft.AspNetCore.Builder;
@@ -42,6 +43,9 @@ namespace DevChatter.DevStreams.Web
             services.Configure<DatabaseSettings>(
                 Configuration.GetSection("ConnectionStrings"));
 
+            services.Configure<TwitchSettings>(
+                Configuration.GetSection("TwitchSettings"));
+
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
@@ -66,6 +70,7 @@ namespace DevChatter.DevStreams.Web
             services.AddTransient<ICrudRepository, DapperCrudRepository>();
             services.AddTransient<IChannelSearchService, ChannelSearchService>();
             services.AddTransient<IChannelAggregateService, ChannelAggregateService>();
+            services.AddTransient<ITwitchService, TwitchService>();
 
             services.AddSingleton<IClock>(SystemClock.Instance);
 

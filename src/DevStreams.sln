@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevChatter.DevStreams.UnitT
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevChatter.DevStreams.Infra.Dapper", "DevChatter.DevStreams.Infra.Dapper\DevChatter.DevStreams.Infra.Dapper.csproj", "{964F1FA2-BF2C-4EF9-872F-B5F2E01404AF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevChatter.DevStreams.Infra.Db", "DevChatter.DevStreams.Infra.Db\DevChatter.DevStreams.Infra.Db.csproj", "{57D38F4B-E209-4172-BD09-1DD1FCE65428}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevChatter.DevStreams.Infra.Db", "DevChatter.DevStreams.Infra.Db\DevChatter.DevStreams.Infra.Db.csproj", "{57D38F4B-E209-4172-BD09-1DD1FCE65428}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevChatter.DevStreams.Infra.Twitch", "DevChatter.DevStreams.Infra.Twitch\DevChatter.DevStreams.Infra.Twitch.csproj", "{21294781-F1E1-478E-9065-12989955CC1F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{57D38F4B-E209-4172-BD09-1DD1FCE65428}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{57D38F4B-E209-4172-BD09-1DD1FCE65428}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{57D38F4B-E209-4172-BD09-1DD1FCE65428}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21294781-F1E1-478E-9065-12989955CC1F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21294781-F1E1-478E-9065-12989955CC1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21294781-F1E1-478E-9065-12989955CC1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21294781-F1E1-478E-9065-12989955CC1F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

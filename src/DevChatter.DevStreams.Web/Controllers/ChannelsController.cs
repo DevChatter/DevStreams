@@ -1,5 +1,8 @@
-﻿using DevChatter.DevStreams.Core.Data;
+﻿using System.Collections.Generic;
+using System.Linq;
+using DevChatter.DevStreams.Core.Data;
 using DevChatter.DevStreams.Core.Model;
+using DevChatter.DevStreams.Core.Services;
 using DevChatter.DevStreams.Web.Data.ViewModel.Channels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,13 +14,15 @@ namespace DevChatter.DevStreams.Web.Controllers
     public class ChannelsController : Controller
     {
         private readonly IChannelAggregateService _channelService;
+        private readonly ITwitchService _twitchService;
         private readonly ICrudRepository _crudRepository;
 
         public ChannelsController(IChannelAggregateService channelService,
-            ICrudRepository crudRepository)
+            ICrudRepository crudRepository, ITwitchService twitchService)
         {
             _channelService = channelService;
             _crudRepository = crudRepository;
+            _twitchService = twitchService;
         }
 
         [HttpGet, Route("{id}")]
@@ -33,6 +38,15 @@ namespace DevChatter.DevStreams.Web.Controllers
             var editModel = channel?.ToChannelEditModel();
 
             return editModel;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetLive()
+        {
+            List<Channel> channels = await _crudRepository.GetAll<Channel>();
+            List<string> channelNames = channels.Select(x => x.Name).ToList();
+            var liveChannels = await _twitchService.GetLiveChannels(channelNames);
+            return Ok(liveChannels);
         }
 
         [HttpPost]

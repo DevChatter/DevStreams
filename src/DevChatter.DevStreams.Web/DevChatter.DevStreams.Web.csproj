@@ -20,6 +20,7 @@
     <ProjectReference Include="..\DevChatter.DevStreams.Core\DevChatter.DevStreams.Core.csproj" />
     <ProjectReference Include="..\DevChatter.DevStreams.Infra.Dapper\DevChatter.DevStreams.Infra.Dapper.csproj" />
     <ProjectReference Include="..\DevChatter.DevStreams.Infra.Db\DevChatter.DevStreams.Infra.Db.csproj" />
+    <ProjectReference Include="..\DevChatter.DevStreams.Infra.Twitch\DevChatter.DevStreams.Infra.Twitch.csproj" />
   </ItemGroup>
 
 </Project>

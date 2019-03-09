@@ -1,15 +1,32 @@
-﻿using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using DevChatter.DevStreams.Core.Data;
+using DevChatter.DevStreams.Core.Model;
+using DevChatter.DevStreams.Web.Data.ViewModel.Channels;
+using DevChatter.DevStreams.Web.Data.ViewModel.ScheduledStreams;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace DevChatter.DevStreams.Web.Pages.Channels
 {
     public class DetailsModel : PageModel
     {
-        public void OnGet(int id)
+        private readonly IChannelAggregateService _channelAggregateService;
+
+        public DetailsModel(IChannelAggregateService channelAggregateService)
         {
-            // TODO: Load the details of this channel
-            Name = "Super Awesome Super Show";
+            _channelAggregateService = channelAggregateService;
         }
 
-        public string Name { get; set; }
+        public ChannelViewModel Channel { get; set; }
+        public List<ScheduledStreamViewModel> ScheduledStreams { get; set; }
+
+        public async Task<IActionResult> OnGetAsync(int id)
+        {
+            var channel = _channelAggregateService.GetAggregate(id);
+            Channel = channel.ToChannelViewModel();
+
+            return Page();
+        }
     }
 }

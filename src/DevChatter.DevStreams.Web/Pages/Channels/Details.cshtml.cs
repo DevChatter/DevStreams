@@ -7,6 +7,9 @@ namespace DevChatter.DevStreams.Web.Pages.Channels
         public void OnGet(int id)
         {
             // TODO: Load the details of this channel
+            Name = "Super Awesome Super Show";
         }
+
+        public string Name { get; set; }
     }
 }

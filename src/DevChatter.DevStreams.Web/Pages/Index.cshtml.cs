@@ -22,7 +22,8 @@ namespace DevChatter.DevStreams.Web.Pages
             _twitchService = twitchService;
         }
 
-        public List<ChannelViewModel> LiveChannels { get; set; }
+        public List<ChannelIndexModel> LiveChannels { get; set; }
+        public List<ChannelIndexModel> NewlyAddedChannels { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
@@ -33,7 +34,12 @@ namespace DevChatter.DevStreams.Web.Pages
 
             LiveChannels = channels
                 .Where(x => liveChannelNames.Contains(x.Name))
-                .Select(x => x.ToChannelViewModel())
+                .Select(x => x.ToChannelIndexModel())
+                .ToList();
+
+            NewlyAddedChannels = channels
+                .Take(5)
+                .Select(x => x.ToChannelIndexModel())
                 .ToList();
 
             return Page();

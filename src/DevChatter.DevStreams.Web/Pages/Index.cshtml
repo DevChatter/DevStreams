@@ -26,9 +26,10 @@
     <div class="col-md-4">
         <h2>Newly Added Channels</h2> @*TODO: Show recently added channels.*@
         <ul>
-            <li>CodeBaseAlpha</li>
-            <li>Ardalis</li>
-            <li>BrandonSatrom</li>
+            @foreach (var addedChannel in Model.NewlyAddedChannels)
+            {
+                <li><a href="@addedChannel.Uri">@addedChannel.Name</a></li>
+            }
         </ul>
     </div>
     <div class="col-md-12 text-center">

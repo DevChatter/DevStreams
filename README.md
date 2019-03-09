@@ -50,5 +50,7 @@ Regardless of how you're contributing, we recommend joining our Discord channel 
 * [Brendan Enrick](https://github.com/benrick)
 * [Jon Skeet](https://github.com/jskeet)
 * [Dave Paquette](https://github.com/dpaquette)
+* [Stu Bonham](https://github.com/essenbee)
+* [James Arroyo](https://github.com/jamesarroyo1994)
 
 **Feel free to add your name to this list when sending a Pull Request.**

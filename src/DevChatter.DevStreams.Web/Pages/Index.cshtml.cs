@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
-using DevChatter.DevStreams.Core;
+﻿using DevChatter.DevStreams.Core;
 using DevChatter.DevStreams.Core.Data;
+using DevChatter.DevStreams.Core.Model;
 using DevChatter.DevStreams.Core.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DevChatter.DevStreams.Core.Model;
 
 namespace DevChatter.DevStreams.Web.Pages
 {

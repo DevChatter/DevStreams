@@ -1,8 +1,8 @@
-let app = new Vue({
+﻿let app = new Vue({
     el: "#channelDetails",
     data: {
-        isLiveCheckComplete: false,
-        isLive: false,
+        isLiveComplete: false,
+        liveStatus: false,
         scheduleCheckComplete: false,
         schedule: [],
         twitchId: document.getElementById('twitchId').value
@@ -15,8 +15,8 @@ let app = new Vue({
         fetchLiveStatus: function() {
             axios.get(`/api/IsLive/${encodeURIComponent(this.twitchId)}`)
                 .then(response => {
-                    this.isLive = response.data;
-                    this.isLiveCheckComplete = true;
+                    this.liveStatus = response.data ? "Live 🔴" : "Offline";
+                    this.isLiveComplete = true;
                 })
                 .catch(error => {
                     console.log(error.statusText);

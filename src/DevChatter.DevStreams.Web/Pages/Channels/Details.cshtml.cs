@@ -21,7 +21,7 @@ namespace DevChatter.DevStreams.Web.Pages.Channels
         public ChannelViewModel Channel { get; set; }
         public List<ScheduledStreamViewModel> ScheduledStreams { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int id)
+        public IActionResult OnGet(int id)
         {
             var channel = _channelAggregateService.GetAggregate(id);
             Channel = channel.ToChannelViewModel();

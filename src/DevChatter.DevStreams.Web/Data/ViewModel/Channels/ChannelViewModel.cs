@@ -21,6 +21,6 @@ namespace DevChatter.DevStreams.Web.Data.ViewModel.Channels
         [Display(Name = "Tags")]
         public string Tags { get; set; }
 
-        public string TwitchId { get; set; } = "188854137";
+        public string TwitchId { get; set; }
     }
 }

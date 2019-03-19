@@ -15,5 +15,6 @@ namespace DevChatter.DevStreams.Core.Model
         public string CountryCode { get; set; }
         public string TimeZoneId { get; set; }
         public List<Tag> Tags { get; set; } = new List<Tag>();
+        public TwitchChannel Twitch { get; set; }
     }
 }

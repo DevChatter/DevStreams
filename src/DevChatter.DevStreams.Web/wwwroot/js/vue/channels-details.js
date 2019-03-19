@@ -8,14 +8,16 @@
         twitchId: document.getElementById('twitchId').value
     },
     mounted() {
-        this.fetchLiveStatus();
+        if (this.twitchId) {
+            this.fetchLiveStatus();
+        }
         this.fetchSchedule();
     },
     methods: {
         fetchLiveStatus: function() {
             axios.get(`/api/IsLive/${encodeURIComponent(this.twitchId)}`)
                 .then(response => {
-                    this.liveStatus = response.data ? "Live 🔴" : "Offline";
+                    this.liveStatus = response.data === true ? "Live 🔴" : "Offline";
                     this.isLiveComplete = true;
                 })
                 .catch(error => {

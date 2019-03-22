@@ -42,7 +42,12 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
                 var timeZone = DateTimeZoneProviders.Tzdb[stream.TimeZoneId];
                 var sessions = CreateStreamSessions(stream, timeZone);
 
-                await Task.WhenAll(sessions.Select(s => connection.InsertAsync(s)));
+                foreach (var s in sessions)
+                {
+                    await connection.InsertAsync(s);
+                }
+
+                //await Task.WhenAll(sessions.Select(s => connection.InsertAsync(s)));
 
                 return id;
             }

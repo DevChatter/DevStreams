@@ -24,7 +24,7 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
         {
             const string channelSql = "SELECT * FROM Channels";
             const string extraSql =
-                @"SELECT Id FROM ScheduledStreams WHERE ChannelId = @id;
+                @"SELECT * FROM ScheduledStreams WHERE ChannelId = @id;
                   SELECT t.* FROM ChannelTags ct INNER JOIN Tags t ON t.Id = ct.TagId WHERE ct.ChannelId = @id";
 
             using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
@@ -35,7 +35,7 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
                 {
                     using (var multi = connection.QueryMultiple(extraSql, new {channel.Id}))
                     {
-                        channel.ScheduledStreamIds = multi.Read<int>().ToList();
+                        channel.ScheduledStreams = multi.Read<ScheduledStream>().ToList();
                         channel.Tags = multi.Read<Tag>().ToList();
                     }
                 }
@@ -48,7 +48,7 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
         {
             const string channelSql = "SELECT * FROM Channels c INNER JOIN ChannelPermissions cp on cp.ChannelId = c.Id WHERE cp.UserId = @userId";
             const string extraSql =
-                @"SELECT Id FROM ScheduledStreams WHERE ChannelId = @id;
+                @"SELECT * FROM ScheduledStreams WHERE ChannelId = @id;
                   SELECT t.* FROM ChannelTags ct INNER JOIN Tags t ON t.Id = ct.TagId WHERE ct.ChannelId = @id";
 
             using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
@@ -61,7 +61,7 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
                 {
                     using (var multi = connection.QueryMultiple(extraSql, new { channel.Id }))
                     {
-                        channel.ScheduledStreamIds = multi.Read<int>().ToList();
+                        channel.ScheduledStreams = multi.Read<ScheduledStream>().ToList();
                         channel.Tags = multi.Read<Tag>().ToList();
                     }
                 }
@@ -75,7 +75,7 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
             const string sql =
                 @"SELECT * FROM Channels WHERE Id = @id;
                   SELECT * FROM TwitchChannels WHERE ChannelId = @id;
-                  SELECT Id FROM ScheduledStreams WHERE ChannelId = @id;
+                  SELECT * FROM ScheduledStreams WHERE ChannelId = @id;
                   SELECT t.* FROM ChannelTags ct INNER JOIN Tags t ON t.Id = ct.TagId WHERE ct.ChannelId = @id";
 
             using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
@@ -84,7 +84,7 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
                 {
                     var channel = multi.Read<Channel>().First();
                     channel.Twitch = multi.Read<TwitchChannel>().FirstOrDefault();
-                    channel.ScheduledStreamIds = multi.Read<int>().ToList();
+                    channel.ScheduledStreams = multi.Read<ScheduledStream>().ToList();
                     channel.Tags = multi.Read<Tag>().ToList();
                     return channel;
                 }

@@ -11,7 +11,7 @@ namespace DevChatter.DevStreams.Core.Model
     {
         public string Name { get; set; }
         public string Uri { get; set; }
-        public List<int> ScheduledStreamIds { get; set; } = new List<int>();
+        public List<ScheduledStream> ScheduledStreams { get; set; } = new List<ScheduledStream>();
         public string CountryCode { get; set; }
         public string TimeZoneId { get; set; }
         public List<Tag> Tags { get; set; } = new List<Tag>();

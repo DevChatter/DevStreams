@@ -1,4 +1,5 @@
 ﻿@page "{id:int}"
+@using Core.Model
 @model DevChatter.DevStreams.Web.Pages.Channels.DetailsModel
 @{
     ViewData["Title"] = "Details";
@@ -8,21 +9,30 @@
     <h2>@Model.Channel.Name<span v-if="isLiveComplete"> - {{liveStatus}}</span></h2>
 
     <div class="row">
-        <div class="col-md-3">
-            <h3>Channel Details</h3>
-            <p>DevChatter is a stream about foo, bar, coding, other stuff, chatting, etc.</p>
-        </div>
         <div class="col-md-5">
-            <h3>Something Big Here</h3>
-            <p>This could be an embedded video player (not playing, muted by default) or perhaps embedded videos from previous streams?</p>
+            <h3>Channel Details</h3>
+            <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur elit lacus, cursus quis quam ut, tempor mattis eros. Nam ac lectus massa. Vivamus viverra, libero sed tempor consequat, mauris urna suscipit eros, sit amet posuere elit nunc id arcu. Ut sed lectus aliquam risus blandit mollis vel nec velit.
+            </p>
+            <a href="@Model.Channel.Uri">View @Model.Channel.Name on Twitch</a>
+        </div>
+        <div class="col-md-3">
+            <h3>Next Streams</h3>
+            <ul>
+                @foreach (StreamSession session in Model.StreamSessions)
+                {
+                    <li>@session.UtcStartTime</li>
+                }
+            </ul>
         </div>
         <div class="col-md-4">
             <h3>Schedule</h3>
             <ul>
-                <li>Mondays at 2:00 PM Eastern Time</li>
-                <li>Tuesdays at 2:00 PM Eastern Time</li>
-                <li>Thursdays at 12:00 PM Eastern Time</li>
-                <li>Saturdays at 1:00 PM Eastern Time</li>
+                @* TODO: Show these in viewer's timezone. *@
+                @foreach (var stream in Model.ScheduledStreams)
+                {
+                    <li>@stream.DayOfWeek at @stream.LocalStartTime @stream.TimeZoneName</li>
+                }
             </ul>
         </div>
     </div>

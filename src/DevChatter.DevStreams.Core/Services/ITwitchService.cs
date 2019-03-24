@@ -7,5 +7,6 @@ namespace DevChatter.DevStreams.Core.Services
     {
         Task<List<string>> GetChannelIds(List<string> channelNames);
         Task<List<string>> GetLiveChannels(List<string> channelNames);
+        Task<bool> IsLive(int twitchId);
     }
 }

@@ -52,7 +52,20 @@ namespace DevChatter.DevStreams.Infra.Twitch
 
             var result = JsonConvert.DeserializeObject<StreamResult>(jsonResult);
 
+            // TODO: Cache this result.
             return result.Data.Select(x => x.User_name).ToList();
+        }
+
+        public async Task<bool> IsLive(int twitchId)
+        {
+            // TODO: Have this just check cache or do a refresh based on getting *all* data.
+
+            var url = $"{_twitchSettings.BaseApiUrl}/streams?user_id={twitchId}";
+            var jsonResult = await Get(url);
+
+            var result = JsonConvert.DeserializeObject<StreamResult>(jsonResult);
+
+            return result.Data.Any();
         }
 
         private async Task<string> Get(string url)

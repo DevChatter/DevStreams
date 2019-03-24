@@ -44,15 +44,6 @@ namespace DevChatter.DevStreams.Web.Controllers
             return editModel;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetLive()
-        {
-            List<Channel> channels = await _crudRepository.GetAll<Channel>();
-            List<string> channelNames = channels.Select(x => x.Name).ToList();
-            var liveChannels = await _twitchService.GetLiveChannels(channelNames);
-            return Ok(liveChannels);
-        }
-
         [Authorize, ChannelAuthorize("channel")]
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] ChannelEditModel channel)

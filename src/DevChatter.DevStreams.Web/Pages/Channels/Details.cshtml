@@ -1,8 +1,47 @@
-﻿@page
+﻿@page "{id:int}"
+@using Core.Model
 @model DevChatter.DevStreams.Web.Pages.Channels.DetailsModel
 @{
     ViewData["Title"] = "Details";
 }
 
-<h2>Details</h2>
+<div id="channelDetails">
+    <h2>@Model.Channel.Name<span v-if="isLiveComplete"> - {{liveStatus}}</span></h2>
+
+    <div class="row">
+        <div class="col-md-5">
+            <h3>Channel Details</h3>
+            <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur elit lacus, cursus quis quam ut, tempor mattis eros. Nam ac lectus massa. Vivamus viverra, libero sed tempor consequat, mauris urna suscipit eros, sit amet posuere elit nunc id arcu. Ut sed lectus aliquam risus blandit mollis vel nec velit.
+            </p>
+            <a href="@Model.Channel.Uri">View @Model.Channel.Name on Twitch</a>
+        </div>
+        <div class="col-md-3">
+            <h3>Next Streams</h3>
+            <ul>
+                @foreach (StreamSession session in Model.StreamSessions)
+                {
+                    <li>@session.UtcStartTime</li>
+                }
+            </ul>
+        </div>
+        <div class="col-md-4">
+            <h3>Schedule</h3>
+            <ul>
+                @* TODO: Show these in viewer's timezone. *@
+                @foreach (var stream in Model.ScheduledStreams)
+                {
+                    <li>@stream.DayOfWeek at @stream.LocalStartTime @stream.TimeZoneName</li>
+                }
+            </ul>
+        </div>
+    </div>
+
+    <input id="twitchId" type="hidden" value="@Model.Channel.TwitchId" />
+</div>
+
+
+@section Scripts {
+    <script src="~/js/vue/channels-details.js"></script>
+}
 

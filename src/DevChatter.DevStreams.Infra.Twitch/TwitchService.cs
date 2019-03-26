@@ -56,7 +56,7 @@ namespace DevChatter.DevStreams.Infra.Twitch
             return result.Data.Select(x => x.User_name).ToList();
         }
 
-        public async Task<bool> IsLive(int twitchId)
+        public async Task<bool> IsLive(string twitchId)
         {
             // TODO: Have this just check cache or do a refresh based on getting *all* data.
 

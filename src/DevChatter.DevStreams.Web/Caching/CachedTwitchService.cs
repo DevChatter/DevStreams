@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DevChatter.DevStreams.Web.Caching
@@ -22,12 +23,23 @@ namespace DevChatter.DevStreams.Web.Caching
             return _service.GetChannelIds(channelNames);
         }
 
-        public Task<List<string>> GetLiveChannels(List<string> channelNames)
+        public async Task<List<string>> GetLiveChannels(List<string> channelNames)
         {
-            return _service.GetLiveChannels(channelNames);
+            return await _cacheLayer.GetOrCreateAsync("AllLiveChannels", async entry =>
+            {
+                entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(1));
+                return await GetLiveChannelsFallback(channelNames);
+            });
         }
 
-        public async Task<bool> IsLive(int twitchId)
+        private string GetKey(string twitchId) => $"Twitch-LiveStatus-{twitchId}";
+
+        public async Task<List<string>> GetLiveChannelsFallback(List<string> channelNames)
+        {
+            return await _service.GetLiveChannels(channelNames);
+        }
+
+        public async Task<bool> IsLive(string twitchId)
         {
             return await _cacheLayer.GetOrCreateAsync($"{twitchId}", async entry =>
             {
@@ -36,6 +48,6 @@ namespace DevChatter.DevStreams.Web.Caching
             });
         }
 
-        public async Task<bool> IsLiveFallback(int key) => await _service.IsLive(key);
+        public async Task<bool> IsLiveFallback(string key) => await _service.IsLive(key);
     }
 }

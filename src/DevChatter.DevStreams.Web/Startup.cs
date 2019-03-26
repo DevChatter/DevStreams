@@ -21,6 +21,7 @@ using NodaTime;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using DevChatter.DevStreams.Core.Twitch;
 
 namespace DevChatter.DevStreams.Web
 {

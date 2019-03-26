@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace DevChatter.DevStreams.Core.Services
+namespace DevChatter.DevStreams.Core.Twitch
 {
     public interface ITwitchService
     {

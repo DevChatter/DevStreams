@@ -1,5 +1,5 @@
-﻿using DevChatter.DevStreams.Core.Services;
-using DevChatter.DevStreams.Core.Settings;
+﻿using DevChatter.DevStreams.Core.Settings;
+using DevChatter.DevStreams.Core.Twitch;
 using DevChatter.DevStreams.Core.TwitchHelper;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;

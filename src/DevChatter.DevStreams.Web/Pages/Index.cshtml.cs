@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DevChatter.DevStreams.Core.Twitch;
 
 namespace DevChatter.DevStreams.Web.Pages
 {

@@ -27,8 +27,9 @@ namespace DevChatter.DevStreams.Core.Twitch
 
         public async Task<bool> IsLive(int twitchId)
         {
-            async Task<bool> FallBack(int key) => await _service.IsLive(key);
-            return await _cacheLayer.GetValueOrFallback(twitchId, FallBack);
+            return await _cacheLayer.GetValueOrFallback(twitchId, IsLiveFallback);
         }
+
+        public async Task<bool> IsLiveFallback(int key) => await _service.IsLive(key);
     }
 }

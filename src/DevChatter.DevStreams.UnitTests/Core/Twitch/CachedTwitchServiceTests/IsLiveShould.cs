@@ -1,11 +1,8 @@
-﻿using System;
+﻿using DevChatter.DevStreams.Core.Caching;
 using DevChatter.DevStreams.Core.Twitch;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using DevChatter.DevStreams.Core.Caching;
-using FluentAssertions;
-using Xunit;
 using Moq;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace DevChatter.DevStreams.UnitTests.Core.Twitch.CachedTwitchServiceTests
 {
@@ -24,14 +21,27 @@ namespace DevChatter.DevStreams.UnitTests.Core.Twitch.CachedTwitchServiceTests
         [Fact]
         public void NotCallTwitch_WhenValueIsCached()
         {
-            _cacheMock.Setup(x => 
-                    x.GetValueOrFallback(twitchId, It.IsAny<Func<int, Task<bool>>>()))
-                .Returns(Task.FromResult(true));
             var twitchService = new CachedTwitchService(_twitchMock.Object, _cacheMock.Object);
+            _cacheMock.Setup(x => 
+                    x.GetValueOrFallback(twitchId, twitchService.IsLiveFallback))
+                .Returns(Task.FromResult(true));
 
             bool isLive = twitchService.IsLive(twitchId).Result;
 
             _twitchMock.Verify(x => x.IsLive(twitchId), Times.Never);
+        }
+
+        [Fact]
+        public void CallTwitch_WhenValueIsNotCached()
+        {
+            var twitchService = new CachedTwitchService(_twitchMock.Object, _cacheMock.Object);
+            _cacheMock.Setup(x =>
+                    x.GetValueOrFallback(twitchId, twitchService.IsLiveFallback))
+                .Returns(Task.FromResult(false));
+
+            bool isLive = twitchService.IsLive(twitchId).Result;
+
+            _twitchMock.Verify(x => x.IsLive(twitchId), Times.Once);
         }
     }
 }

@@ -1,15 +1,17 @@
-﻿using DevChatter.DevStreams.Core.Caching;
+﻿using DevChatter.DevStreams.Core.Twitch;
+using Microsoft.Extensions.Caching.Memory;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace DevChatter.DevStreams.Core.Twitch
+namespace DevChatter.DevStreams.Web.Caching
 {
     public class CachedTwitchService : ITwitchService
     {
         private readonly ITwitchService _service;
-        private readonly ICacheLayer<int,bool> _cacheLayer;
+        private readonly IMemoryCache _cacheLayer;
 
-        public CachedTwitchService(ITwitchService service, ICacheLayer<int,bool> cacheLayer)
+        public CachedTwitchService(ITwitchService service, IMemoryCache cacheLayer)
         {
             _service = service;
             _cacheLayer = cacheLayer;
@@ -27,7 +29,11 @@ namespace DevChatter.DevStreams.Core.Twitch
 
         public async Task<bool> IsLive(int twitchId)
         {
-            return await _cacheLayer.GetValueOrFallback(twitchId, IsLiveFallback);
+            return await _cacheLayer.GetOrCreateAsync($"{twitchId}", async entry =>
+            {
+                entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(1));
+                return await IsLiveFallback(twitchId);
+            });
         }
 
         public async Task<bool> IsLiveFallback(int key) => await _service.IsLive(key);

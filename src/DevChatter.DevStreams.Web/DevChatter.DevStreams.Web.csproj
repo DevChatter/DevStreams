@@ -9,6 +9,9 @@
     <PackageReference Include="BuildBundlerMinifier" Version="2.8.391" />
     <PackageReference Include="FluentMigrator" Version="3.1.3" />
     <PackageReference Include="FluentMigrator.Runner" Version="3.1.3" />
+    <PackageReference Include="GraphQL" Version="2.4.0" />
+    <PackageReference Include="GraphQL.Server.Transports.AspNetCore" Version="3.4.0" />
+    <PackageReference Include="GraphQL.Server.Ui.Playground" Version="3.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.5" PrivateAssets="All" />
@@ -20,6 +23,7 @@
     <ProjectReference Include="..\DevChatter.DevStreams.Core\DevChatter.DevStreams.Core.csproj" />
     <ProjectReference Include="..\DevChatter.DevStreams.Infra.Dapper\DevChatter.DevStreams.Infra.Dapper.csproj" />
     <ProjectReference Include="..\DevChatter.DevStreams.Infra.Db\DevChatter.DevStreams.Infra.Db.csproj" />
+    <ProjectReference Include="..\DevChatter.DevStreams.Infra.GraphQL\DevChatter.DevStreams.Infra.GraphQL.csproj" />
     <ProjectReference Include="..\DevChatter.DevStreams.Infra.Twitch\DevChatter.DevStreams.Infra.Twitch.csproj" />
   </ItemGroup>
 

@@ -6,9 +6,15 @@ using DevChatter.DevStreams.Infra.Dapper;
 using DevChatter.DevStreams.Infra.Dapper.Services;
 using DevChatter.DevStreams.Infra.Dapper.TypeHandlers;
 using DevChatter.DevStreams.Infra.Db.Migrations;
+using DevChatter.DevStreams.Infra.GraphQL;
+using DevChatter.DevStreams.Infra.GraphQL.Types;
 using DevChatter.DevStreams.Infra.Twitch;
 using DevChatter.DevStreams.Web.Data;
 using FluentMigrator.Runner;
+using GraphQL;
+using GraphQL.Server;
+using GraphQL.Server.Ui.Playground;
+using GraphQL.Types;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -26,12 +32,14 @@ namespace DevChatter.DevStreams.Web
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             Configuration = configuration;
+            _env = env;
         }
 
         public IConfiguration Configuration { get; }
+        private readonly IHostingEnvironment _env;
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -84,7 +92,6 @@ namespace DevChatter.DevStreams.Web
             SqlMapper.AddTypeHandler(InstantHandler.Default);
             SqlMapper.AddTypeHandler(LocalTimeHandler.Default);
 
-
             services.AddScoped<IStreamSessionService, DapperSessionLookup>();
             services.AddScoped<IScheduledStreamService, ScheduledStreamService>();
             services.AddTransient<ITagSearchService, TagSearchService>();
@@ -97,6 +104,23 @@ namespace DevChatter.DevStreams.Web
 
             services.AddTransient<IChannelPermissionsService,
                 ChannelPermissionsService>();
+
+            // For GraphQL
+            services.AddScoped<IDependencyResolver>(s => 
+                new FuncDependencyResolver(s.GetRequiredService));
+            services.AddScoped<DevStreamsSchema>();
+            services.AddScoped<DevStreamsQuery>();
+            services.AddScoped<ChannelType>();
+            services.AddScoped<ScheduledStreamType>();
+            services.AddScoped<IsoDayOfWeekGraphType>();
+            services.AddScoped<LocalTimeGraphType>();
+            services.AddScoped<InstantGraphType>();
+
+            services.AddGraphQL(options =>
+            {
+                options.ExposeExceptions = _env.IsDevelopment();
+            })
+            .AddGraphTypes(ServiceLifetime.Scoped);
 
             services
                 .AddMvc()
@@ -140,8 +164,13 @@ namespace DevChatter.DevStreams.Web
 
             app.UseAuthentication();
 
-            app.UseMvc();
+            app.UseGraphQL<DevStreamsSchema>(path: "/graphql");
+            app.UseGraphQLPlayground(new GraphQLPlaygroundOptions
+            {
+                Path = "/ui/playground"
+            });
 
+            app.UseMvc();
         }
 
         private async Task SetUpDefaultUsersAndRoles(UserManager<IdentityUser> userManager,

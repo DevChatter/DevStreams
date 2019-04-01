@@ -9,7 +9,8 @@ namespace DevChatter.DevStreams.Infra.GraphQL
         public DevStreamsSchema(IDependencyResolver resolver) : base(resolver)
         {
             Query = resolver.Resolve<DevStreamsQuery>();
-            RegisterTypes(new[] { typeof(IsoDayOfWeekGraphType), typeof(LocalTimeGraphType) });
+            RegisterTypes(new[] { typeof(IsoDayOfWeekGraphType), typeof(LocalTimeGraphType),
+                typeof(InstantGraphType) });
         }
     }
 }

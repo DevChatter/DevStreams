@@ -105,22 +105,7 @@ namespace DevChatter.DevStreams.Web
             services.AddTransient<IChannelPermissionsService,
                 ChannelPermissionsService>();
 
-            // For GraphQL
-            services.AddScoped<IDependencyResolver>(s => 
-                new FuncDependencyResolver(s.GetRequiredService));
-            services.AddScoped<DevStreamsSchema>();
-            services.AddScoped<DevStreamsQuery>();
-            services.AddScoped<ChannelType>();
-            services.AddScoped<ScheduledStreamType>();
-            services.AddScoped<IsoDayOfWeekGraphType>();
-            services.AddScoped<LocalTimeGraphType>();
-            services.AddScoped<InstantGraphType>();
-
-            services.AddGraphQL(options =>
-            {
-                options.ExposeExceptions = _env.IsDevelopment();
-            })
-            .AddGraphTypes(ServiceLifetime.Scoped);
+            RegisterGraphQL.Configure(services, _env);
 
             services
                 .AddMvc()

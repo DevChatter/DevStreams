@@ -45,15 +45,20 @@ namespace DevChatter.DevStreams.Infra.GraphQL.Types
 
             if (!string.IsNullOrWhiteSpace(_timeZone))
             {
-                foreach (var item in scheduleLookup)
+                foreach (var scheduleGroup in scheduleLookup)
                 {
-                    foreach (var stream in item)
+                    foreach (var stream in scheduleGroup)
                     {
-                        stream.LocalStartTime = TimeZoneHelper.ConvertDateTimeToDifferentTimeZone(stream.LocalStartTime,
-                            stream.TimeZoneId, _timeZone);
-                        stream.LocalEndTime = TimeZoneHelper.ConvertDateTimeToDifferentTimeZone(stream.LocalEndTime,
-                            stream.TimeZoneId, _timeZone);
-                        stream.TimeZoneId = _timeZone;
+                        if (!stream.TimeZoneId.Equals(_timeZone))
+                        {
+                            stream.LocalStartTime = TimeZoneHelper.ConvertLocalTimeToDifferentTimeZone(
+                                stream.LocalStartTime,
+                                stream.TimeZoneId, _timeZone);
+                            stream.LocalEndTime = TimeZoneHelper.ConvertLocalTimeToDifferentTimeZone(
+                                stream.LocalEndTime,
+                                stream.TimeZoneId, _timeZone);
+                            stream.TimeZoneId = _timeZone;
+                        }
                     }
                 }
             }

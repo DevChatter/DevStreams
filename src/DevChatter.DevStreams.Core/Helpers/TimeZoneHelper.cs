@@ -5,7 +5,7 @@ namespace DevChatter.DevStreams.Core.Helpers
 {
     public static class TimeZoneHelper
     {
-        public static LocalTime ConvertLocalTimeToDifferentTimeZone(LocalTime fromTime, string fromZoneId, string toZoneId)
+        public static (int adjustDayOfWeek, LocalTime localTime) ConvertLocalTimeToDifferentTimeZone(LocalTime fromTime, string fromZoneId, string toZoneId)
         {
             var localDateTime = LocalDateTime.FromDateTime(DateTime.Today
                 .AddHours(fromTime.Hour)
@@ -13,11 +13,15 @@ namespace DevChatter.DevStreams.Core.Helpers
             var fromZone = DateTimeZoneProviders.Tzdb[fromZoneId];
             var fromZoned = localDateTime.InZoneLeniently(fromZone);
 
+            var originalDayOfWeek = localDateTime.DayOfWeek;
+
             var toZone = DateTimeZoneProviders.Tzdb[toZoneId];
             var toZoned = fromZoned.WithZone(toZone);
             var toLocal = toZoned.LocalDateTime;
 
-            return new LocalTime(toLocal.Hour, toLocal.Minute);
+            var adjustDayOfWeek = toLocal.DayOfWeek - originalDayOfWeek;
+
+            return (adjustDayOfWeek, new LocalTime(toLocal.Hour, toLocal.Minute));
         }
     }
 }

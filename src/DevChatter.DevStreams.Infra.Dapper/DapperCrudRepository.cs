@@ -67,6 +67,24 @@ namespace DevChatter.DevStreams.Infra.Dapper
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="filter">WARNING: Should never come from user input!</param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public async Task<List<T>> GetAll<T>(string filter, string orderBy, object args) where T : DataEntity
+        {
+            string tableName = GetTableName<T>();
+            string sql = $"SELECT * FROM {tableName} WHERE {filter} ORDER BY {orderBy}";
+
+            using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
+            {
+                return (await connection.QueryAsync<T>(sql, args)).ToList();
+            }
+        }
+
         public async Task<int> Update<T>(T model) where T : DataEntity
         {
             using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))

@@ -18,6 +18,9 @@ namespace DevChatter.DevStreams.Web
             services.AddScoped<DevStreamsQuery>();
             services.AddScoped<ChannelType>();
             services.AddScoped<ScheduledStreamType>();
+            services.AddScoped<TagType>();
+            services.AddScoped<TwitchChannelType>();
+            services.AddScoped<StreamSessionType>();
             services.AddScoped<IsoDayOfWeekGraphType>();
             services.AddScoped<LocalTimeGraphType>();
             services.AddScoped<InstantGraphType>();

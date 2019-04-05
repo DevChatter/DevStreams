@@ -26,13 +26,13 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
         {
             var channelTags = new Dictionary<int, IEnumerable<Tag>>();
 
-            const string channelSql = "SELECT Id FROM Channels";
+            const string channelSql = "SELECT Id FROM Channels WHERE Id IN @ChannelIds";
             const string extraSql =
                 @"SELECT t.* FROM ChannelTags ct INNER JOIN Tags t ON t.Id = ct.TagId WHERE ct.ChannelId = @id";
 
             using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
             {
-                var channels = (await connection.QueryAsync<Channel>(channelSql)).ToList();
+                var channels = (await connection.QueryAsync<Channel>(channelSql, new { ChannelIds = channelIds })).ToList();
 
                 foreach (var channel in channels)
                 {

@@ -48,7 +48,7 @@ namespace DevChatter.DevStreams.Infra.Twitch
         {
             if (!twitchIds.Any())
             {
-                return new List<ChannelLiveState>();
+                return new List<ChannelLiveState>(); // TODO: Replace with Guard Clause
             }
             var channelIdsQueryFormat = String.Join("&user_id=", twitchIds);
 

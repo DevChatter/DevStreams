@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace DevChatter.DevStreams.Infra.Twitch
 {
-    public class TwitchService : ITwitchService
+    public class TwitchService : ITwitchStreamService
     {
         private readonly TwitchSettings _twitchSettings;
 

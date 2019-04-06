@@ -11,11 +11,11 @@ namespace DevChatter.DevStreams.Web.Controllers
     [Route("api/[controller]")]
     public class IsLiveController : Controller
     {
-        private readonly ITwitchService _twitchService;
+        private readonly ITwitchStreamService _twitchService;
         private readonly ICrudRepository _crudRepository;
 
         public IsLiveController(ICrudRepository crudRepository,
-            ITwitchService twitchService)
+            ITwitchStreamService twitchService)
         {
             _crudRepository = crudRepository;
             _twitchService = twitchService;

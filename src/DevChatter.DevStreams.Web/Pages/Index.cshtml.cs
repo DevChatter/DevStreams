@@ -1,23 +1,22 @@
 ﻿using DevChatter.DevStreams.Core;
 using DevChatter.DevStreams.Core.Data;
 using DevChatter.DevStreams.Core.Model;
-using DevChatter.DevStreams.Core.Services;
+using DevChatter.DevStreams.Core.Twitch;
 using DevChatter.DevStreams.Web.Data.ViewModel.Channels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DevChatter.DevStreams.Core.Twitch;
 
 namespace DevChatter.DevStreams.Web.Pages
 {
     public class IndexModel : PageModel
     {
         private readonly ICrudRepository _repo;
-        private readonly ITwitchService _twitchService;
+        private readonly ITwitchStreamService _twitchService;
 
-        public IndexModel(ICrudRepository repo, ITwitchService twitchService)
+        public IndexModel(ICrudRepository repo, ITwitchStreamService twitchService)
         {
             _repo = repo;
             _twitchService = twitchService;

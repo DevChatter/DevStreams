@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace DevChatter.DevStreams.Web.Caching
 {
-    public class CachedTwitchService : ITwitchService
+    public class CachedTwitchService : ITwitchStreamService
     {
-        private readonly ITwitchService _service;
+        private readonly ITwitchStreamService _service;
         private readonly IMemoryCache _cacheLayer;
 
-        public CachedTwitchService(ITwitchService service, IMemoryCache cacheLayer)
+        public CachedTwitchService(ITwitchStreamService service, IMemoryCache cacheLayer)
         {
             _service = service;
             _cacheLayer = cacheLayer;

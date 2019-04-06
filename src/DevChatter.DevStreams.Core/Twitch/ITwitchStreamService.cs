@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace DevChatter.DevStreams.Core.Twitch
 {
-    public interface ITwitchService
+    public interface ITwitchStreamService
     {
         Task<List<ChannelLiveState>> GetChannelLiveStates(List<string> twitchIds);
         Task<bool> IsLive(string twitchId);

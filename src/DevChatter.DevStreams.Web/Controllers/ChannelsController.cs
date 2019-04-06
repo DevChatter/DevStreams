@@ -18,11 +18,11 @@ namespace DevChatter.DevStreams.Web.Controllers
     public class ChannelsController : Controller
     {
         private readonly IChannelAggregateService _channelService;
-        private readonly ITwitchService _twitchService;
+        private readonly ITwitchStreamService _twitchService;
         private readonly ICrudRepository _crudRepository;
 
         public ChannelsController(IChannelAggregateService channelService,
-            ICrudRepository crudRepository, ITwitchService twitchService)
+            ICrudRepository crudRepository, ITwitchStreamService twitchService)
         {
             _channelService = channelService;
             _crudRepository = crudRepository;

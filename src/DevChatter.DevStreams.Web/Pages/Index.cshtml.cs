@@ -30,11 +30,16 @@ namespace DevChatter.DevStreams.Web.Pages
         {
             // TODO: Don't pull the data like this....
             List<Channel> channels = await _repo.GetAll<Channel>();
-            List<string> channelNames = channels.Select(x => x.Name).ToList();
-            var liveChannelNames = await _twitchService.GetLiveChannels(channelNames);
+            List<string> twitchIds = channels.Select(x => x?.Twitch?.TwitchId)
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .ToList();
+            var liveTwitchIds = (await _twitchService.GetChannelLiveStates(twitchIds))
+                .Where(x => x.IsLive)
+                .Select(x => x.TwitchId)
+                .ToList();
 
             LiveChannels = channels
-                .Where(x => liveChannelNames.Contains(x.Name))
+                .Where(x => liveTwitchIds.Contains(x?.Twitch?.TwitchId))
                 .Select(x => x.ToChannelIndexModel())
                 .ToList();
 
@@ -49,13 +54,18 @@ namespace DevChatter.DevStreams.Web.Pages
         public async Task<IActionResult> OnGetLuckyAsync()
         {
             List<Channel> channels = await _repo.GetAll<Channel>();
-            List<string> channelNames = channels.Select(x => x.Name).ToList();
-            var liveChannels = await _twitchService.GetLiveChannels(channelNames);
+            List<string> twitchIds = channels.Select(x => x?.Twitch?.TwitchId)
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .ToList();
+            var liveChannelIds = (await _twitchService.GetChannelLiveStates(twitchIds))
+                .Where(x => x.IsLive)
+                .Select(x => x.TwitchId)
+                .ToList();
             var result = new Result();
 
-            if (liveChannels.Any())
+            if (liveChannelIds.Any())
             {
-                result.ChannelName = liveChannels.PickOneRandomElement();
+                result.ChannelName = liveChannelIds.PickOneRandomElement();
             }
             else
             {

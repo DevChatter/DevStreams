@@ -29,11 +29,14 @@ namespace DevChatter.DevStreams.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            // TODO: Do this better. Extract and remove duplication.
             List<Channel> channels = await _crudRepository.GetAll<Channel>();
-            List<string> channelNames = channels.Select(x => x.Name).ToList();
-            var liveChannels = await _twitchService.GetLiveChannels(channelNames);
-            return Ok(liveChannels);
+            List<string> twitchIds = channels.Select(x => x.Twitch.TwitchId).ToList();
+            var liveTwitchIds = (await _twitchService.GetChannelLiveStates(twitchIds))
+                .Where(x => x.IsLive)
+                .Select(x => x.TwitchId)
+                .ToList();
+            var liveChannelNames = channels.Where(c => liveTwitchIds.Contains(c.Twitch.TwitchId)).Select(c => c.Name);
+            return Ok(liveChannelNames);
         }
 
         [HttpGet, Route("{twitchId}")]

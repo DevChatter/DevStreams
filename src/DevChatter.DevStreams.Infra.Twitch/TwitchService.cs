@@ -27,6 +27,8 @@ namespace DevChatter.DevStreams.Infra.Twitch
         /// <returns>The Twitch ChannelId/UserId for each Channel.</returns>
         public async Task<List<string>> GetChannelIds(List<string> channelNames)
         {
+            // TODO: Move this to new interface, following Interface Segregation.
+
             var channeNamesQueryFormat = String.Join("&login=", channelNames.ToArray());
 
             var url = $"{_twitchSettings.BaseApiUrl}/users?login={channeNamesQueryFormat}";
@@ -42,18 +44,28 @@ namespace DevChatter.DevStreams.Infra.Twitch
         /// </summary>
         /// <param name="channelNames">Names of the Channels to check for live status.</param>
         /// <returns>The names of the subset of channels that are currently live.</returns>
-        public async Task<List<string>> GetLiveChannels(List<string> channelNames)
+        public async Task<List<ChannelLiveState>> GetChannelLiveStates(List<string> twitchIds)
         {
-            var channelIds = await GetChannelIds(channelNames);
-            var channelIdsQueryFormat = String.Join("&user_id=", channelIds.ToArray());
+            if (!twitchIds.Any())
+            {
+                return new List<ChannelLiveState>();
+            }
+            var channelIdsQueryFormat = String.Join("&user_id=", twitchIds);
 
             var url = $"{_twitchSettings.BaseApiUrl}/streams?user_id={channelIdsQueryFormat}";
             var jsonResult = await Get(url);
 
             var result = JsonConvert.DeserializeObject<StreamResult>(jsonResult);
 
-            // TODO: Cache this result.
-            return result.Data.Select(x => x.User_name).ToList();
+            var liveChannels = result.Data.Where(x => x.Type == "live").ToList();
+
+            return twitchIds
+                .Select(twitchId => new ChannelLiveState
+                {
+                    TwitchId = twitchId,
+                    IsLive = liveChannels.Any(x => x.User_id == twitchId)
+                })
+                .ToList();
         }
 
         public async Task<bool> IsLive(string twitchId)

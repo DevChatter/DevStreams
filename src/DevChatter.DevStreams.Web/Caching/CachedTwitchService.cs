@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace DevChatter.DevStreams.Web.Caching
@@ -18,30 +17,38 @@ namespace DevChatter.DevStreams.Web.Caching
             _cacheLayer = cacheLayer;
         }
 
-        public Task<List<string>> GetChannelIds(List<string> channelNames)
+        public async Task<List<ChannelLiveState>> GetChannelLiveStates(List<string> twitchIds)
         {
-            return _service.GetChannelIds(channelNames);
-        }
+            List<ChannelLiveState> channelLiveStates = new List<ChannelLiveState>();
 
-        public async Task<List<string>> GetLiveChannels(List<string> channelNames)
-        {
-            return await _cacheLayer.GetOrCreateAsync("AllLiveChannels", async entry =>
+            List<string> idsNotInCache = new List<string>();
+
+            foreach (var twitchId in twitchIds)
             {
-                entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(1));
-                return await GetLiveChannelsFallback(channelNames);
-            });
+                if (_cacheLayer.TryGetValue(CreateCacheKey(twitchId), out ChannelLiveState state))
+                {
+                    channelLiveStates.Add(state);
+                }
+                else
+                {
+                    idsNotInCache.Add(twitchId);
+                }
+            }
+
+            List<ChannelLiveState> nonCachedStates = await _service.GetChannelLiveStates(idsNotInCache);
+
+            foreach (var state in nonCachedStates)
+            {
+                _cacheLayer.Set(CreateCacheKey(state.TwitchId), state);
+            }
+
+            return channelLiveStates;
         }
 
-        private string GetKey(string twitchId) => $"Twitch-LiveStatus-{twitchId}";
-
-        public async Task<List<string>> GetLiveChannelsFallback(List<string> channelNames)
-        {
-            return await _service.GetLiveChannels(channelNames);
-        }
 
         public async Task<bool> IsLive(string twitchId)
         {
-            return await _cacheLayer.GetOrCreateAsync($"{twitchId}", async entry =>
+            return await _cacheLayer.GetOrCreateAsync(CreateCacheKey(twitchId), async entry =>
             {
                 entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(1));
                 return await IsLiveFallback(twitchId);
@@ -49,5 +56,7 @@ namespace DevChatter.DevStreams.Web.Caching
         }
 
         public async Task<bool> IsLiveFallback(string key) => await _service.IsLive(key);
+
+        private string CreateCacheKey(string twitchId) => $"Twitch-LiveStatus-{twitchId}";
     }
 }

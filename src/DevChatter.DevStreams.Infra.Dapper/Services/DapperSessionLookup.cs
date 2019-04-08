@@ -23,6 +23,24 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
             _dbSettings = databaseSettings.Value;
         }
 
+        public async Task<IDictionary<int, StreamSession>> GetChannelNextStreamLookup(IEnumerable<int> channelIds)
+        {
+            const string sql = @"SELECT DISTINCT a.* FROM StreamSessions a
+                                JOIN (SELECT ChannelId, MIN(UtcStartTime) AS UtcStartTime
+                                FROM StreamSessions
+                                WHERE UtcStartTime > GETUTCDATE()
+                                AND ChannelId in @ChannelIds
+                                GROUP BY ChannelId) b ON a.UtcStartTime = b.UtcStartTime";
+
+            using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
+            {
+                var nextStreams = (await connection.QueryAsync<StreamSession>(
+                    sql, new { ChannelIds = channelIds })).ToList();
+
+                return nextStreams.ToDictionary(c => c.ChannelId);
+            }
+        }
+
         public async Task<List<EventResult>> Get(string timeZoneId, DateTime localDateTime, IEnumerable<int> includedTagIds)
         {
 
@@ -71,6 +89,5 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
             Instant dayEnd = input.PlusDays(1).AtStartOfDayInZone(zone).ToInstant();
             return (dayStart.ToDateTimeUtc(), dayEnd.ToDateTimeUtc());
         }
-
     }
 }

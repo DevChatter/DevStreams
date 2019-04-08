@@ -16,15 +16,14 @@ namespace DevChatter.DevStreams.Infra.GraphQL.Types
         private readonly IScheduledStreamService _scheduledStreamService;
         private readonly ITagService _tagService;
         private string _timeZone = string.Empty;
-        private readonly ICrudRepository _repo;
 
         public ChannelType(IScheduledStreamService scheduledStreamService,
-            ITagService tagService, ICrudRepository repo, ITwitchChannelService twitchChannelService,
+            ITagService tagService, IStreamSessionService dapperSessionLookup, 
+            ITwitchChannelService twitchChannelService,
             IDataLoaderContextAccessor accessor)
         {
             _scheduledStreamService = scheduledStreamService;
             _tagService = tagService;
-            _repo = repo;
 
             Field(f => f.Id).Description("Unique Channel Identifier");
             Field(f => f.Name).Description("The name of the streamer channel");
@@ -61,8 +60,13 @@ namespace DevChatter.DevStreams.Infra.GraphQL.Types
                     return loader.LoadAsync(ctx.Source.Id);
                 });
             Field<StreamSessionType>("nextStream", "The times of the the channels next stream",
-                resolve: ctx => repo.GetAll<StreamSession>("ChannelId = @id AND UtcStartTime > GETUTCDATE()",
-                "UtcStartTime", new { ctx.Source.Id }).Result.FirstOrDefault());
+                resolve: ctx =>
+                {
+                    var loader = accessor.Context.GetOrAddBatchLoader<int, StreamSession>(
+                        "GetChannelNextStream", dapperSessionLookup.GetChannelNextStreamLookup);
+
+                    return loader.LoadAsync(ctx.Source.Id);
+                });
         }
 
         private async Task<ILookup<int, Tag>> GetChannelTags(IEnumerable<int> channelIds)

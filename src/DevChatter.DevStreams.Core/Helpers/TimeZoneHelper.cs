@@ -23,5 +23,12 @@ namespace DevChatter.DevStreams.Core.Helpers
 
             return (adjustDayOfWeek, new LocalTime(toLocal.Hour, toLocal.Minute));
         }
+
+        public static DateTime ConvertFromUtcToLocalTimeZone(Instant instant, string timeZone)
+        {
+            var zone = DateTimeZoneProviders.Tzdb[timeZone];
+            var zoneDateTime = instant.InZone(zone);
+            return zoneDateTime.ToDateTimeUnspecified();
+        }
     }
 }

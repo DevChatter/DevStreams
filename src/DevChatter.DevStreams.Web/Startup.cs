@@ -98,8 +98,8 @@ namespace DevChatter.DevStreams.Web
             services.AddMemoryCache();
 
             services.AddScoped(typeof(TwitchStreamService));
-            CachedTwitchService TwitchServiceFactory(IServiceProvider x) => new CachedTwitchService((ITwitchStreamService) x.GetService(typeof(TwitchStreamService)), (IMemoryCache)x.GetService(typeof(IMemoryCache)));
-            services.AddScoped<ITwitchStreamService, CachedTwitchService>(TwitchServiceFactory);
+            CachedTwitchStreamService TwitchServiceFactory(IServiceProvider x) => new CachedTwitchStreamService((ITwitchStreamService) x.GetService(typeof(TwitchStreamService)), (IMemoryCache)x.GetService(typeof(IMemoryCache)));
+            services.AddScoped<ITwitchStreamService, CachedTwitchStreamService>(TwitchServiceFactory);
 
             services.AddScoped<ITwitchChannelService, TwitchChannelService>();
 

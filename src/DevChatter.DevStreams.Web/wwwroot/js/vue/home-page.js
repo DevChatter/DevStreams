@@ -1,10 +1,25 @@
-let app = new Vue({
-    el: "#luckySearch",
+﻿let app = new Vue({
+    el: "#mainContent",
     data: {
+        liveChannelsIsLoaded: false,
+        liveChannels : [],
         hasStream: false,
         errorMessage: ''
     },
+    mounted() {
+        this.fetchLiveChannels();
+    },
     methods: {
+        fetchLiveChannels: function () {
+            axios.get(`/api/IsLive/`)
+                .then(response => {
+                    this.liveChannels = response.data;
+                    this.liveChannelsIsLoaded = true;
+                })
+                .catch(error => {
+                    console.log(error.statusText);
+                });
+        },
         fetchStream: function () {
             axios.get(`?handler=Lucky`)
                 .then(response => {

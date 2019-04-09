@@ -22,25 +22,24 @@ namespace DevChatter.DevStreams.Web.Pages
             _twitchService = twitchService;
         }
 
-        public List<ChannelIndexModel> LiveChannels { get; set; }
         public List<ChannelIndexModel> NewlyAddedChannels { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
             // TODO: Don't pull the data like this....
             List<Channel> channels = await _repo.GetAll<Channel>();
-            List<string> twitchIds = channels.Select(x => x?.Twitch?.TwitchId)
-                .Where(x => !string.IsNullOrWhiteSpace(x))
-                .ToList();
-            var liveTwitchIds = (await _twitchService.GetChannelLiveStates(twitchIds))
-                .Where(x => x.IsLive)
-                .Select(x => x.TwitchId)
-                .ToList();
+            //List<string> twitchIds = channels.Select(x => x?.Twitch?.TwitchId)
+            //    .Where(x => !string.IsNullOrWhiteSpace(x))
+            //    .ToList();
+            //var liveTwitchIds = (await _twitchService.GetChannelLiveStates(twitchIds))
+            //    .Where(x => x.IsLive)
+            //    .Select(x => x.TwitchId)
+            //    .ToList();
 
-            LiveChannels = channels
-                .Where(x => liveTwitchIds.Contains(x?.Twitch?.TwitchId))
-                .Select(x => x.ToChannelIndexModel())
-                .ToList();
+            //LiveChannels = channels
+            //    .Where(x => liveTwitchIds.Contains(x?.Twitch?.TwitchId))
+            //    .Select(x => x.ToChannelIndexModel())
+            //    .ToList();
 
             NewlyAddedChannels = channels
                 .Take(5)

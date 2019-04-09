@@ -13,11 +13,14 @@ namespace DevChatter.DevStreams.Web.Controllers
     {
         private readonly ITwitchStreamService _twitchService;
         private readonly ICrudRepository _crudRepository;
+        private readonly IChannelAggregateService _channelAggregateService;
 
         public IsLiveController(ICrudRepository crudRepository,
+            IChannelAggregateService channelAggregateService,
             ITwitchStreamService twitchService)
         {
             _crudRepository = crudRepository;
+            _channelAggregateService = channelAggregateService;
             _twitchService = twitchService;
         }
 
@@ -29,13 +32,13 @@ namespace DevChatter.DevStreams.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            List<Channel> channels = await _crudRepository.GetAll<Channel>();
-            List<string> twitchIds = channels.Select(x => x.Twitch.TwitchId).ToList();
+            List<TwitchChannel> channels = await _crudRepository.GetAll<TwitchChannel>();
+            List<string> twitchIds = channels.Select(x => x.TwitchId).ToList();
             var liveTwitchIds = (await _twitchService.GetChannelLiveStates(twitchIds))
                 .Where(x => x.IsLive)
                 .Select(x => x.TwitchId)
                 .ToList();
-            var liveChannelNames = channels.Where(c => liveTwitchIds.Contains(c.Twitch.TwitchId)).Select(c => c.Name);
+            var liveChannelNames = channels.Where(c => liveTwitchIds.Contains(c.TwitchId)).Select(c => c.TwitchName);
             return Ok(liveChannelNames);
         }
 

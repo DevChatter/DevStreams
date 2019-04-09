@@ -48,7 +48,7 @@ namespace DevChatter.DevStreams.Infra.Twitch
                 .ToList();
         }
 
-        public async Task<bool> IsLive(string twitchId)
+        public async Task<ChannelLiveState> IsLive(string twitchId)
         {
             // TODO: Have this just check cache or do a refresh based on getting *all* data.
 
@@ -57,7 +57,7 @@ namespace DevChatter.DevStreams.Infra.Twitch
 
             var result = JsonConvert.DeserializeObject<StreamResult>(jsonResult);
 
-            return result.Data.Any();
+            return new ChannelLiveState{TwitchId = twitchId, IsLive = result.Data.Any()};
         }
 
         // TODO: Extract to composed dependency

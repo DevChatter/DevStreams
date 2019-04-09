@@ -46,7 +46,7 @@ namespace DevChatter.DevStreams.Web.Caching
         }
 
 
-        public async Task<bool> IsLive(string twitchId)
+        public async Task<ChannelLiveState> IsLive(string twitchId)
         {
             return await _cacheLayer.GetOrCreateAsync(CreateCacheKey(twitchId), async entry =>
             {
@@ -55,7 +55,7 @@ namespace DevChatter.DevStreams.Web.Caching
             });
         }
 
-        public async Task<bool> IsLiveFallback(string key) => await _service.IsLive(key);
+        public async Task<ChannelLiveState> IsLiveFallback(string key) => await _service.IsLive(key);
 
         private string CreateCacheKey(string twitchId) => $"Twitch-LiveStatus-{twitchId}";
     }

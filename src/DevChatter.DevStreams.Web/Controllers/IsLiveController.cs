@@ -45,9 +45,8 @@ namespace DevChatter.DevStreams.Web.Controllers
         [HttpGet, Route("{twitchId}")]
         public async Task<IActionResult> Get(string twitchId)
         {
-            // TODO: Do this better. Extract and remove duplication.
-            bool isLive = await _twitchService.IsLive(twitchId);
-            return Ok(isLive);
+            var liveState = await _twitchService.IsLive(twitchId);
+            return Ok(liveState.IsLive);
         }
     }
 }

@@ -58,12 +58,16 @@ namespace DevChatter.DevStreams.Web.Authorization
 
             string userId = GetUserId(httpContext);
 
-            object value = arguments[_parameter];
+            if (!arguments.TryGetValue(_parameter, out object value))
+            {
+                return true;
+            }
 
             switch (value)
             {
                 case Channel channel when channel.Id == 0 || authorization.CanAccessChannel(userId, channel.Id):
                 case int id when authorization.CanAccessChannel(userId, id):
+                case -1:
                 case null:
                     return true;
             }

@@ -1,6 +1,5 @@
 ﻿using DevChatter.DevStreams.Core.Settings;
 using DevChatter.DevStreams.Core.Twitch;
-using DevChatter.DevStreams.Core.TwitchHelper;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
@@ -11,32 +10,13 @@ using System.Threading.Tasks;
 
 namespace DevChatter.DevStreams.Infra.Twitch
 {
-    public class TwitchService : ITwitchStreamService
+    public class TwitchStreamService : ITwitchStreamService
     {
         private readonly TwitchSettings _twitchSettings;
 
-        public TwitchService(IOptions<TwitchSettings> twitchSettings)
+        public TwitchStreamService(IOptions<TwitchSettings> twitchSettings)
         {
             _twitchSettings = twitchSettings.Value;
-        }
-
-        /// <summary>
-        /// Converts a list of Twitch channel names to a list of Twitch ChannelIds
-        /// </summary>
-        /// <param name="channelNames"></param>
-        /// <returns>The Twitch ChannelId/UserId for each Channel.</returns>
-        public async Task<List<string>> GetChannelIds(List<string> channelNames)
-        {
-            // TODO: Move this to new interface, following Interface Segregation.
-
-            var channeNamesQueryFormat = String.Join("&login=", channelNames.ToArray());
-
-            var url = $"{_twitchSettings.BaseApiUrl}/users?login={channeNamesQueryFormat}";
-            var jsonResult = await Get(url);
-
-            var result = JsonConvert.DeserializeObject<UserResult>(jsonResult);
-
-            return result.Data.Select(x => x.Id.ToString()).ToList();
         }
 
         /// <summary>
@@ -80,13 +60,13 @@ namespace DevChatter.DevStreams.Infra.Twitch
             return result.Data.Any();
         }
 
+        // TODO: Extract to composed dependency
         private async Task<string> Get(string url)
         {
             using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Add("Client-Id", _twitchSettings.ClientId);
-                var result =
-                    await client.GetStringAsync(url);
+                var result = await client.GetStringAsync(url);
                 return result;
             }
         }

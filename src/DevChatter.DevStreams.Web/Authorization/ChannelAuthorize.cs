@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
+using DevChatter.DevStreams.Web.Data.ViewModel.Channels;
 
 namespace DevChatter.DevStreams.Web.Authorization
 {
@@ -66,6 +67,7 @@ namespace DevChatter.DevStreams.Web.Authorization
             switch (value)
             {
                 case Channel channel when channel.Id == 0 || authorization.CanAccessChannel(userId, channel.Id):
+                case ChannelEditModel editModel when editModel.Id == 0 || authorization.CanAccessChannel(userId, editModel.Id):
                 case int id when authorization.CanAccessChannel(userId, id):
                 case -1:
                 case null:

@@ -1,4 +1,5 @@
-﻿using Dapper;
+﻿using System;
+using Dapper;
 using DevChatter.DevStreams.Core.Data;
 using DevChatter.DevStreams.Core.Model;
 using DevChatter.DevStreams.Core.Settings;
@@ -109,6 +110,10 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
                 const string insertPermissionsSql = "INSERT INTO [ChannelPermissions] (ChannelId, UserId, ChannelRole) VALUES (@ChannelId, @UserId, @ChannelRole)";
                 await connection.ExecuteAsync(insertPermissionsSql, channelPermission);
 
+                model.Twitch.ChannelId = id.Value;
+                const string insertTwitchChannelSql = "INSERT INTO [TwitchChannels] (ChannelId, TwitchId, TwitchName, IsAffiliate, IsPartner) VALUES (@ChannelId, @TwitchId, @TwitchName, @IsAffiliate, @IsPartner)";
+                await connection.ExecuteAsync(insertTwitchChannelSql, model.Twitch);
+
                 const string insertChannelTagSql = "INSERT INTO [ChannelTags] (ChannelId, TagId) VALUES (@ChannelId, @TagId)";
                 await Task.WhenAll(channelTags.Select(ct 
                     => connection.ExecuteAsync(insertChannelTagSql, ct)));
@@ -129,6 +134,8 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
                 await connection.DeleteListAsync<ChannelTag>(new {ChannelId = model.Id});
 
                 await Task.WhenAll(channelTags.Select(ct => connection.InsertAsync(ct)));
+
+                // TODO: Update the TwitchInfo on channel Edit
 
                 return rows;
             }

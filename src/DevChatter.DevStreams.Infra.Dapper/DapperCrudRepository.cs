@@ -56,7 +56,7 @@ namespace DevChatter.DevStreams.Infra.Dapper
         /// <param name="filter">WARNING: Should never come from user input!</param>
         /// <param name="args"></param>
         /// <returns></returns>
-        public async Task<List<T>> GetAll<T>(string filter, object args) where T : DataEntity
+        public async Task<List<T>> GetAll<T>(string filter, object args)
         {
             string tableName = GetTableName<T>();
             string sql = $"SELECT * FROM {tableName} WHERE {filter}";
@@ -75,7 +75,7 @@ namespace DevChatter.DevStreams.Infra.Dapper
         /// <param name="orderBy">WARNING: Should never come from user input!</param>
         /// <param name="args"></param>
         /// <returns></returns>
-        public async Task<List<T>> GetAll<T>(string filter, string orderBy, object args) where T : DataEntity
+        public async Task<List<T>> GetAll<T>(string filter, string orderBy, object args)
         {
             string tableName = GetTableName<T>();
             string sql = $"SELECT * FROM {tableName} WHERE {filter} ORDER BY {orderBy}";

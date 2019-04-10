@@ -6,6 +6,7 @@ using GraphQL.Types;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DevChatter.DevStreams.Core.Data;
 
 namespace DevChatter.DevStreams.Infra.GraphQL.Types
 {
@@ -14,18 +15,20 @@ namespace DevChatter.DevStreams.Infra.GraphQL.Types
         private readonly IScheduledStreamService _scheduledStreamService;
         private readonly ITagService _tagService;
         private readonly IStreamSessionService _dapperSessionLookup;
+        private readonly ICrudRepository _repo;
         private string _timeZone = string.Empty;
         private int _skip = 0;
         private int _take = 0;
 
         public ChannelType(IScheduledStreamService scheduledStreamService,
             ITagService tagService, IStreamSessionService dapperSessionLookup, 
-            ITwitchChannelService twitchChannelService,
+            ICrudRepository repo,
             IDataLoaderContextAccessor accessor)
         {
             _scheduledStreamService = scheduledStreamService;
             _tagService = tagService;
             _dapperSessionLookup = dapperSessionLookup;
+            _repo = repo;
 
             Field(f => f.Id).Description("Unique Channel Identifier");
             Field(f => f.Name).Description("The name of the streamer channel");
@@ -57,7 +60,7 @@ namespace DevChatter.DevStreams.Infra.GraphQL.Types
                 resolve: ctx =>
                 {
                     var loader = accessor.Context.GetOrAddBatchLoader<int, TwitchChannel>(
-                        "GetTwitchChannel", twitchChannelService.GetTwitchChannel);
+                        "GetTwitchChannel", GetTwitchChannel);
 
                     return loader.LoadAsync(ctx.Source.Id);
                 });
@@ -88,6 +91,12 @@ namespace DevChatter.DevStreams.Infra.GraphQL.Types
 
                     return loader.LoadAsync(ctx.Source.Id);
                 });
+        }
+
+        private async Task<IDictionary<int, TwitchChannel>> GetTwitchChannel(IEnumerable<int> arg)
+        {
+            return (await _repo.GetAll<TwitchChannel>("ChannelId in @ChannelIds", new { ChannelIds = arg }))
+                .ToDictionary(x => x.ChannelId);
         }
 
         private async Task<ILookup<int, StreamSession>> GetChannelFutureStreams(IEnumerable<int> channelIds)

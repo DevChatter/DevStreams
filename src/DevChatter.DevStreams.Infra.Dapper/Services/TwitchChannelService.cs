@@ -22,7 +22,7 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
 
         public async Task<IDictionary<int, TwitchChannel>> GetTwitchChannel(IEnumerable<int> channelIds)
         {
-            string sql = $"SELECT * FROM TwitchChannels WHERE ChannelId IN @ChannelIds";
+            const string sql = "SELECT * FROM TwitchChannels WHERE ChannelId IN @ChannelIds";
 
             using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
             {

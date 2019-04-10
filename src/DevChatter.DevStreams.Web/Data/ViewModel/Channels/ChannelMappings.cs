@@ -8,6 +8,7 @@ using DevChatter.DevStreams.Web.Data.ViewModel.Tags;
 
 namespace DevChatter.DevStreams.Web.Data.ViewModel.Channels
 {
+    // TODO: Rename to ChannelExtensions
     public static class ChannelMappings
     {
         public static ChannelIndexModel ToChannelIndexModel(this Channel src)
@@ -56,6 +57,13 @@ namespace DevChatter.DevStreams.Web.Data.ViewModel.Channels
             model.CountryCode = editModel.CountryCode;
             model.TimeZoneId = editModel.TimeZoneId;
             model.Tags = editModel.Tags.Select(x => new Tag { Id = x.Id }).ToList();
+        }
+
+        public static void ApplyTwitchChanges(this Channel model,
+            TwitchChannel twitchChannel)
+        {
+            twitchChannel.ChannelId = model.Id;
+            model.Twitch = twitchChannel;
         }
 
         public static ChannelEditModel ToChannelEditModel(this Channel src)

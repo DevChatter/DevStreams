@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
-namespace DevChatter.DevStreams.Core.TwitchHelper
+namespace DevChatter.DevStreams.Core.Twitch
 {
     public class TwitchResult
     {

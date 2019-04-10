@@ -4,19 +4,18 @@
 @{
     ViewData["Title"] = "Home page";
 }
-<div class="row">
+<div class="row" id="mainContent">
     <div class="col-md-3">
         <h2>Live Now</h2> @*TODO: Show channels that are live right now.*@
         <ul>
-            @foreach (var liveChannel in Model.LiveChannels)
-            {
-                <li><a href="@liveChannel.Uri">@liveChannel.Name</a></li>
-            }
+            <li v-for="liveChannel in liveChannels">
+                {{liveChannel}}
+            </li>
         </ul>
     </div>
     <div class="col-md-5">
         <h2>DevChatter</h2>
-        <div id="luckySearch">
+        <div>
             <div v-if="!hasStream && errorMessage.length" class="alert alert-danger">
                 {{errorMessage}}
             </div> 

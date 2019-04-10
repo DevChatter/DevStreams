@@ -39,7 +39,7 @@ We are using [GitHub Issues](https://github.com/DevChatter/DevStreams/issues) fo
 
 Have I mentioned that you're awesome for even considering contributing to this project? Thanks!
 
-Be sure to check out list of [GitHub Issues](https://github.com/DevChatter/DevStreams/issues) to know what things need doing on the project. Once you've found one, be sure to comment on the issue to let us know that you're interested in tackling it. We'll put a `Clained` label on it to make it easier for people to know someone is working on it!
+Be sure to check out list of [GitHub Issues](https://github.com/DevChatter/DevStreams/issues) to know what things need doing on the project. Once you've found one, be sure to comment on the issue to let us know that you're interested in tackling it. We'll put a `Claimed` label on it to make it easier for people to know someone is working on it!
 
 If you've got an idea for something that isnt' among our issues list, feel free to make it as a suggestion or talk with us about it on our Discord channel.
 
@@ -52,5 +52,6 @@ Regardless of how you're contributing, we recommend joining our Discord channel 
 * [Dave Paquette](https://github.com/dpaquette)
 * [Stu Bonham](https://github.com/essenbee)
 * [James Arroyo](https://github.com/jamesarroyo1994)
+* [Zac Davis](https://github.com/thatzacdavis)
 
 **Feel free to add your name to this list when sending a Pull Request.**

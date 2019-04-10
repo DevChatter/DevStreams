@@ -1,6 +1,5 @@
-﻿using DevChatter.DevStreams.Core.Services;
-using DevChatter.DevStreams.Core.Settings;
-using DevChatter.DevStreams.Core.TwitchHelper;
+﻿using DevChatter.DevStreams.Core.Settings;
+using DevChatter.DevStreams.Core.Twitch;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
@@ -11,30 +10,13 @@ using System.Threading.Tasks;
 
 namespace DevChatter.DevStreams.Infra.Twitch
 {
-    public class TwitchService : ITwitchService
+    public class TwitchStreamService : ITwitchStreamService
     {
         private readonly TwitchSettings _twitchSettings;
 
-        public TwitchService(IOptions<TwitchSettings> twitchSettings)
+        public TwitchStreamService(IOptions<TwitchSettings> twitchSettings)
         {
             _twitchSettings = twitchSettings.Value;
-        }
-
-        /// <summary>
-        /// Converts a list of Twitch channel names to a list of Twitch ChannelIds
-        /// </summary>
-        /// <param name="channelNames"></param>
-        /// <returns>The Twitch ChannelId/UserId for each Channel.</returns>
-        public async Task<List<string>> GetChannelIds(List<string> channelNames)
-        {
-            var channeNamesQueryFormat = String.Join("&login=", channelNames.ToArray());
-
-            var url = $"{_twitchSettings.BaseApiUrl}/users?login={channeNamesQueryFormat}";
-            var jsonResult = await Get(url);
-
-            var result = JsonConvert.DeserializeObject<UserResult>(jsonResult);
-
-            return result.Data.Select(x => x.Id.ToString()).ToList();
         }
 
         /// <summary>
@@ -42,21 +24,31 @@ namespace DevChatter.DevStreams.Infra.Twitch
         /// </summary>
         /// <param name="channelNames">Names of the Channels to check for live status.</param>
         /// <returns>The names of the subset of channels that are currently live.</returns>
-        public async Task<List<string>> GetLiveChannels(List<string> channelNames)
+        public async Task<List<ChannelLiveState>> GetChannelLiveStates(List<string> twitchIds)
         {
-            var channelIds = await GetChannelIds(channelNames);
-            var channelIdsQueryFormat = String.Join("&user_id=", channelIds.ToArray());
+            if (!twitchIds.Any())
+            {
+                return new List<ChannelLiveState>(); // TODO: Replace with Guard Clause
+            }
+            var channelIdsQueryFormat = String.Join("&user_id=", twitchIds);
 
             var url = $"{_twitchSettings.BaseApiUrl}/streams?user_id={channelIdsQueryFormat}";
             var jsonResult = await Get(url);
 
             var result = JsonConvert.DeserializeObject<StreamResult>(jsonResult);
 
-            // TODO: Cache this result.
-            return result.Data.Select(x => x.User_name).ToList();
+            var liveChannels = result.Data.Where(x => x.Type == "live").ToList();
+
+            return twitchIds
+                .Select(twitchId => new ChannelLiveState
+                {
+                    TwitchId = twitchId,
+                    IsLive = liveChannels.Any(x => x.User_id == twitchId)
+                })
+                .ToList();
         }
 
-        public async Task<bool> IsLive(int twitchId)
+        public async Task<ChannelLiveState> IsLive(string twitchId)
         {
             // TODO: Have this just check cache or do a refresh based on getting *all* data.
 
@@ -65,16 +57,16 @@ namespace DevChatter.DevStreams.Infra.Twitch
 
             var result = JsonConvert.DeserializeObject<StreamResult>(jsonResult);
 
-            return result.Data.Any();
+            return new ChannelLiveState{TwitchId = twitchId, IsLive = result.Data.Any()};
         }
 
+        // TODO: Extract to composed dependency
         private async Task<string> Get(string url)
         {
             using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Add("Client-Id", _twitchSettings.ClientId);
-                var result =
-                    await client.GetStringAsync(url);
+                var result = await client.GetStringAsync(url);
                 return result;
             }
         }

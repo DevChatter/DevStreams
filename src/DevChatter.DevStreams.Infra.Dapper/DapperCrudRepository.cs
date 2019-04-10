@@ -38,7 +38,7 @@ namespace DevChatter.DevStreams.Infra.Dapper
             }
         }
 
-        public async Task<List<T>> GetAll<T>() where T : DataEntity
+        public async Task<List<T>> GetAll<T>()
         {
             string tableName = GetTableName<T>();
             string sql = $"SELECT * FROM {tableName}";
@@ -118,7 +118,7 @@ namespace DevChatter.DevStreams.Infra.Dapper
             }
         }
 
-        private static string GetTableName<T>() where T : DataEntity
+        private static string GetTableName<T>()
         {
             var tableAttrib = typeof(T).GetCustomAttributes(true)
                 .SingleOrDefault(attr => attr.GetType().Name == typeof(TableAttribute).Name) as dynamic;

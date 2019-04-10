@@ -1,10 +1,8 @@
-﻿using DevChatter.DevStreams.Core.Data;
-using DevChatter.DevStreams.Core.Helpers;
+﻿using DevChatter.DevStreams.Core.Helpers;
 using DevChatter.DevStreams.Core.Model;
 using DevChatter.DevStreams.Core.Services;
 using GraphQL.DataLoader;
 using GraphQL.Types;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -98,14 +96,14 @@ namespace DevChatter.DevStreams.Infra.GraphQL.Types
 
             if (_take > 0)
             {
-                var foo = new List<StreamSession>();
+                var streamSessions = new List<StreamSession>();
 
                 foreach (var group in futureStreams)
                 {
-                    foo.AddRange(group.Skip(_skip).Take(_take));
+                    streamSessions.AddRange(group.Skip(_skip).Take(_take));
                 }
 
-                return foo.ToLookup(c => c.ChannelId);
+                return streamSessions.ToLookup(c => c.ChannelId);
             }
 
             return futureStreams;
@@ -121,27 +119,24 @@ namespace DevChatter.DevStreams.Infra.GraphQL.Types
         {
             var scheduleLookup = await _scheduledStreamService.GetChannelScheduleLookup(channelIds);
 
-            if (!string.IsNullOrWhiteSpace(_timeZone))
+            if (string.IsNullOrWhiteSpace(_timeZone)) return scheduleLookup;
+
+            var streamsNotInZone = scheduleLookup
+                .SelectMany(x => x)
+                .Where(stream => stream.TimeZoneId.Equals(_timeZone));
+
+            foreach (ScheduledStream stream in streamsNotInZone)
             {
-                foreach (var scheduleGroup in scheduleLookup)
-                {
-                    foreach (var stream in scheduleGroup)
-                    {
-                        if (!stream.TimeZoneId.Equals(_timeZone))
-                        {
-                            var (adjustDayOfWeek, localStartTime) = TimeZoneHelper.ConvertLocalTimeToDifferentTimeZone(
-                                stream.LocalStartTime, stream.TimeZoneId, _timeZone);
+                var (adjustDayOfWeek, localStartTime) = TimeZoneHelper.ConvertLocalTimeToDifferentTimeZone(
+                    stream.LocalStartTime, stream.TimeZoneId, _timeZone);
 
-                            var (_, localEndTime) = TimeZoneHelper.ConvertLocalTimeToDifferentTimeZone(
-                                stream.LocalEndTime, stream.TimeZoneId, _timeZone);
+                var (_, localEndTime) = TimeZoneHelper.ConvertLocalTimeToDifferentTimeZone(
+                    stream.LocalEndTime, stream.TimeZoneId, _timeZone);
 
-                            stream.LocalStartTime = localStartTime;
-                            stream.LocalEndTime = localEndTime;
-                            stream.DayOfWeek += adjustDayOfWeek;
-                            stream.TimeZoneId = _timeZone;
-                        }
-                    }
-                }
+                stream.LocalStartTime = localStartTime;
+                stream.LocalEndTime = localEndTime;
+                stream.DayOfWeek += adjustDayOfWeek;
+                stream.TimeZoneId = _timeZone;
             }
 
             return scheduleLookup;

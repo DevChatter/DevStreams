@@ -40,7 +40,9 @@ let app = new Vue({
             // }
             this.timeZoneOptions = [];
            // this.selectedTimeZone = null;
-            this.fetchTimeZones(value);
+           if (value) {
+               this.fetchTimeZones(value);
+           }
         }
     },
     methods: {
@@ -52,7 +54,7 @@ let app = new Vue({
 
                     var currentIndex = this.timeZoneOptions
                         .findIndex(t => t.key === this.model.timeZoneId);
-                    if (currentIndex == -1) {
+                    if (currentIndex === -1) {
                         this.model.timeZoneId = this.timeZoneOptions[0].key;
                     }
                     

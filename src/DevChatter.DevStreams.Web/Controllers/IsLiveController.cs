@@ -1,23 +1,26 @@
-﻿using System.Collections.Generic;
+﻿using DevChatter.DevStreams.Core.Data;
+using DevChatter.DevStreams.Core.Model;
+using DevChatter.DevStreams.Core.Twitch;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DevChatter.DevStreams.Core.Data;
-using DevChatter.DevStreams.Core.Model;
-using DevChatter.DevStreams.Core.Services;
-using Microsoft.AspNetCore.Mvc;
 
 namespace DevChatter.DevStreams.Web.Controllers
 {
     [Route("api/[controller]")]
     public class IsLiveController : Controller
     {
-        private readonly ITwitchService _twitchService;
+        private readonly ITwitchStreamService _twitchService;
         private readonly ICrudRepository _crudRepository;
+        private readonly IChannelAggregateService _channelAggregateService;
 
         public IsLiveController(ICrudRepository crudRepository,
-            ITwitchService twitchService)
+            IChannelAggregateService channelAggregateService,
+            ITwitchStreamService twitchService)
         {
             _crudRepository = crudRepository;
+            _channelAggregateService = channelAggregateService;
             _twitchService = twitchService;
         }
 
@@ -29,19 +32,21 @@ namespace DevChatter.DevStreams.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            // TODO: Do this better. Extract and remove duplication.
-            List<Channel> channels = await _crudRepository.GetAll<Channel>();
-            List<string> channelNames = channels.Select(x => x.Name).ToList();
-            var liveChannels = await _twitchService.GetLiveChannels(channelNames);
-            return Ok(liveChannels);
+            List<TwitchChannel> channels = await _crudRepository.GetAll<TwitchChannel>();
+            List<string> twitchIds = channels.Select(x => x.TwitchId).ToList();
+            var liveTwitchIds = (await _twitchService.GetChannelLiveStates(twitchIds))
+                .Where(x => x.IsLive)
+                .Select(x => x.TwitchId)
+                .ToList();
+            var liveChannelNames = channels.Where(c => liveTwitchIds.Contains(c.TwitchId)).Select(c => c.TwitchName);
+            return Ok(liveChannelNames);
         }
 
         [HttpGet, Route("{twitchId}")]
-        public async Task<IActionResult> Get(int twitchId)
+        public async Task<IActionResult> Get(string twitchId)
         {
-            // TODO: Do this better. Extract and remove duplication.
-            bool isLive = await _twitchService.IsLive(twitchId);
-            return Ok(isLive);
+            var liveState = await _twitchService.IsLive(twitchId);
+            return Ok(liveState.IsLive);
         }
     }
 }

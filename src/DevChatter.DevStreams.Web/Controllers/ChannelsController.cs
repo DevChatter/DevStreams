@@ -1,12 +1,11 @@
 ﻿using DevChatter.DevStreams.Core.Data;
 using DevChatter.DevStreams.Core.Model;
-using DevChatter.DevStreams.Core.Services;
+using DevChatter.DevStreams.Core.Twitch;
 using DevChatter.DevStreams.Web.Authorization;
 using DevChatter.DevStreams.Web.Data.ViewModel.Channels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -17,11 +16,11 @@ namespace DevChatter.DevStreams.Web.Controllers
     public class ChannelsController : Controller
     {
         private readonly IChannelAggregateService _channelService;
-        private readonly ITwitchService _twitchService;
+        private readonly ITwitchChannelService _twitchService;
         private readonly ICrudRepository _crudRepository;
 
         public ChannelsController(IChannelAggregateService channelService,
-            ICrudRepository crudRepository, ITwitchService twitchService)
+            ICrudRepository crudRepository, ITwitchChannelService twitchService)
         {
             _channelService = channelService;
             _crudRepository = crudRepository;
@@ -55,10 +54,13 @@ namespace DevChatter.DevStreams.Web.Controllers
 
             try
             {
+                var twitchChannel = await _twitchService.GetChannelInfo(channel.Name);
+
                 if (IsNewChannel(channel))
                 {
                     Channel model = new Channel();
                     model.ApplyEditChanges(channel);
+                    model.ApplyTwitchChanges(twitchChannel);
 
                     var userId = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
 
@@ -68,6 +70,7 @@ namespace DevChatter.DevStreams.Web.Controllers
                 {
                     Channel model = _channelService.GetAggregate(channel.Id);
                     model.ApplyEditChanges(channel);
+                    model.ApplyTwitchChanges(twitchChannel);
                     await _channelService.Update(model);
                 }
             }

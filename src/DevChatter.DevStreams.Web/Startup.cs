@@ -21,6 +21,9 @@ using NodaTime;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using DevChatter.DevStreams.Core.Twitch;
+using DevChatter.DevStreams.Web.Caching;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace DevChatter.DevStreams.Web
 {
@@ -91,7 +94,14 @@ namespace DevChatter.DevStreams.Web
             services.AddTransient<ICrudRepository, DapperCrudRepository>();
             services.AddTransient<IChannelSearchService, ChannelSearchService>();
             services.AddTransient<IChannelAggregateService, ChannelAggregateService>();
-            services.AddTransient<ITwitchService, TwitchService>();
+
+            services.AddMemoryCache();
+
+            services.AddScoped(typeof(TwitchStreamService));
+            CachedTwitchStreamService TwitchServiceFactory(IServiceProvider x) => new CachedTwitchStreamService((ITwitchStreamService) x.GetService(typeof(TwitchStreamService)), (IMemoryCache)x.GetService(typeof(IMemoryCache)));
+            services.AddScoped<ITwitchStreamService, CachedTwitchStreamService>(TwitchServiceFactory);
+
+            services.AddScoped<ITwitchChannelService, TwitchChannelService>();
 
             services.AddSingleton<IClock>(SystemClock.Instance);
 

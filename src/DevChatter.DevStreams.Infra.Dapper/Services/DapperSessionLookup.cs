@@ -23,6 +23,23 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
             _dbSettings = databaseSettings.Value;
         }
 
+        public async Task<ILookup<int, StreamSession>> GetChannelFutureStreamsLookup(IEnumerable<int> channelIds)
+        {
+            const string sql = @"SELECT *
+                                FROM StreamSessions
+                                WHERE UtcStartTime > GETUTCDATE()
+                                AND ChannelId in @ChannelIds
+                                ORDER BY UtcStartTime";
+
+            using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
+            {
+                var futureStreams = (await connection.QueryAsync<StreamSession>(
+                    sql, new { ChannelIds = channelIds })).ToList();
+
+                return futureStreams.ToLookup(c => c.ChannelId);
+            }
+        }
+
         public async Task<IDictionary<int, StreamSession>> GetChannelNextStreamLookup(IEnumerable<int> channelIds)
         {
             const string sql = @"SELECT DISTINCT a.* FROM StreamSessions a

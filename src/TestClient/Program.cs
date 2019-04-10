@@ -1,5 +1,6 @@
 ﻿using DevChatter.DevStreams.Client.GraphQL;
 using GraphQL.Client;
+using GraphQL.Common.Exceptions;
 using System;
 
 namespace TestClient
@@ -14,15 +15,49 @@ namespace TestClient
 
             var timeZone = "Europe/London";
 
-            var result = channelGraphClient.GetChannel(1, timeZone).Result;
+            try
+            {
+                var result = channelGraphClient.GetChannelFutureStreams(1, timeZone, 0, 5).Result;
 
-            Console.WriteLine($"{result.Name} (ID: {result.Id}");
-            Console.WriteLine($"    URI = {result.Uri}");
-            Console.WriteLine($"    Streamer's TZ = {result.TimeZoneId}");
-            Console.WriteLine();
-            Console.WriteLine($"Next Stream (in Time Zone {timeZone}):");
-            Console.WriteLine($"    Start Time: {result.NextStream.LocalStartTime}");
-            Console.WriteLine($"    End Time  : {result.NextStream.LocalEndTime}");
+                Console.WriteLine($"{result.Name} (ID: {result.Id}");
+                Console.WriteLine($"    URI = {result.Uri}");
+                Console.WriteLine($"    Streamer's TZ = {result.TimeZoneId}");
+                Console.WriteLine();
+
+                Console.WriteLine($"Next 5 streams (in Time Zone {timeZone}):");
+                foreach (var stream in result.FutureStreams)
+                {
+                    Console.WriteLine($"    Start Time: {stream.LocalStartTime}");
+                    Console.WriteLine($"    End Time  : {stream.LocalEndTime}");
+                    Console.WriteLine();
+                }
+
+                Console.WriteLine();
+
+                Console.WriteLine($"Published Schedule (in Time Zone {timeZone}):");
+                foreach (var slot in result.Schedule)
+                {
+                    Console.WriteLine($"    {slot.DayOfWeek} : {slot.LocalStartTime} to {slot.LocalEndTime}");
+                }
+                Console.WriteLine("Subjects channel is tagged with:");
+                foreach (var tag in result.Tags)
+                {
+                    Console.WriteLine($"    {tag.Name}");
+                }
+
+                var result2 = channelGraphClient.GetChannels(timeZone).Result;
+
+                Console.WriteLine($"Total # of channel in DevStreams = {result2.Count}");
+
+                foreach (var channel in result2)
+                {
+                    Console.WriteLine($"  {channel.Name}");
+                }
+            }
+            catch (GraphQLException gex)
+            {
+                Console.WriteLine(gex.Message);
+            }
 
             Console.ReadLine();
         }

@@ -15,7 +15,10 @@ namespace DevChatter.DevStreams.Infra.GraphQL.Types
     {
         private readonly IScheduledStreamService _scheduledStreamService;
         private readonly ITagService _tagService;
+        private readonly IStreamSessionService _dapperSessionLookup;
         private string _timeZone = string.Empty;
+        private int _skip = 0;
+        private int _take = 0;
 
         public ChannelType(IScheduledStreamService scheduledStreamService,
             ITagService tagService, IStreamSessionService dapperSessionLookup, 
@@ -24,6 +27,7 @@ namespace DevChatter.DevStreams.Infra.GraphQL.Types
         {
             _scheduledStreamService = scheduledStreamService;
             _tagService = tagService;
+            _dapperSessionLookup = dapperSessionLookup;
 
             Field(f => f.Id).Description("Unique Channel Identifier");
             Field(f => f.Name).Description("The name of the streamer channel");
@@ -59,7 +63,7 @@ namespace DevChatter.DevStreams.Infra.GraphQL.Types
 
                     return loader.LoadAsync(ctx.Source.Id);
                 });
-            Field<StreamSessionType>("nextStream", "The times of the the channels next stream",
+            Field<StreamSessionType>("nextStream", "The times of the channels next stream",
                 resolve: ctx =>
                 {
                     var loader = accessor.Context.GetOrAddBatchLoader<int, StreamSession>(
@@ -67,6 +71,44 @@ namespace DevChatter.DevStreams.Infra.GraphQL.Types
 
                     return loader.LoadAsync(ctx.Source.Id);
                 });
+
+            Field<ListGraphType<StreamSessionType>>("futureStreams", "The channels future stream",
+                arguments: new QueryArguments(new QueryArgument<IntGraphType>
+                {
+                    Name = "skip"
+                }, 
+                new QueryArgument<IntGraphType>
+                {
+                    Name = "take"
+                }),
+                resolve: ctx =>
+                {
+                    _skip = ctx.GetArgument<int>("skip");
+                    _take = ctx.GetArgument<int>("take");
+                    var loader = accessor.Context.GetOrAddCollectionBatchLoader<int, StreamSession>(
+                        "GetChannelFutureStreams", GetChannelFutureStreams);
+
+                    return loader.LoadAsync(ctx.Source.Id);
+                });
+        }
+
+        private async Task<ILookup<int, StreamSession>> GetChannelFutureStreams(IEnumerable<int> channelIds)
+        {
+            var futureStreams = await _dapperSessionLookup.GetChannelFutureStreamsLookup(channelIds);
+
+            if (_take > 0)
+            {
+                var foo = new List<StreamSession>();
+
+                foreach (var group in futureStreams)
+                {
+                    foo.AddRange(group.Skip(_skip).Take(_take));
+                }
+
+                return foo.ToLookup(c => c.ChannelId);
+            }
+
+            return futureStreams;
         }
 
         private async Task<ILookup<int, Tag>> GetChannelTags(IEnumerable<int> channelIds)

@@ -44,7 +44,7 @@ namespace DevChatter.DevStreams.Infra.GraphQL.Types
             {
                 return null;
             }
-            
+
             try
             {
                 var ret = LocalTimePattern.ExtendedIso

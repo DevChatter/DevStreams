@@ -68,7 +68,7 @@ namespace DevChatter.DevStreams.Infra.GraphQL.Types
             {
                 return FromDateTimeUtc(dateTimeValue.Value);
             }
-                       
+
             return null;
         }
     }

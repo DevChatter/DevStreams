@@ -72,6 +72,7 @@ namespace DevChatter.DevStreams.Infra.Dapper
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="filter">WARNING: Should never come from user input!</param>
+        /// <param name="orderBy">WARNING: Should never come from user input!</param>
         /// <param name="args"></param>
         /// <returns></returns>
         public async Task<List<T>> GetAll<T>(string filter, string orderBy, object args) where T : DataEntity

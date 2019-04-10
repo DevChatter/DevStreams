@@ -28,7 +28,7 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
         {
             using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
             {
-                var sql = "SELECT * FROM ScheduledStreams WHERE ChannelId IN @ChannelIds";
+                const string sql = "SELECT * FROM ScheduledStreams WHERE ChannelId IN @ChannelIds";
                 var schedules = (await connection.QueryAsync<ScheduledStream>(
                     sql, new { ChannelIds = channelIds })).ToList();
 

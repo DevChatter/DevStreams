@@ -11,7 +11,7 @@ namespace DevChatter.DevStreams.Client.GraphQL
 {
     public class ChannelGraphClient
     {
-        private GraphQLClient _client;
+        private readonly GraphQLClient _client;
 
         public ChannelGraphClient(GraphQLClient client)
         {

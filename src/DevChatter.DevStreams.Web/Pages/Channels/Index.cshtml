@@ -6,36 +6,32 @@
 
 <h2>Find Channels</h2>
 
-<table class="table">
-    <thead>
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Channels[0].Name)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Channels[0].Tags)
-        </th>
-        <th>Links</th>
-        <th>Next Stream</th>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach (var item in Model.Channels) {
+<div id="channelList">
+    <table class="table">
+        <thead>
         <tr>
-            <td>
-                <a asp-page="./Details" asp-route-id="@item.Id">@Html.DisplayFor(modelItem => item.Name)</a>
-            </td>
-            <td>
-                @item.Tags
-            </td>
-            <td>
-                <a href="@item.Uri">@item.ChannelLinkText</a>
-            </td>
-            <td>
-                Tuesday at 2:00 PM EST
-            </td>
+            <th>Name</th>
+            <th>Tags</th>
+            <th>Next Stream</th>
         </tr>
-    }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            <tr v-for="channel in channels">
+                <td>
+                    <a :href="'/Channels/Details/' + channel.id">{{channel.name}}</a>
+                </td>
+                <td>
+                    {{formatTags(channel.tags)}}
+                </td>
+                <td>
+                    {{formatStartTime(channel.nextStream)}}
+                </td>
+            </tr>
 
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script src="~/js/vue/channels-index.js"></script>
+}

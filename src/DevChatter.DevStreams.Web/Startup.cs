@@ -6,9 +6,12 @@ using DevChatter.DevStreams.Infra.Dapper;
 using DevChatter.DevStreams.Infra.Dapper.Services;
 using DevChatter.DevStreams.Infra.Dapper.TypeHandlers;
 using DevChatter.DevStreams.Infra.Db.Migrations;
+using DevChatter.DevStreams.Infra.GraphQL;
 using DevChatter.DevStreams.Infra.Twitch;
 using DevChatter.DevStreams.Web.Data;
 using FluentMigrator.Runner;
+using GraphQL.Server;
+using GraphQL.Server.Ui.Playground;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -29,12 +32,14 @@ namespace DevChatter.DevStreams.Web
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             Configuration = configuration;
+            _env = env;
         }
 
         public IConfiguration Configuration { get; }
+        private readonly IHostingEnvironment _env;
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -87,9 +92,11 @@ namespace DevChatter.DevStreams.Web
             SqlMapper.AddTypeHandler(InstantHandler.Default);
             SqlMapper.AddTypeHandler(LocalTimeHandler.Default);
 
-
             services.AddScoped<IStreamSessionService, DapperSessionLookup>();
             services.AddScoped<IScheduledStreamService, ScheduledStreamService>();
+
+            services.AddScoped<ITagService, TagService>();
+
             services.AddTransient<ITagSearchService, TagSearchService>();
             services.AddTransient<ICrudRepository, DapperCrudRepository>();
             services.AddTransient<IChannelSearchService, ChannelSearchService>();
@@ -107,6 +114,8 @@ namespace DevChatter.DevStreams.Web
 
             services.AddTransient<IChannelPermissionsService,
                 ChannelPermissionsService>();
+
+            RegisterGraphQL.Configure(services, _env);
 
             services
                 .AddMvc()
@@ -150,8 +159,16 @@ namespace DevChatter.DevStreams.Web
 
             app.UseAuthentication();
 
-            app.UseMvc();
+            app.UseGraphQL<DevStreamsSchema>(path: "/graphql");
+            if (env.IsDevelopment())
+            {
+                app.UseGraphQLPlayground(new GraphQLPlaygroundOptions
+                {
+                    Path = "/ui/playground"
+                });
+            }
 
+            app.UseMvc();
         }
 
         private async Task SetUpDefaultUsersAndRoles(UserManager<IdentityUser> userManager,

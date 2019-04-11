@@ -24,6 +24,18 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
             _clock = clock;
         }
 
+        public async Task<ILookup<int, ScheduledStream>> GetChannelScheduleLookup(IEnumerable<int> channelIds)
+        {
+            using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
+            {
+                const string sql = "SELECT * FROM ScheduledStreams WHERE ChannelId IN @ChannelIds";
+                var schedules = (await connection.QueryAsync<ScheduledStream>(
+                    sql, new { ChannelIds = channelIds })).ToList();
+
+                return schedules.ToLookup(c => c.ChannelId);
+            }
+        }
+
         public async Task<List<ScheduledStream>> GetChannelSchedule(int channelId)
         {
             using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))

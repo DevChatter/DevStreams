@@ -1,12 +1,29 @@
-﻿let app = new Vue({
+﻿Vue.component('vue-multiselect', window.VueMultiselect.default);
+
+let app = new Vue({
+    components: {
+        Multiselect: window.VueMultiselect.default
+    },
     el: "#channelList",
     data: {
         isLoadingData: true,
         channels: [],
-        searchFilter: ''
+        searchFilters: {
+            selectedTags: [],
+        },
+        tags: [],
+        isLoadingTags: false,
     },
     mounted() {
         this.fetchChannels();
+    },
+    watch:{
+        searchFilters: {
+            handler: async function () {
+                await this.fetchChannels();
+            },
+            deep: true
+          }
     },
     methods: {
         fetchChannels: async function () {
@@ -42,6 +59,15 @@
                 return streamSession.utcStartTime;
             }
             return "None Scheduled";
+        },
+        tagSearch: function (filter) {
+            axios.get(`/api/Tags/?filter=${encodeURIComponent(filter)}`)
+                .then(response => {
+                    this.tags = response.data;
+                })
+                .catch(error => {
+                    console.log(error.statusText);
+                });
         }
     }
 });

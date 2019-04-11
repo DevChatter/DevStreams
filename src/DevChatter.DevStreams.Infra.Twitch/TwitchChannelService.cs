@@ -1,4 +1,5 @@
-﻿using DevChatter.DevStreams.Core.Model;
+﻿using System;
+using DevChatter.DevStreams.Core.Model;
 using DevChatter.DevStreams.Core.Settings;
 using DevChatter.DevStreams.Core.Twitch;
 using Microsoft.Extensions.Options;
@@ -44,15 +45,23 @@ namespace DevChatter.DevStreams.Infra.Twitch
         /// <returns></returns>
         public async Task<TwitchChannel> GetChannelInfo(string channelName)
         {
-            string url = $"{_twitchSettings.BaseApiUrl}/users?login={channelName}";
-            string jsonResult = await Get(url);
+            try
+            {
+                string url = $"{_twitchSettings.BaseApiUrl}/users?login={channelName}";
+                string jsonResult = await Get(url);
 
-            UserResult result = JsonConvert.DeserializeObject<UserResult>(jsonResult);
+                UserResult result = JsonConvert.DeserializeObject<UserResult>(jsonResult);
 
-            UserResultData userInfo = result.Data.SingleOrDefault();
-            TwitchChannel channelInfo = userInfo.ToTwitchChannelModel();
-            return channelInfo;
+                UserResultData userInfo = result.Data.SingleOrDefault();
+                TwitchChannel channelInfo = userInfo.ToTwitchChannelModel();
+                return channelInfo;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
 
+            return null;
         }
 
         // TODO: Extract to composed dependency

@@ -99,7 +99,7 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
                 int? id = await connection.InsertAsync(model);
 
                 var channelTags = model.Tags
-                    .Select(tag => new ChannelTag {ChannelId = model.Id, TagId = tag.Id});
+                    .Select(tag => new ChannelTag {ChannelId = id.Value, TagId = tag.Id});
 
                 var channelPermission = new ChannelPermission
                 {
@@ -110,13 +110,18 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
                 const string insertPermissionsSql = "INSERT INTO [ChannelPermissions] (ChannelId, UserId, ChannelRole) VALUES (@ChannelId, @UserId, @ChannelRole)";
                 await connection.ExecuteAsync(insertPermissionsSql, channelPermission);
 
-                model.Twitch.ChannelId = id.Value;
-                const string insertTwitchChannelSql = "INSERT INTO [TwitchChannels] (ChannelId, TwitchId, TwitchName, IsAffiliate, IsPartner) VALUES (@ChannelId, @TwitchId, @TwitchName, @IsAffiliate, @IsPartner)";
-                await connection.ExecuteAsync(insertTwitchChannelSql, model.Twitch);
+                if (model.Twitch != null)
+                {
+                    model.Twitch.ChannelId = id.Value;
+                    const string insertTwitchChannelSql = "INSERT INTO [TwitchChannels] (ChannelId, TwitchId, TwitchName, IsAffiliate, IsPartner) VALUES (@ChannelId, @TwitchId, @TwitchName, @IsAffiliate, @IsPartner)";
+                    await connection.ExecuteAsync(insertTwitchChannelSql, model.Twitch);
+                }
 
                 const string insertChannelTagSql = "INSERT INTO [ChannelTags] (ChannelId, TagId) VALUES (@ChannelId, @TagId)";
-                await Task.WhenAll(channelTags.Select(ct 
-                    => connection.ExecuteAsync(insertChannelTagSql, ct)));
+                foreach (var channelTag in channelTags)
+                {
+                    await connection.ExecuteAsync(insertChannelTagSql, channelTag);
+                }
 
                 return id;
             }
@@ -133,8 +138,11 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
 
                 await connection.DeleteListAsync<ChannelTag>(new {ChannelId = model.Id});
 
-                await Task.WhenAll(channelTags.Select(ct => connection.InsertAsync(ct)));
-
+                const string insertChannelTagSql = "INSERT INTO [ChannelTags] (ChannelId, TagId) VALUES (@ChannelId, @TagId)";
+                foreach (var channelTag in channelTags)
+                {
+                    await connection.ExecuteAsync(insertChannelTagSql, channelTag);
+                }
                 // TODO: Update the TwitchInfo on channel Edit
 
                 return rows;

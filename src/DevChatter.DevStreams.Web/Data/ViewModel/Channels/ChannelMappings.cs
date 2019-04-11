@@ -62,6 +62,8 @@ namespace DevChatter.DevStreams.Web.Data.ViewModel.Channels
         public static void ApplyTwitchChanges(this Channel model,
             TwitchChannel twitchChannel)
         {
+            if (twitchChannel == null) return;
+
             twitchChannel.ChannelId = model.Id;
             model.Twitch = twitchChannel;
         }

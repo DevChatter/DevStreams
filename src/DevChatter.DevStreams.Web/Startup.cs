@@ -160,10 +160,13 @@ namespace DevChatter.DevStreams.Web
             app.UseAuthentication();
 
             app.UseGraphQL<DevStreamsSchema>(path: "/graphql");
-            app.UseGraphQLPlayground(new GraphQLPlaygroundOptions
+            if (env.IsDevelopment())
             {
-                Path = "/ui/playground"
-            });
+                app.UseGraphQLPlayground(new GraphQLPlaygroundOptions
+                {
+                    Path = "/ui/playground"
+                });
+            }
 
             app.UseMvc();
         }

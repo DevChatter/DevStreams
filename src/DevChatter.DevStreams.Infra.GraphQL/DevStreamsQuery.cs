@@ -14,7 +14,8 @@ namespace DevChatter.DevStreams.Infra.GraphQL
             Field<ListGraphType<ChannelType>>("channels",
                 arguments: new QueryArguments(new QueryArgument<ListGraphType<IdGraphType>>
                 {
-                    Name = "tagIds"
+                    Name = "tagIds",
+                    DefaultValue = new List<int>()
                 }),
                 resolve: ctx =>
                 {

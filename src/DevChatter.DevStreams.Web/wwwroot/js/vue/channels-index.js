@@ -29,20 +29,24 @@ let app = new Vue({
         fetchChannels: async function () {
             const res = await axios.post('/graphql',
                 {
-                    query: `query getChannels
-                        { channels
-                            { id name
-                                tags
-                                {
-                                    name
+                    query: `query channelQuery($tagIds: [ID]!)
+                            { channels(tagIds:$tagIds)
+                                { id name uri
+                                    tags
+                                    {
+                                        id
+                                        name
+                                    }
+                                    nextStream
+                                    {
+                                        utcStartTime
+                                        utcEndTime
+                                    }
                                 }
-                                nextStream
-                                {
-                                    utcStartTime 
-                                    utcEndTime
-                                }
-                            }
-                        }`
+                            }`,
+                    variables: {
+                        tagIds: this.searchFilters.selectedTags.map(tag => tag.id)
+                    }
                 });
             this.channels = res.data.data.channels;
             this.isLoadingData = false;

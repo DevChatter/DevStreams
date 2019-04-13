@@ -1,7 +1,9 @@
-﻿using DevChatter.DevStreams.Core.Data;
+﻿using System.Collections.Generic;
+using DevChatter.DevStreams.Core.Data;
 using DevChatter.DevStreams.Core.Model;
 using DevChatter.DevStreams.Infra.GraphQL.Types;
 using GraphQL.Types;
+using System.Linq;
 
 namespace DevChatter.DevStreams.Infra.GraphQL
 {
@@ -10,16 +12,16 @@ namespace DevChatter.DevStreams.Infra.GraphQL
         public DevStreamsQuery(IChannelRepository channelRepo)
         {
             Field<ListGraphType<ChannelType>>("channels",
-                arguments: new QueryArguments(new QueryArgument<IdGraphType>
+                arguments: new QueryArguments(new QueryArgument<ListGraphType<IdGraphType>>
                 {
-                    Name = "tagId"
+                    Name = "tagIds"
                 }),
                 resolve: ctx =>
                 {
-                    int tagId = ctx.GetArgument<int>("tagId");
-                    if (tagId > 0)
+                    List<int> tagIds = ctx.GetArgument<List<int>>("tagIds");
+                    if (tagIds.Any())
                     {
-                        return channelRepo.GetChannelsByTagIds(tagId);
+                        return channelRepo.GetChannelsByTagIds(tagIds.ToArray());
                     }
                     return channelRepo.GetAll<Channel>();
                 });

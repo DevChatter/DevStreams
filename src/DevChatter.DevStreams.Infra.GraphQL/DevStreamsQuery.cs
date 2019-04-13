@@ -7,10 +7,22 @@ namespace DevChatter.DevStreams.Infra.GraphQL
 {
     public class DevStreamsQuery : ObjectGraphType
     {
-        public DevStreamsQuery(ICrudRepository repo)
+        public DevStreamsQuery(IChannelRepository channelRepo)
         {
             Field<ListGraphType<ChannelType>>("channels",
-                resolve: ctx => repo.GetAll<Channel>());
+                arguments: new QueryArguments(new QueryArgument<IdGraphType>
+                {
+                    Name = "tagId"
+                }),
+                resolve: ctx =>
+                {
+                    int tagId = ctx.GetArgument<int>("tagId");
+                    if (tagId > 0)
+                    {
+                        return channelRepo.GetChannelsByTagIds(tagId);
+                    }
+                    return channelRepo.GetAll<Channel>();
+                });
 
             Field<ChannelType>("channel",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<IdGraphType>>
@@ -20,7 +32,7 @@ namespace DevChatter.DevStreams.Infra.GraphQL
                 resolve: ctx =>
                 {
                     var id = ctx.GetArgument<int>("id");
-                    return repo.Get<Channel>(id);
+                    return channelRepo.Get<Channel>(id);
                 });
         }
     }

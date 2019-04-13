@@ -99,6 +99,7 @@ namespace DevChatter.DevStreams.Web
 
             services.AddTransient<ITagSearchService, TagSearchService>();
             services.AddTransient<ICrudRepository, DapperCrudRepository>();
+            services.AddScoped<IChannelRepository, DapperChannelRepository>();
             services.AddTransient<IChannelSearchService, ChannelSearchService>();
             services.AddTransient<IChannelAggregateService, ChannelAggregateService>();
 

@@ -13,7 +13,7 @@ namespace DevChatter.DevStreams.Infra.Dapper
 {
     public class DapperCrudRepository : ICrudRepository
     {
-        private readonly DatabaseSettings _dbSettings;
+        protected readonly DatabaseSettings _dbSettings;
 
         public DapperCrudRepository(IOptions<DatabaseSettings> databaseSettings)
         {
@@ -124,6 +124,14 @@ namespace DevChatter.DevStreams.Infra.Dapper
                 .SingleOrDefault(attr => attr.GetType().Name == typeof(TableAttribute).Name) as dynamic;
             string tableName = tableAttrib?.Name ?? typeof(T).Name + "s";
             return tableName;
+        }
+
+        protected async Task<List<T>> QueryAsync<T>(string sql, object args)
+        {
+            using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
+            {
+                return (await connection.QueryAsync<T>(sql, args)).ToList();
+            }
         }
     }
 }

@@ -55,7 +55,7 @@
 
     <ul>
         <li v-for="anEvent in events">
-            {{ anEvent.channelName }} ({{anEvent.utcStartTime}} - {{anEvent.utcEndTime}})
+            {{ anEvent.channelName }} is streaming {{anEvent.localStartTime}} until {{anEvent.localEndTime}} ({{anEvent.streamLength}})
         </li>
     </ul>
 </div>

@@ -67,13 +67,22 @@ let calendar = new Vue({
 
                 axios.post(`/api/Events/`, this.model)
                     .then(response => {
-                        this.events = response.data;
+                        this.events = response.data.map(this.convertDataToLocal);
                     })
                     .catch(error => {
-                        debugger;
                         console.log(error.statusText);
                     });
             }
+        },
+        convertDataToLocal: function (event) {
+            let startMoment = new moment(event.utcStartTime);
+            let endMoment = new moment(event.utcEndTime);
+            return {
+                channelName: event.channelName,
+                localStartTime: startMoment.calendar(),
+                localEndTime: endMoment.calendar(),
+                streamLength: moment.duration(endMoment.diff(startMoment)).humanize()
+            };
         },
         tagSearch: function (filter) {
             axios.get(`/api/Tags/?filter=${encodeURIComponent(filter)}`)

@@ -12,6 +12,7 @@ namespace DevChatter.DevStreams.Core.Twitch
                 TwitchName = src.Display_name,
                 IsAffiliate = src.Broadcaster_type == TwitchConstants.AFFILIATE,
                 IsPartner = src.Broadcaster_type == TwitchConstants.PARTNER,
+				ImageUrl =  src.Profile_image_url
             };
         }
     }

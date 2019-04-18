@@ -13,6 +13,7 @@
 <table class="table">
     <thead>
         <tr>
+            <th>@Html.DisplayNameFor(model => model.Channels[0].ImageUrl)</th>
             <th>
                 @Html.DisplayNameFor(model => model.Channels[0].Name)
             </th>
@@ -26,24 +27,34 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.Channels) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Uri)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TimeZoneName)
-            </td>
-            <td>
-                <a asp-page="./Schedule/Index" asp-route-channelId="@item.Id">Schedule (@item.ScheduledStreamsCount)</a> |
-                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model.Channels)
+        {
+            // TODO: Should we have some kind of placeholder image displyed if there's not a valid Channel image from twitch?
+            var fullyQualifiedChannelImageSource = (!string.IsNullOrWhiteSpace(item?.ImageUrl)) ? item?.ImageUrl : "";
+
+
+            <tr>
+                <td>
+                    <img src="@fullyQualifiedChannelImageSource" title="Channel image for @item.Name" class="img-responsive" />
+
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Uri)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TimeZoneName)
+                </td>
+                <td>
+                    <a asp-page="./Schedule/Index" asp-route-channelId="@item.Id">Schedule (@item.ScheduledStreamsCount)</a> |
+                    <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

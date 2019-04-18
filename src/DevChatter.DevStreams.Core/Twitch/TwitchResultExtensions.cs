@@ -10,6 +10,7 @@ namespace DevChatter.DevStreams.Core.Twitch
             {
                 TwitchId = src.Id,
                 TwitchName = src.Display_name,
+                Description = src.Description,
                 IsAffiliate = src.Broadcaster_type == TwitchConstants.AFFILIATE,
                 IsPartner = src.Broadcaster_type == TwitchConstants.PARTNER,
             };

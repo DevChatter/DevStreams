@@ -59,8 +59,7 @@ let app = new Vue({
         },
         formatStartTime: function (streamSession) {
             if (streamSession) {
-                // TODO: Show in correct time zone.
-                return streamSession.utcStartTime;
+                return new moment(streamSession.utcStartTime).calendar();
             }
             return "None Scheduled";
         },

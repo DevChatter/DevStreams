@@ -19,25 +19,23 @@
         <div class="col-md-3">
             <h3>Next Streams</h3>
             <ul>
-                @foreach (StreamSession session in Model.StreamSessions)
-                {
-                    <li>@session.UtcStartTime</li>
-                }
+                <li v-for="stream in nextStreams">
+                    {{stream.startTime}}
+                </li>
             </ul>
         </div>
         <div class="col-md-4">
             <h3>Schedule</h3>
             <ul>
-                @* TODO: Show these in viewer's timezone. *@
-                @foreach (var stream in Model.ScheduledStreams)
-                {
-                    <li>@stream.DayOfWeek at @stream.LocalStartTime @stream.TimeZoneName</li>
-                }
+                <li v-for="stream in schedule">
+                    {{ stream.dayOfWeek }} {{stream.startTime}} until {{stream.endTime}}
+                </li>
             </ul>
         </div>
     </div>
 
     <input id="twitchId" type="hidden" value="@Model.Channel.TwitchId" />
+    <input id="channelId" type="hidden" value="@Model.Channel.Id" />
 </div>
 
 

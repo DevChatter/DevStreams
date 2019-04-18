@@ -1,9 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace DevChatter.DevStreams.Core.Model
+﻿namespace DevChatter.DevStreams.Core.Model
 {
-    [Table("TwitchChannels")]
     public class TwitchChannel
     {
         public int ChannelId { get; set; }

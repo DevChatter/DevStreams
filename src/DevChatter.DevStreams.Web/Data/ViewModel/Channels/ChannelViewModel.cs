@@ -11,6 +11,7 @@ namespace DevChatter.DevStreams.Web.Data.ViewModel.Channels
 
         [Display(Name = "Uri")]
         public string Uri { get; set; }
+        public string Description { get; set; }
 
         [Display(Name = "Scheduled Streams")]
         public int ScheduledStreamsCount { get; set; }

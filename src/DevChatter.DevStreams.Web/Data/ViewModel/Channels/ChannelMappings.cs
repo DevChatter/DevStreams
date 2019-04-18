@@ -42,6 +42,7 @@ namespace DevChatter.DevStreams.Web.Data.ViewModel.Channels
                 Id = src.Id,
                 Name = src.Name,
                 Uri = src.Uri,
+                Description = src.Twitch?.Description,
                 TimeZoneName = TZNames.GetNamesForTimeZone(src.TimeZoneId, CultureInfo.CurrentUICulture.Name).Generic,
                 ScheduledStreamsCount = src.ScheduledStreams.Count,
                 Tags = string.Join(", ", src.Tags.Select(x => x.Name)),

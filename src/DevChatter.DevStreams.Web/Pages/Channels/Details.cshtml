@@ -12,32 +12,30 @@
         <div class="col-md-5">
             <h3>Channel Details</h3>
             <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur elit lacus, cursus quis quam ut, tempor mattis eros. Nam ac lectus massa. Vivamus viverra, libero sed tempor consequat, mauris urna suscipit eros, sit amet posuere elit nunc id arcu. Ut sed lectus aliquam risus blandit mollis vel nec velit.
+                @Model.Channel.Description
             </p>
             <a href="@Model.Channel.Uri">View @Model.Channel.Name on Twitch</a>
         </div>
         <div class="col-md-3">
             <h3>Next Streams</h3>
             <ul>
-                @foreach (StreamSession session in Model.StreamSessions)
-                {
-                    <li>@session.UtcStartTime</li>
-                }
+                <li v-for="stream in nextStreams">
+                    {{stream.startTime}}
+                </li>
             </ul>
         </div>
         <div class="col-md-4">
             <h3>Schedule</h3>
             <ul>
-                @* TODO: Show these in viewer's timezone. *@
-                @foreach (var stream in Model.ScheduledStreams)
-                {
-                    <li>@stream.DayOfWeek at @stream.LocalStartTime @stream.TimeZoneName</li>
-                }
+                <li v-for="stream in schedule">
+                    {{ stream.dayOfWeek }} {{stream.startTime}} until {{stream.endTime}}
+                </li>
             </ul>
         </div>
     </div>
 
     <input id="twitchId" type="hidden" value="@Model.Channel.TwitchId" />
+    <input id="channelId" type="hidden" value="@Model.Channel.Id" />
 </div>
 
 

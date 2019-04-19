@@ -3,6 +3,9 @@
 @model DevChatter.DevStreams.Web.Pages.Channels.DetailsModel
 @{
     ViewData["Title"] = "Details";
+
+    // TODO: Should we have some kind of placeholder image displyed if there's not a valid Channel image from twitch?
+    var fullyQualifiedChannelImageSource = (!string.IsNullOrWhiteSpace(Model?.Channel?.ImageUrl)) ? Model?.Channel?.ImageUrl : "";
 }
 
 <div id="channelDetails">
@@ -11,10 +14,21 @@
     <div class="row">
         <div class="col-md-5">
             <h3>Channel Details</h3>
-            <p>
-                @Model.Channel.Description
-            </p>
-            <a href="@Model.Channel.Uri">View @Model.Channel.Name on Twitch</a>
+            <div class="row">
+                <div class="col-md-6">
+                    <img style="height: 100px"src="@fullyQualifiedChannelImageSource" title="Channel image for @Model.Channel.Name" class="img-responsive" />
+                </div>
+                <div class="col-md-6">
+                    <p>
+                        @Model.Channel.Description
+                    </p>
+                </div>
+            </div>
+
+
+
+
+            <a href="@Model.Channel.Uri" class="btn-block">View @Model.Channel.Name on Twitch</a>
         </div>
         <div class="col-md-3">
             <h3>Next Streams</h3>

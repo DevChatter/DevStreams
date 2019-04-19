@@ -18,7 +18,6 @@ namespace DevChatter.DevStreams.Web.Data.ViewModel.Channels
 		[Display(Name = "Time Zone")]
 		public string TimeZoneName { get; set; }
 
-		[Display(Name = "Channel Image")]
-		public string ImageUrl { get; set; }
+
 	}
 }

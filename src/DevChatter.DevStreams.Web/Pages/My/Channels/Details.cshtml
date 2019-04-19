@@ -3,6 +3,10 @@
 
 @{
     ViewData["Title"] = "Details";
+
+
+    // TODO: Should we have some kind of placeholder image displyed if there's not a valid Channel image from twitch?
+    var fullyQualifiedChannelImageSource = (!string.IsNullOrWhiteSpace(Model?.Channel?.ImageUrl)) ? Model?.Channel?.ImageUrl : "";
 }
 
 <h2>Details</h2>
@@ -11,6 +15,12 @@
     <h4>Channel</h4>
     <hr />
     <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Channel.ImageUrl)
+        </dt>
+        <dd>
+            <img style="height:100px" src="@fullyQualifiedChannelImageSource" title="Channel image for @Model.Channel.Name" class="img-responsive" />
+        </dd>
         <dt>
             @Html.DisplayNameFor(model => model.Channel.Name)
         </dt>

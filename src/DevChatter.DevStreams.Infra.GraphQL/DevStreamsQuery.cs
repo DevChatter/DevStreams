@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
-using DevChatter.DevStreams.Core.Data;
+﻿using DevChatter.DevStreams.Core.Data;
 using DevChatter.DevStreams.Core.Model;
+using DevChatter.DevStreams.Core.Services;
+using DevChatter.DevStreams.Core.Twitch;
 using DevChatter.DevStreams.Infra.GraphQL.Types;
 using GraphQL.Types;
+using System.Collections.Generic;
 using System.Linq;
-using DevChatter.DevStreams.Core.Services;
 using System.Threading.Tasks;
-using DevChatter.DevStreams.Core.Twitch;
 
 namespace DevChatter.DevStreams.Infra.GraphQL
 {

@@ -4,13 +4,23 @@ using DevChatter.DevStreams.Core.Model;
 using DevChatter.DevStreams.Infra.GraphQL.Types;
 using GraphQL.Types;
 using System.Linq;
+using DevChatter.DevStreams.Core.Services;
+using System.Threading.Tasks;
+using DevChatter.DevStreams.Core.Twitch;
 
 namespace DevChatter.DevStreams.Infra.GraphQL
 {
     public class DevStreamsQuery : ObjectGraphType
     {
-        public DevStreamsQuery(IChannelRepository channelRepo)
+        private readonly IChannelRepository _channelRepo;
+        private readonly ITwitchStreamService _twitchService;
+
+        public DevStreamsQuery(IChannelRepository channelRepo, ITwitchStreamService twitchService,
+            IChannelSearchService channelSearchService)
         {
+            _channelRepo = channelRepo;
+            _twitchService = twitchService;
+
             Field<ListGraphType<ChannelType>>("channels",
                 arguments: new QueryArguments(new QueryArgument<ListGraphType<IdGraphType>>
                 {
@@ -37,6 +47,51 @@ namespace DevChatter.DevStreams.Infra.GraphQL
                     var id = ctx.GetArgument<int>("id");
                     return channelRepo.Get<Channel>(id);
                 });
+
+            Field<ChannelType>("channelSoundex",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>>
+                {
+                    Name = "name"
+                }),
+                resolve: ctx =>
+                {
+                    var name = ctx.GetArgument<string>("name");
+                    return channelSearchService.GetChannelSoundex(name);
+                });
+            Field<ListGraphType<ChannelType>>("liveChannels",
+                resolve: ctx =>
+                {
+                    return GetLiveChannels();
+                });
+        }
+
+        private async Task<List<Channel>> GetLiveChannels()
+        {
+            var channels = await _channelRepo.GetAll<Channel>();
+            var liveChannelIds = await GetLiveTwitchChannels();
+
+            return channels
+                .Where( c=> liveChannelIds.Contains(c.Id))
+                .ToList();
+        }
+
+        private async Task<List<int>> GetLiveTwitchChannels()
+        {
+            var twitchChannels = await _channelRepo.GetAll<TwitchChannel>();
+
+            var twitchIds = twitchChannels.Select(t => t.TwitchId)
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .ToList();
+
+            var liveChannelTwitchIds = (await _twitchService.GetChannelLiveStates(twitchIds))
+                .Where(x => x.IsLive)
+                .Select(x => x.TwitchId)
+                .ToList();
+
+            return twitchChannels
+                .Where(c => liveChannelTwitchIds.Contains(c.TwitchId))
+                .Select(c => c.ChannelId)
+                .ToList();
         }
     }
 }

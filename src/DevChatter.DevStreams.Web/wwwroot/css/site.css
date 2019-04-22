@@ -24,3 +24,9 @@ body {
 .theme-select {
     margin-top: 6px;
 }
+
+/* Basic Tag Styling */
+.tag-selection {
+    display: flex;
+    flex-direction: row;
+}

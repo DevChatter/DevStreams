@@ -28,10 +28,8 @@
                 </template>
                 <span slot="noResult">Oops! No elements found. Consider changing the search query.</span>
             </multiselect>
-            <div>
-                <ul>
-                    <li v-for="(tag, index) in tags" v-if="index < 5"><a href="#">{{tag.name}} ({{tag.count}})</a></li>
-                </ul>
+            <div class="tag-selection">
+                <span v-for="(tag, index) in tags" v-if="index < 5"><a href="#">{{tag.name}} ({{tag.count}})</a></span>
             </div>
         </div>
     </div>

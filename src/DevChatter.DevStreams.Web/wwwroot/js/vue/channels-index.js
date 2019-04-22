@@ -15,6 +15,7 @@ let app = new Vue({
         isLoadingTags: false,
     },
     mounted() {
+        this.tagSearch('');
         this.fetchChannels();
     },
     watch:{

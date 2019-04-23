@@ -27,6 +27,11 @@ let app = new Vue({
             deep: true
           }
     },
+    computed: {
+        availableTags: function() {
+            return this.tags.filter(tag => tag.count > 0).sort((a,b) => b.count - a.count);
+        }
+    },
     methods: {
         fetchChannels: async function () {
             const res = await axios.post('/graphql',
@@ -51,6 +56,13 @@ let app = new Vue({
                     }
                 });
             this.channels = res.data.data.channels;
+            if (this.channels) {
+                this.tags
+                    .forEach(
+                        tag => tag.count = this.channels.filter(
+                            (x) =>  x.tags.map(
+                                t => t.name).indexOf(tag.name) > -1).length);
+            }
             this.isLoadingData = false;
         },
         formatTags: function (tags) {

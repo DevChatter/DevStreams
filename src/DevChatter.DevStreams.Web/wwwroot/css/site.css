@@ -19,8 +19,27 @@ body {
 
 [v-cloak] {
     display: none;
-  }
+}
 
 .theme-select {
     margin-top: 6px;
+}
+
+
+/* Styling for the channel images */
+.channel-image {
+    /*Note: This class should be used in combination with the img-responsive class.*/
+    height: 100px;
+}
+
+
+.vertical-align_middle {
+    display: inline-block;
+    vertical-align: middle;
+    float: none;
+}
+
+.channel-description
+{
+    width: 60%;
 }

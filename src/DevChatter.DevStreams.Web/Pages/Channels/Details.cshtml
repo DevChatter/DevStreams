@@ -14,42 +14,38 @@
     <div class="row">
         <div class="col-md-5">
             <h3>Channel Details</h3>
-            <div class="row">
-                <div class="col-md-6">
-                    <img style="height: 100px"src="@fullyQualifiedChannelImageSource" title="Channel image for @Model.Channel.Name" class="img-responsive" />
-                </div>
-                <div class="col-md-6">
-                    <p>
-                        @Model.Channel.Description
-                    </p>
-                </div>
-            </div>
+            <img src="@fullyQualifiedChannelImageSource" title="Channel image for @Model.Channel.Name" class="img-responsive channel-image vertical-align_middle" />
 
-
-
-
-            <a href="@Model.Channel.Uri" class="btn-block">View @Model.Channel.Name on Twitch</a>
+            <p class="vertical-align_middle channel-description">
+                @Model.Channel.Description
+            </p>
         </div>
-        <div class="col-md-3">
-            <h3>Next Streams</h3>
-            <ul>
-                <li v-for="stream in nextStreams">
-                    {{stream.startTime}}
-                </li>
-            </ul>
-        </div>
-        <div class="col-md-4">
-            <h3>Schedule</h3>
-            <ul>
-                <li v-for="stream in schedule">
-                    {{ stream.dayOfWeek }} {{stream.startTime}} until {{stream.endTime}}
-                </li>
-            </ul>
-        </div>
+
+
+
+
+        <a href="@Model.Channel.Uri" class="btn-block">View @Model.Channel.Name on Twitch</a>
     </div>
+    <div class="col-md-3">
+        <h3>Next Streams</h3>
+        <ul>
+            <li v-for="stream in nextStreams">
+                {{stream.startTime}}
+            </li>
+        </ul>
+    </div>
+    <div class="col-md-4">
+        <h3>Schedule</h3>
+        <ul>
+            <li v-for="stream in schedule">
+                {{ stream.dayOfWeek }} {{stream.startTime}} until {{stream.endTime}}
+            </li>
+        </ul>
+    </div>
+</div>
 
-    <input id="twitchId" type="hidden" value="@Model.Channel.TwitchId" />
-    <input id="channelId" type="hidden" value="@Model.Channel.Id" />
+<input id="twitchId" type="hidden" value="@Model.Channel.TwitchId" />
+<input id="channelId" type="hidden" value="@Model.Channel.Id" />
 </div>
 
 

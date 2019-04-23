@@ -2,12 +2,14 @@ using Dapper;
 using DevChatter.DevStreams.Core.Data;
 using DevChatter.DevStreams.Core.Services;
 using DevChatter.DevStreams.Core.Settings;
+using DevChatter.DevStreams.Core.Twitch;
 using DevChatter.DevStreams.Infra.Dapper;
 using DevChatter.DevStreams.Infra.Dapper.Services;
 using DevChatter.DevStreams.Infra.Dapper.TypeHandlers;
 using DevChatter.DevStreams.Infra.Db.Migrations;
 using DevChatter.DevStreams.Infra.GraphQL;
 using DevChatter.DevStreams.Infra.Twitch;
+using DevChatter.DevStreams.Web.Caching;
 using DevChatter.DevStreams.Web.Data;
 using FluentMigrator.Runner;
 using GraphQL.Server;
@@ -18,15 +20,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using DevChatter.DevStreams.Core.Twitch;
-using DevChatter.DevStreams.Web.Caching;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace DevChatter.DevStreams.Web
 {
@@ -100,7 +100,6 @@ namespace DevChatter.DevStreams.Web
             services.AddTransient<ITagSearchService, TagSearchService>();
             services.AddTransient<ICrudRepository, DapperCrudRepository>();
             services.AddScoped<IChannelRepository, DapperChannelRepository>();
-            services.AddTransient<IChannelSearchService, ChannelSearchService>();
             services.AddTransient<IChannelAggregateService, ChannelAggregateService>();
 
             services.AddMemoryCache();
@@ -108,6 +107,10 @@ namespace DevChatter.DevStreams.Web
             services.AddScoped(typeof(TwitchStreamService));
             CachedTwitchStreamService TwitchServiceFactory(IServiceProvider x) => new CachedTwitchStreamService((ITwitchStreamService) x.GetService(typeof(TwitchStreamService)), (IMemoryCache)x.GetService(typeof(IMemoryCache)));
             services.AddScoped<ITwitchStreamService, CachedTwitchStreamService>(TwitchServiceFactory);
+
+            services.AddScoped<ChannelSearchService>();
+            CachedChannelSearchService ChannelSearchServiceFactory(IServiceProvider x) => new CachedChannelSearchService((IChannelSearchService) x.GetService(typeof(ChannelSearchService)), (IMemoryCache)x.GetService(typeof(IMemoryCache)));
+            services.AddScoped<IChannelSearchService, CachedChannelSearchService>(ChannelSearchServiceFactory);
 
             services.AddScoped<ITwitchChannelService, TwitchChannelService>();
 

@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
-using DevChatter.DevStreams.Core.Model;
+﻿using DevChatter.DevStreams.Core.Model;
+using System.Threading.Tasks;
 
 namespace DevChatter.DevStreams.Core.Services
 {
     public interface IChannelSearchService
     {
-        List<Channel> Find();
+        Task<Channel> GetChannelSoundex(string standardizedChannelName);
     }
 }

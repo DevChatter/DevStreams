@@ -132,7 +132,7 @@ namespace DevChatter.DevStreams.Infra.GraphQL.Types
 
             var streamsNotInZone = scheduleLookup
                 .SelectMany(x => x)
-                .Where(stream => stream.TimeZoneId.Equals(_timeZone));
+                .Where(stream => !stream.TimeZoneId.Equals(_timeZone));
 
             foreach (ScheduledStream stream in streamsNotInZone)
             {

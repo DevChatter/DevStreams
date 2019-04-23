@@ -1,19 +1,19 @@
 ﻿Vue.component('vue-multiselect', window.VueMultiselect.default);
 
 let app = new Vue({
-	components: {
-		Multiselect: window.VueMultiselect.default
-	},
-	el: "#channelList",
-	data: {
-		isLoadingData: true,
-		channels: [],
-		searchFilters: {
-			selectedTags: [],
-		},
-		tags: [],
-		isLoadingTags: false,
-		showMoreTags: false
+    components: {
+        Multiselect: window.VueMultiselect.default
+    },
+    el: "#channelList",
+    data: {
+        isLoadingData: true,
+        channels: [],
+        searchFilters: {
+            selectedTags: [],
+        },
+        tags: [],
+        isLoadingTags: false,
+        showMoreTags: false
     },
     mounted() {
         this.tagSearch('');
@@ -75,7 +75,15 @@ let app = new Vue({
                 });
         },
         showMoreLessTags: function() {
-	        this.showMoreTags = !this.showMoreTags;
+            this.showMoreTags = !this.showMoreTags;
+        },
+        clickTag: function(tag) {
+            var index = this.searchFilters.selectedTags.indexOf(tag);
+            if (index > -1) {
+                this.searchFilters.selectedTags.splice(index, 1);
+            } else {
+                this.searchFilters.selectedTags.push(tag);
+            }
         }
     }
 });

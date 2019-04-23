@@ -9,7 +9,7 @@
 <div id="channelList">
     <div>
         <div>
-            <label class="control-label" for="ajax">Tags</label>
+            <label class="control-label" for="ajax">Selected Tags</label>
             <multiselect v-model="searchFilters.selectedTags" id="ajax" label="name"
                          track-by="id" placeholder="" open-direction="bottom"
                          :options="tags" :multiple="true" :searchable="true"
@@ -28,6 +28,7 @@
                 </template>
                 <span slot="noResult">Oops! No elements found. Consider changing the search query.</span>
             </multiselect>
+            <label class="control-label">Available Tags</label>
             <div class="tag-selection">
                 <span v-for="(tag, index) in availableTags" v-if="showMoreTags || index < 5" class="badge">
                     <a href="#" v-on:click="clickTag(tag)">{{tag.name}} ({{tag.count}})</a>

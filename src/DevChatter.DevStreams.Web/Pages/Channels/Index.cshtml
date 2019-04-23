@@ -29,8 +29,9 @@
                 <span slot="noResult">Oops! No elements found. Consider changing the search query.</span>
             </multiselect>
             <div class="tag-selection">
-                <span v-for="(tag, index) in tags" v-if="index < 5"><a href="#">{{tag.name}} ({{tag.count}})</a></span>
+                <span v-for="(tag, index) in tags" v-if="showMoreTags || index < 5" class="badge"><a href="#">{{tag.name}} ({{tag.count}})</a></span>
             </div>
+            <button v-on:click="showMoreLessTags">{{showMoreTags ? 'Show less...' : 'Show more...'}}</button>
         </div>
     </div>
     <h3>Channels</h3>

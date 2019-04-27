@@ -13,7 +13,7 @@ namespace DevChatter.DevStreams.Core.Twitch
                 Description = src.Description,
                 IsAffiliate = src.Broadcaster_type == TwitchConstants.AFFILIATE,
                 IsPartner = src.Broadcaster_type == TwitchConstants.PARTNER,
-				ImageUrl =  src.Profile_image_url
+                ImageUrl = src.Profile_image_url
             };
         }
     }

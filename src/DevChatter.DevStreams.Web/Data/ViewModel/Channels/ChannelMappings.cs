@@ -47,9 +47,9 @@ namespace DevChatter.DevStreams.Web.Data.ViewModel.Channels
                 ScheduledStreamsCount = src.ScheduledStreams.Count,
                 Tags = string.Join(", ", src.Tags.Select(x => x.Name)),
                 TwitchId = src.Twitch?.TwitchId,
-				// Assuming that src.Twitch could be null as we are potentially integrating more platforms later on. -- DAR 18/04/2019
-				ImageUrl = src.Twitch?.ImageUrl ?? ""
-			};
+                // Assuming that src.Twitch could be null as we are potentially integrating more platforms later on. -- DAR 18/04/2019
+                ImageUrl = src.Twitch?.ImageUrl ?? ""
+            };
         }
 
         public static void ApplyEditChanges(this Channel model,

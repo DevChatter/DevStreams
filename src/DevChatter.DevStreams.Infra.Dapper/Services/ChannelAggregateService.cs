@@ -113,7 +113,7 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
                 if (model.Twitch != null)
                 {
                     model.Twitch.ChannelId = id.Value;
-                    const string insertTwitchChannelSql = "INSERT INTO [TwitchChannels] (ChannelId, TwitchId, TwitchName, IsAffiliate, IsPartner, Description) VALUES (@ChannelId, @TwitchId, @TwitchName, @IsAffiliate, @IsPartner, @Description)";
+                    const string insertTwitchChannelSql = "INSERT INTO [TwitchChannels] (ChannelId, TwitchId, TwitchName, IsAffiliate, IsPartner, Description, ImageUrl) VALUES (@ChannelId, @TwitchId, @TwitchName, @IsAffiliate, @IsPartner, @Description, @ImageUrl)";
                     await connection.ExecuteAsync(insertTwitchChannelSql, model.Twitch);
                 }
 

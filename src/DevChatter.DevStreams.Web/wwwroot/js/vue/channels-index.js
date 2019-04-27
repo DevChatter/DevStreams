@@ -1,15 +1,10 @@
-﻿Vue.component('vue-multiselect', window.VueMultiselect.default);
-
-let app = new Vue({
-    components: {
-        Multiselect: window.VueMultiselect.default
-    },
+﻿let app = new Vue({
     el: "#channelList",
     data: {
         isLoadingData: true,
         channels: [],
         searchFilters: {
-            selectedTags: [],
+            selectedTags: []
         },
         tags: [],
         isLoadingTags: false,
@@ -29,7 +24,10 @@ let app = new Vue({
     },
     computed: {
         availableTags: function() {
-            return this.tags.filter(tag => tag.count > 0).sort((a,b) => b.count - a.count);
+            const selectedTags = this.searchFilters.selectedTags;
+            return this.tags
+                .filter(tag => tag.count > 0 && selectedTags.indexOf(tag) == -1)
+                .sort((a,b) => b.count - a.count);
         }
     },
     methods: {

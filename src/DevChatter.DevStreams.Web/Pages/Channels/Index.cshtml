@@ -10,27 +10,17 @@
     <div>
         <div>
             <label class="control-label" for="ajax">Selected Tags</label>
-            <multiselect v-model="searchFilters.selectedTags" id="ajax" label="name"
-                         track-by="id" placeholder="" open-direction="bottom"
-                         :options="tags" :multiple="true" :searchable="true"
-                         :loading="isLoadingTags" :internal-search="false"
-                         :clear-on-select="true" :close-on-select="false"
-                         :options-limit="300" :limit="5"
-                         :max-height="600" :show-no-results="false"
-                         v-on:search-change="tagSearch">
-                <template slot="tag" slot-scope="{ option, remove }">
-                    <span class="multiselect__tag">
-                        <span>{{ option.name }}</span>
-                        <span class="multiselect__tag-icon" v-on:click="remove(option)"></span>
-                    </span>
-                </template>
-                <template slot="clear" slot-scope="props">
-                </template>
-                <span slot="noResult">Oops! No elements found. Consider changing the search query.</span>
-            </multiselect>
+            <div class="tag-selection">
+                <span v-for="(tag, index) in searchFilters.selectedTags" 
+                    class="tag-selected btn-success">
+                    <span>{{ tag.name }}</span>
+                    <span class="tag-remove-icon" v-on:click="clickTag(tag)"></span>
+                </span>
+                <span v-if="searchFilters.selectedTags.length == 0">None Selected</span>
+            </div>
             <label class="control-label">Available Tags</label>
             <div class="tag-selection">
-                <span v-for="(tag, index) in availableTags" v-if="showMoreTags || index < 5" class="badge">
+                <span v-for="(tag, index) in availableTags" v-if="showMoreTags || index < 5" class="tag-available">
                     <a href="#" v-on:click="clickTag(tag)">{{tag.name}} ({{tag.count}})</a>
                 </span>
             </div>

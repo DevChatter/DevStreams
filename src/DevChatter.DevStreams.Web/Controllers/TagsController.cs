@@ -1,5 +1,5 @@
-﻿using DevChatter.DevStreams.Core.Services;
-using DevChatter.DevStreams.Core.Tagging;
+﻿using DevChatter.DevStreams.Core.Model;
+using DevChatter.DevStreams.Core.Services;
 using DevChatter.DevStreams.Web.Data.ViewModel.Tags;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -21,7 +21,7 @@ namespace DevChatter.DevStreams.Web.Controllers
         [HttpGet]
         public async Task<IList<TagViewModel>> Get(string filter)
         {
-            List<TagWithCount> models = await _tagSearchService.FindTagsWithCount(filter);
+            List<Tag> models = await _tagSearchService.Find(filter);
 
             var viewModels = models
                 .Select(x => x.ToViewModel())

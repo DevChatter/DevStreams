@@ -2,7 +2,6 @@
 using DevChatter.DevStreams.Core.Model;
 using DevChatter.DevStreams.Core.Services;
 using DevChatter.DevStreams.Core.Settings;
-using DevChatter.DevStreams.Core.Tagging;
 using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.Data;
@@ -21,26 +20,14 @@ namespace DevChatter.DevStreams.Infra.Dapper
             _dbSettings = databaseSettings.Value;
         }
 
-
-        public async Task<List<TagWithCount>> FindTagsWithCount(string filter)
+        public async Task<List<Tag>> Find(string filter)
         {
             using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
             {
                 var args = new { Search = $"%{filter}%" };
-                const string sql = 
-                    @"SELECT t.*, count(*) as [Count]
-                    FROM[Tags] t
-                        INNER JOIN[ChannelTags] ct on ct.TagId = t.Id
-                    WHERE[Name] LIKE @Search
-                    GROUP BY  t.Id, t.Name, t.Description
-                ";
-                List<TagWithCount> tagsWithCounts = 
-                    (await connection.QueryAsync<Tag, int, TagWithCount>(
-                        sql,
-                        (tag, count) => new TagWithCount { Tag = tag, Count = count },
-                        args,
-                        splitOn:"Count")).ToList();
-                return tagsWithCounts;
+                const string sql = "WHERE [Name] like @Search";
+                List<Tag> output = (await connection.GetListAsync<Tag>(sql, args)).ToList();
+                return output;
             }
         }
     }

@@ -1,4 +1,4 @@
-﻿using DevChatter.DevStreams.Core.Tagging;
+﻿using DevChatter.DevStreams.Core.Model;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -6,6 +6,6 @@ namespace DevChatter.DevStreams.Core.Services
 {
     public interface ITagSearchService
     {
-        Task<List<TagWithCount>> FindTagsWithCount(string filter);
+        Task<List<Tag>> Find(string filter);
     }
 }

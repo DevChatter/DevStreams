@@ -26,7 +26,7 @@
         availableTags: function() {
             const selectedTags = this.searchFilters.selectedTags;
             return this.tags
-                .filter(tag => tag.count > 0 && selectedTags.indexOf(tag) == -1)
+                .filter(tag => tag.count > 0 && selectedTags.indexOf(tag) === -1)
                 .sort((a,b) => b.count - a.count);
         }
     },

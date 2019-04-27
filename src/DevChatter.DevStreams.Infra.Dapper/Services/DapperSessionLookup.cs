@@ -58,26 +58,34 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
             }
         }
 
-        public async Task<List<EventResult>> Get(string timeZoneId, DateTime localDateTime, IEnumerable<int> includedTagIds)
+        public async Task<List<EventResult>> Get(string timeZoneId, DateTime localDateTime,
+            List<int> tagIds)
         {
-
             DateTimeZone zone = DateTimeZoneProviders.Tzdb[timeZoneId];
             LocalDate localDate = LocalDate.FromDateTime(localDateTime);
 
             (DateTime dayStart, DateTime dayEnd) = ResolveDayRange(localDate, zone);
 
-            const string sessionSql = @"SELECT * FROM [StreamSessions]
-                WHERE UtcEndTime > @dayStart 
-                    AND UtcStartTime < @dayEnd";
+            const string sessionSql =
+                    @"SELECT ss.Id, ss.ChannelId, ss.UtcStartTime, ss.UtcEndTime,
+                            ss.ScheduledStreamId, ss.TzdbVersionId
+                    FROM [StreamSessions] ss
+                        INNER JOIN [ChannelTags] ct on ct.ChannelId = ss.ChannelId
+                    WHERE UtcEndTime > @dayStart
+                        AND UtcStartTime < @dayEnd
+                        AND ct.TagId in @tagIds
+                    GROUP BY ss.Id, ss.ChannelId, ss.UtcStartTime, ss.UtcEndTime,
+                            ss.ScheduledStreamId, ss.TzdbVersionId
+                    HAVING count(*) >= @tagCount;
+";
 
-            const string channelSql = "SELECT * FROM Channels WHERE Id IN @ids";
-
+            const string channelSql = "SELECT * FROM Channels WHERE Id IN @ids;";
 
             using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
             {
                 try
                 {
-                    var args = new { dayStart, dayEnd };
+                    var args = new { dayStart, dayEnd, tagIds, tagCount = tagIds.Count};
                     var sessions = (await connection.QueryAsync<StreamSession>(sessionSql, args))
                         .ToList();
                     var channelArgs = new { ids = sessions.Select(x => x.ChannelId).ToArray() };

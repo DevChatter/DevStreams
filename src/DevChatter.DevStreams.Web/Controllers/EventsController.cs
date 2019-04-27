@@ -24,7 +24,7 @@ namespace DevChatter.DevStreams.Web.Controllers
         [HttpPost]
         public async Task<IList<EventViewModel>> Post([FromBody] EventsRequestModel requestModel)
         {
-            var includedTagIds = requestModel.IncludedTags.Select(t => t.Id);
+            var includedTagIds = requestModel.IncludedTags.Select(t => t.Id).ToList();
             List<EventResult> events = await _streamSessionService
                 .Get(requestModel.SelectedTimeZone, requestModel.SelectedDate, includedTagIds);
 

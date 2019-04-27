@@ -8,7 +8,7 @@ namespace DevChatter.DevStreams.Core.Services
 {
     public interface IStreamSessionService
     {
-        Task<List<EventResult>> Get(string timeZoneId, DateTime localDateTime, IEnumerable<int> includedTagIds);
+        Task<List<EventResult>> Get(string timeZoneId, DateTime localDateTime, List<int> tagIds);
 
         Task<IDictionary<int, StreamSession>> GetChannelNextStreamLookup(IEnumerable<int> channelIds);
 

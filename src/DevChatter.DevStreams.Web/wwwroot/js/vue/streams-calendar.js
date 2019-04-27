@@ -17,6 +17,7 @@ let calendar = new Vue({
         events: [],
         tags: [],
         isLoadingTags: false,
+        showMoreTags: false
     },
     computed: {
         selectedDate() {
@@ -28,6 +29,11 @@ let calendar = new Vue({
         includedTags() {
             return this.model.includedTags;
         },
+        availableTags: function () {
+            const selectedTags = this.model.includedTags;
+            return this.tags
+                .filter(tag => selectedTags.indexOf(tag) === -1);
+        }
     },
     watch: {
         selectedCountry: function (value, previous) {
@@ -63,8 +69,6 @@ let calendar = new Vue({
         },
         fetchEvents: function () {
             if (this.model.selectedTimeZone && this.model.selectedDate) {
-                const localDate = moment(this.model.selectedDate).format('YYYY-MM-DD');
-
                 axios.post(`/api/Events/`, this.model)
                     .then(response => {
                         this.events = response.data.map(this.convertDataToLocal);
@@ -93,8 +97,21 @@ let calendar = new Vue({
                     console.log(error.statusText);
                 });
         },
+        showMoreLessTags: function () {
+            this.showMoreTags = !this.showMoreTags;
+        },
+        clickTag: function (tag) {
+            var index = this.model.includedTags.indexOf(tag);
+            if (index > -1) {
+                this.model.includedTags.splice(index, 1);
+            } else {
+                this.model.includedTags.push(tag);
+            }
+        }
+
     },
     mounted: function () {
         this.fetchTimeZones();
+        this.tagSearch('');
     }
 });

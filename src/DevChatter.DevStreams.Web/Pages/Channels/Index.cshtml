@@ -21,7 +21,7 @@
             <label class="control-label">Available Tags</label>
             <div class="tag-selection">
                 <span v-for="(tag, index) in availableTags" v-if="showMoreTags || index < 5" class="tag-available">
-                    <a href="#" v-on:click="clickTag(tag)">{{tag.name}} ({{tag.count}})</a>
+                    <span v-on:click="clickTag(tag)">{{tag.name}} ({{tag.count}})</span>
                 </span>
             </div>
             <button v-on:click="showMoreLessTags" v-if="availableTags.length > 5">{{showMoreTags ? 'Show less...' : 'Show more...'}}</button>

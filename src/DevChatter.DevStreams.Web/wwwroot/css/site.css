@@ -47,7 +47,11 @@ body {
     overflow: hidden;
     max-width: 100%;
     text-overflow: ellipsis;
+    cursor: pointer;
+}
 
+.tag-available:hover {
+    background-color: #505051;
 }
 
 .tag-remove-icon:after {

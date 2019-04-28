@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System;
 
 namespace DevChatter.DevStreams.Web.Controllers
 {
@@ -26,20 +27,46 @@ namespace DevChatter.DevStreams.Web.Controllers
 
 
         /// <summary>
-        /// Get all live streams.
+        /// Get all live streams info.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>TwitchName, isLive = True, started_At, View Count</returns>
         [HttpGet]
         public async Task<IActionResult> Get()
         {
             List<TwitchChannel> channels = await _crudRepository.GetAll<TwitchChannel>();
             List<string> twitchIds = channels.Select(x => x.TwitchId).ToList();
-            var liveTwitchIds = (await _twitchService.GetChannelLiveStates(twitchIds))
+            var liveTwitchData = (await _twitchService.GetChannelLiveStates(twitchIds));
+
+            var sortedLiveData = liveTwitchData.OrderByDescending(o => o.viewerCount).ToList();
+
+            var liveTwitchIds = sortedLiveData
                 .Where(x => x.IsLive)
                 .Select(x => x.TwitchId)
                 .ToList();
-            var liveChannelNames = channels.Where(c => liveTwitchIds.Contains(c.TwitchId)).Select(c => c.TwitchName);
-            return Ok(liveChannelNames);
+
+            var liveChannelSorted = sortedLiveData
+                .OrderByDescending(x => x.viewerCount)
+                .Select(x => channels.Where(y => y.TwitchId == x.TwitchId).Where(v => x.IsLive).Select(z => z.TwitchName))
+                .Where(x => x.Any())
+                .ToList();
+
+            var timeDifference = sortedLiveData
+                .Where(x => liveTwitchIds.Contains(x.TwitchId))
+                .Select(x => (DateTime.UtcNow - x.startedAt.ToUniversalTime()));
+
+            var viewerCount = sortedLiveData
+                .Where(x => liveTwitchIds.Contains(x.TwitchId))
+                .Select(x => x.viewerCount)
+                .ToList();
+
+            var responseObject = new
+            {
+                Channel = liveChannelSorted,
+                viewCount = viewerCount,
+                timeOnline = timeDifference
+            };
+
+            return Ok(responseObject);
         }
 
         [HttpGet, Route("{twitchId}")]

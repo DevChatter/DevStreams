@@ -51,19 +51,26 @@ namespace DevChatter.DevStreams.Web.Pages
 
         public async Task<IActionResult> OnGetLuckyAsync()
         {
-            List<Channel> channels = await _repo.GetAll<Channel>();
+            List<Channel> channels = await _repo.GetAllChannelInfo();
+
             List<string> twitchIds = channels.Select(x => x?.Twitch?.TwitchId)
                 .Where(x => !string.IsNullOrWhiteSpace(x))
                 .ToList();
-            var liveChannelIds = (await _twitchService.GetChannelLiveStates(twitchIds))
+
+            var liveTwitchId = (await _twitchService.GetChannelLiveStates(twitchIds))
                 .Where(x => x.IsLive)
                 .Select(x => x.TwitchId)
-                .ToList();
-            var result = new Result();
+                .ToList().PickOneRandomElement();
 
-            if (liveChannelIds.Any())
+            var liveChannel = channels
+                .Where(x => x?.Twitch?.TwitchId == liveTwitchId)
+                .Select(x => x?.Name);
+
+            var result = new Result(); ;
+
+            if (liveChannel.Any())
             {
-                result.ChannelName = liveChannelIds.PickOneRandomElement();
+                result.ChannelName = liveChannel.First();
             }
             else
             {

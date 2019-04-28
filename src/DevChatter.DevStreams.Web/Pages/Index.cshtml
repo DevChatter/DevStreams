@@ -8,9 +8,12 @@
     <div class="col-md-3">
         <h2>Live Now</h2> @*TODO: Show channels that are live right now.*@
         <ul>
-            <li v-for="liveChannel in liveChannels">
-                {{liveChannel}}
-            </li>
+            <li v-for="liveChannel, index in liveChannels.channel.slice(0, 10)">
+				{{liveChannel[0]}}
+				views: {{ liveChannels.viewCount[index] }} 
+				Online: {{ liveChannels.timeOnline[index] }}
+
+			</li>
         </ul>
     </div>
     <div class="col-md-5">

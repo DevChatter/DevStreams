@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using DevChatter.DevStreams.Core.Model;
 
 namespace DevChatter.DevStreams.Infra.Twitch
 {
@@ -19,11 +20,20 @@ namespace DevChatter.DevStreams.Infra.Twitch
             _twitchSettings = twitchSettings.Value;
         }
 
-        /// <summary>
-        /// Returns the subset of the channels which are currently live on Twitch.
-        /// </summary>
-        /// <param name="channelNames">Names of the Channels to check for live status.</param>
-        /// <returns>The names of the subset of channels that are currently live.</returns>
+
+
+        public async Task<ChannelLiveState> IsLive(string twitchId)
+        {
+            // TODO: Have this just check cache or do a refresh based on getting *all* data.
+
+            var url = $"{_twitchSettings.BaseApiUrl}/streams?user_id={twitchId}";
+            var jsonResult = await Get(url);
+
+            var result = JsonConvert.DeserializeObject<StreamResult>(jsonResult);
+
+            return new ChannelLiveState{TwitchId = twitchId, IsLive = result.Data.Any()};
+        }
+
         public async Task<List<ChannelLiveState>> GetChannelLiveStates(List<string> twitchIds)
         {
             if (!twitchIds.Any())
@@ -37,27 +47,24 @@ namespace DevChatter.DevStreams.Infra.Twitch
 
             var result = JsonConvert.DeserializeObject<StreamResult>(jsonResult);
 
-            var liveChannels = result.Data.Where(x => x.Type == "live").ToList();
+            var liveChannels = result.Data.ToList();
 
-            return twitchIds
-                .Select(twitchId => new ChannelLiveState
-                {
-                    TwitchId = twitchId,
-                    IsLive = liveChannels.Any(x => x.User_id == twitchId)
-                })
-                .ToList();
-        }
+            var returnStat = new List<ChannelLiveState>();
 
-        public async Task<ChannelLiveState> IsLive(string twitchId)
-        {
-            // TODO: Have this just check cache or do a refresh based on getting *all* data.
+            if (twitchIds.Any())
+            {
+                returnStat = twitchIds
+                    .Select(twitchId => new ChannelLiveState
+                    {
+                        TwitchId = twitchId,
+                        IsLive = liveChannels.Any(x => x.User_id == twitchId),
+                        startedAt = result.Data.Where(x => x.User_id == twitchId).Select(x => x.Started_at.ToUniversalTime()).DefaultIfEmpty().First(),
+                        viewerCount = result.Data.Where(x => x.User_id == twitchId).Select(x => x.Viewer_count).DefaultIfEmpty().First()
 
-            var url = $"{_twitchSettings.BaseApiUrl}/streams?user_id={twitchId}";
-            var jsonResult = await Get(url);
-
-            var result = JsonConvert.DeserializeObject<StreamResult>(jsonResult);
-
-            return new ChannelLiveState{TwitchId = twitchId, IsLive = result.Data.Any()};
+                    })
+                    .ToList();
+            }
+            return returnStat;
         }
 
         // TODO: Extract to composed dependency

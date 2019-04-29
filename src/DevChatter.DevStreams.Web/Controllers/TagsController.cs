@@ -1,6 +1,5 @@
 ﻿using DevChatter.DevStreams.Core.Model;
 using DevChatter.DevStreams.Core.Services;
-using DevChatter.DevStreams.Web.Data;
 using DevChatter.DevStreams.Web.Data.ViewModel.Tags;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;

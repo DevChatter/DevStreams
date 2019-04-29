@@ -1,20 +1,17 @@
-﻿Vue.component('vue-multiselect', window.VueMultiselect.default);
-
-let app = new Vue({
-    components: {
-        Multiselect: window.VueMultiselect.default
-    },
+﻿let app = new Vue({
     el: "#channelList",
     data: {
         isLoadingData: true,
         channels: [],
         searchFilters: {
-            selectedTags: [],
+            selectedTags: []
         },
         tags: [],
         isLoadingTags: false,
+        showMoreTags: false
     },
     mounted() {
+        this.tagSearch('');
         this.fetchChannels();
     },
     watch:{
@@ -24,6 +21,14 @@ let app = new Vue({
             },
             deep: true
           }
+    },
+    computed: {
+        availableTags: function() {
+            const selectedTags = this.searchFilters.selectedTags;
+            return this.tags
+                .filter(tag => tag.count > 0 && selectedTags.indexOf(tag) === -1 && tag.count < this.channels.length)
+                .sort((a,b) => b.count - a.count);
+        }
     },
     methods: {
         fetchChannels: async function () {
@@ -49,6 +54,13 @@ let app = new Vue({
                     }
                 });
             this.channels = res.data.data.channels;
+            if (this.channels) {
+                this.tags
+                    .forEach(
+                        tag => tag.count = this.channels.filter(
+                            (x) =>  x.tags.map(
+                                t => t.name).indexOf(tag.name) > -1).length);
+            }
             this.isLoadingData = false;
         },
         formatTags: function (tags) {
@@ -71,6 +83,17 @@ let app = new Vue({
                 .catch(error => {
                     console.log(error.statusText);
                 });
+        },
+        showMoreLessTags: function() {
+            this.showMoreTags = !this.showMoreTags;
+        },
+        clickTag: function(tag) {
+            var index = this.searchFilters.selectedTags.indexOf(tag);
+            if (index > -1) {
+                this.searchFilters.selectedTags.splice(index, 1);
+            } else {
+                this.searchFilters.selectedTags.push(tag);
+            }
         }
     }
 });

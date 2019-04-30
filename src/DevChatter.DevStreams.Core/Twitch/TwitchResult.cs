@@ -52,28 +52,28 @@ namespace DevChatter.DevStreams.Core.Twitch
     }
     public class ChannelResultData
     {
-        public int _total { get; set; }
-        public List<ChannelResult> follows { get; set; }
+        public int Total { get; set; }
+        public List<ChannelResult> Follows { get; set; }
     }
 
     public class ChannelResult
     {
-        public DateTime created_at { get; set; }
-        public bool notifications { get; set; }
-        public ChannelFollowResult channel { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public bool Notifications { get; set; }
+        public ChannelFollowResult Channel { get; set; }
     }
 
     public class ChannelFollowResult
     {
-        public int _id { get; set; }
-        public DateTime created_at { get; set; }
-        public string display_name { get; set; }
-        public int followers { get; set; }
-        public string game { get; set; }
-        public string logo { get; set; }
-        public DateTime updated_at { get; set; }
-        public string url { get; set; }
-        public string video_banner { get; set; }
-        public int views { get; set; }
+        public int Id { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public string DisplayName { get; set; }
+        public int Followers { get; set; }
+        public string Game { get; set; }
+        public string Logo { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public string Url { get; set; }
+        public string VideoBanner { get; set; }
+        public int Views { get; set; }
     }
 }

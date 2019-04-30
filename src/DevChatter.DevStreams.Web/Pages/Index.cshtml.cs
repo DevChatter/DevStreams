@@ -51,7 +51,9 @@ namespace DevChatter.DevStreams.Web.Pages
 
         public async Task<IActionResult> OnGetLuckyAsync()
         {
-            List<Channel> channels = await _repo.GetAllChannelInfo();
+            List<Channel> channels = await _repo.GetAll<Channel>();
+
+            
 
             List<string> twitchIds = channels.Select(x => x?.Twitch?.TwitchId)
                 .Where(x => !string.IsNullOrWhiteSpace(x))

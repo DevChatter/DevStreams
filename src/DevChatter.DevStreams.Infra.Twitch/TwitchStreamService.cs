@@ -58,8 +58,8 @@ namespace DevChatter.DevStreams.Infra.Twitch
                     {
                         TwitchId = twitchId,
                         IsLive = liveChannels.Any(x => x.User_id == twitchId),
-                        startedAt = result.Data.Where(x => x.User_id == twitchId).Select(x => x.Started_at.ToUniversalTime()).DefaultIfEmpty().First(),
-                        viewerCount = result.Data.Where(x => x.User_id == twitchId).Select(x => x.Viewer_count).DefaultIfEmpty().First()
+                        StartedAt = result.Data.Where(x => x.User_id == twitchId).Select(x => x.Started_at.ToUniversalTime()).DefaultIfEmpty().First(),
+                        ViewerCount = result.Data.Where(x => x.User_id == twitchId).Select(x => x.Viewer_count).DefaultIfEmpty().First()
 
                     })
                     .ToList();

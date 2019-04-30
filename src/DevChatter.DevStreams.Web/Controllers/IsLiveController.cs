@@ -33,11 +33,12 @@ namespace DevChatter.DevStreams.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            List<TwitchChannel> channels = await _crudRepository.GetAll<TwitchChannel>();
-            List<string> twitchIds = channels.Select(x => x.TwitchId).ToList();
+            List<Channel> channels = await _channelAggregateService.GetAllAggregate();
+            List<string> twitchIds = channels.Select(x => x?.Twitch?.TwitchId).ToList();
+            twitchIds.RemoveAll(string.IsNullOrWhiteSpace);
             var liveTwitchData = (await _twitchService.GetChannelLiveStates(twitchIds));
 
-            var sortedLiveData = liveTwitchData.OrderByDescending(o => o.viewerCount).ToList();
+            var sortedLiveData = liveTwitchData.OrderByDescending(o => o.ViewerCount).ToList();
 
             var liveTwitchIds = sortedLiveData
                 .Where(x => x.IsLive)
@@ -45,18 +46,18 @@ namespace DevChatter.DevStreams.Web.Controllers
                 .ToList();
 
             var liveChannelSorted = sortedLiveData
-                .OrderByDescending(x => x.viewerCount)
-                .Select(x => channels.Where(y => y.TwitchId == x.TwitchId).Where(v => x.IsLive).Select(z => z.TwitchName))
+                .OrderByDescending(x => x.ViewerCount)
+                .Select(x => channels.Where(y => y?.Twitch?.TwitchId == x?.TwitchId).Where(v => x.IsLive).Select(z => z?.Twitch?.TwitchName))
                 .Where(x => x.Any())
                 .ToList();
 
             var timeDifference = sortedLiveData
                 .Where(x => liveTwitchIds.Contains(x.TwitchId))
-                .Select(x => (DateTime.UtcNow - x.startedAt.ToUniversalTime()));
+                .Select(x => (DateTime.UtcNow - x?.StartedAt.ToUniversalTime()));
 
             var viewerCount = sortedLiveData
                 .Where(x => liveTwitchIds.Contains(x.TwitchId))
-                .Select(x => x.viewerCount)
+                .Select(x => x.ViewerCount)
                 .ToList();
 
             var responseObject = new

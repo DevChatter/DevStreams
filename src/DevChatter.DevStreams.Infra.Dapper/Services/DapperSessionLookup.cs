@@ -66,7 +66,11 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
 
             (DateTime dayStart, DateTime dayEnd) = ResolveDayRange(localDate, zone);
 
-            const string sessionSql =
+            string sqlNoTags = 
+                @"SELECT * FROM [StreamSessions] 
+                  WHERE UtcEndTime > @dayStart AND UtcStartTime < @dayEnd";
+
+            const string sqlWithTags =
                     @"SELECT ss.Id, ss.ChannelId, ss.UtcStartTime, ss.UtcEndTime,
                             ss.ScheduledStreamId, ss.TzdbVersionId
                     FROM [StreamSessions] ss
@@ -86,8 +90,19 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
                 try
                 {
                     var args = new { dayStart, dayEnd, tagIds, tagCount = tagIds.Count};
-                    var sessions = (await connection.QueryAsync<StreamSession>(sessionSql, args))
-                        .ToList();
+                    List<StreamSession> sessions;
+
+                    if (tagIds.Any())
+                    {
+                        sessions = (await connection.QueryAsync<StreamSession>(sqlWithTags, args))
+                            .ToList();
+                    }
+                    else
+                    {
+                        sessions = (await connection.QueryAsync<StreamSession>(sqlNoTags, args))
+                            .ToList();
+                    }
+
                     var channelArgs = new { ids = sessions.Select(x => x.ChannelId).ToArray() };
                     var channels = connection.Query<Channel>(channelSql, channelArgs);
 

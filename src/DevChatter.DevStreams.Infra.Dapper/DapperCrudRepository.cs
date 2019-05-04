@@ -86,7 +86,6 @@ namespace DevChatter.DevStreams.Infra.Dapper
             }
         }
 
-
         public async Task<int> Update<T>(T model) where T : DataEntity
         {
             using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))

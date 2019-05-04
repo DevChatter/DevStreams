@@ -109,10 +109,7 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
 
                 foreach (var channel in channels)
                 {
-                    if (twitchChannels.Where(x => x?.ChannelId == channel?.Id).Any())
-                    {
-                        channel.Twitch = twitchChannels.Where(x => x?.ChannelId == channel?.Id).First();
-                    }
+                    channel.Twitch = twitchChannels.SingleOrDefault(x => x.ChannelId == channel.Id);
                 }
 
                 return channels;

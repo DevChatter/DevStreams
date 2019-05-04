@@ -50,30 +50,4 @@ namespace DevChatter.DevStreams.Core.Twitch
         public List<StreamResultData> Data { get; set; }
         public Pagination Pagination { get; set; }
     }
-    public class ChannelResultData
-    {
-        public int Total { get; set; }
-        public List<ChannelResult> Follows { get; set; }
-    }
-
-    public class ChannelResult
-    {
-        public DateTime CreatedAt { get; set; }
-        public bool Notifications { get; set; }
-        public ChannelFollowResult Channel { get; set; }
-    }
-
-    public class ChannelFollowResult
-    {
-        public int Id { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public string DisplayName { get; set; }
-        public int Followers { get; set; }
-        public string Game { get; set; }
-        public string Logo { get; set; }
-        public DateTime UpdatedAt { get; set; }
-        public string Url { get; set; }
-        public string VideoBanner { get; set; }
-        public int Views { get; set; }
-    }
 }

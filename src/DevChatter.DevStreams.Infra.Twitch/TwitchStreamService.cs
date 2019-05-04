@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using DevChatter.DevStreams.Core.Model;
 
 namespace DevChatter.DevStreams.Infra.Twitch
 {
@@ -20,20 +19,11 @@ namespace DevChatter.DevStreams.Infra.Twitch
             _twitchSettings = twitchSettings.Value;
         }
 
-
-
-        public async Task<ChannelLiveState> IsLive(string twitchId)
-        {
-            // TODO: Have this just check cache or do a refresh based on getting *all* data.
-
-            var url = $"{_twitchSettings.BaseApiUrl}/streams?user_id={twitchId}";
-            var jsonResult = await Get(url);
-
-            var result = JsonConvert.DeserializeObject<StreamResult>(jsonResult);
-
-            return new ChannelLiveState{TwitchId = twitchId, IsLive = result.Data.Any()};
-        }
-
+        /// <summary>
+        /// Returns the subset of the channels which are currently live on Twitch.
+        /// </summary>
+        /// <param name="channelNames">Names of the Channels to check for live status.</param>
+        /// <returns>The names of the subset of channels that are currently live.</returns>
         public async Task<List<ChannelLiveState>> GetChannelLiveStates(List<string> twitchIds)
         {
             if (!twitchIds.Any())
@@ -65,6 +55,18 @@ namespace DevChatter.DevStreams.Infra.Twitch
                     .ToList();
             }
             return returnStat;
+        }
+
+        public async Task<ChannelLiveState> IsLive(string twitchId)
+        {
+            // TODO: Have this just check cache or do a refresh based on getting *all* data.
+
+            var url = $"{_twitchSettings.BaseApiUrl}/streams?user_id={twitchId}";
+            var jsonResult = await Get(url);
+
+            var result = JsonConvert.DeserializeObject<StreamResult>(jsonResult);
+
+            return new ChannelLiveState { TwitchId = twitchId, IsLive = result.Data.Any() };
         }
 
         // TODO: Extract to composed dependency

@@ -17,7 +17,9 @@
     },
     computed: {
         availableTags: function () {
-            return this.tags.filter(tag => this.selectedTags.indexOf(tag) === -1);
+            return this.tags.filter(tag => this.selectedTags.indexOf(tag) === -1
+                && tag.count < this.taggedItems.length
+                && tag.count > 0);
         }
     },
     watch: {

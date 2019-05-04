@@ -100,7 +100,7 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
         {
             string sql = @"SELECT * FROM Channels;
                          SELECT * FROM TwitchChannels;";
-            
+
             using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
             {
                 var dbQuery = await connection.QueryMultipleAsync(sql);
@@ -114,7 +114,6 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
 
                 return channels;
             }
-
         }
 
         public async Task<int?> Create(Channel model, string userId)

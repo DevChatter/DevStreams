@@ -39,21 +39,16 @@ namespace DevChatter.DevStreams.Infra.Twitch
 
             var liveChannels = result.Data.ToList();
 
-            var returnStat = new List<ChannelLiveState>();
+            List<ChannelLiveState> returnStat = twitchIds
+                .Select(twitchId => new ChannelLiveState
+                {
+                    TwitchId = twitchId,
+                    IsLive = liveChannels.Any(x => x.User_id == twitchId),
+                    StartedAt = result.Data.Where(x => x.User_id == twitchId).Select(x => x.Started_at.ToUniversalTime()).DefaultIfEmpty().First(),
+                    ViewerCount = result.Data.Where(x => x.User_id == twitchId).Select(x => x.Viewer_count).DefaultIfEmpty().First()
 
-            if (twitchIds.Any())
-            {
-                returnStat = twitchIds
-                    .Select(twitchId => new ChannelLiveState
-                    {
-                        TwitchId = twitchId,
-                        IsLive = liveChannels.Any(x => x.User_id == twitchId),
-                        StartedAt = result.Data.Where(x => x.User_id == twitchId).Select(x => x.Started_at.ToUniversalTime()).DefaultIfEmpty().First(),
-                        ViewerCount = result.Data.Where(x => x.User_id == twitchId).Select(x => x.Viewer_count).DefaultIfEmpty().First()
-
-                    })
-                    .ToList();
-            }
+                })
+                .ToList();
             return returnStat;
         }
 

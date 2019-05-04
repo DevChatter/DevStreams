@@ -1,13 +1,14 @@
 ﻿using NodaTime;
 
-namespace DevChatter.DevStreams.Core.Twitch
+namespace DevChatter.DevStreams.Web.Data.ViewModel.LiveChannels
 {
-    public class ChannelLiveState
+    public class LiveChannelViewModel
     {
-        public string TwitchId { get; set; }
-        public bool IsLive { get; set; }
+        public string ChannelName { get; set; }
+        public string Uri { get; set; }
         public Instant StartedAt { get; set; }
         public Duration TimeOnline => SystemClock.Instance.GetCurrentInstant() - StartedAt;
         public int ViewerCount { get; set; }
+
     }
 }

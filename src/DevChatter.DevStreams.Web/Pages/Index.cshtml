@@ -6,14 +6,13 @@
 }
 <div class="row" id="mainContent">
     <div class="col-md-3">
-        <h2>Live Now</h2> @*TODO: Show channels that are live right now.*@
+        <h2>Live Now</h2>
         <ul>
-            <li v-for="liveChannel, index in liveChannels.channel">
-				{{liveChannel[0]}}
-				views: {{ liveChannels.viewCount[index] }} 
-				Online: {{ liveChannels.timeOnline[index] }}
-
-			</li>
+            <li v-for="liveChannel in liveChannels">
+                {{ liveChannel.channelName }}
+                Viewers: {{ liveChannel.viewerCount }}
+                Online: {{ liveChannel.timeOnline }}
+            </li>
         </ul>
     </div>
     <div class="col-md-5">

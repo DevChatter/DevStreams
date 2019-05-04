@@ -8,6 +8,5 @@ namespace DevChatter.DevStreams.Core.Twitch
         public bool IsLive { get; set; }
         public DateTime StartedAt { get; set; }
         public int ViewerCount { get; set; }
-
     }
 }

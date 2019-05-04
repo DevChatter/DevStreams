@@ -53,7 +53,7 @@ namespace DevChatter.DevStreams.Web.Pages
 
         public async Task<IActionResult> OnGetLuckyAsync()
         {
-            List<Channel> channels = await _channelAggregateService.GetAllAggregate();
+            List<Channel> channels = await _channelAggregateService.GetAllAggregates();
             
             List<string> twitchIds = channels
                 .Where(x => !(string.IsNullOrEmpty(x.Twitch?.TwitchId)))

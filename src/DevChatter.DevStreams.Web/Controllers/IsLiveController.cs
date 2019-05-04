@@ -33,7 +33,7 @@ namespace DevChatter.DevStreams.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            List<Channel> channels = await _channelAggregateService.GetAllAggregate();
+            List<Channel> channels = await _channelAggregateService.GetAllAggregates();
             List<string> twitchIds = channels.Select(x => x?.Twitch?.TwitchId).ToList();
             twitchIds.RemoveAll(string.IsNullOrWhiteSpace);
             var liveTwitchData = (await _twitchService.GetChannelLiveStates(twitchIds));

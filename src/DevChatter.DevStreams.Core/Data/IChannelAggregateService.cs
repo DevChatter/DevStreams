@@ -9,7 +9,7 @@ namespace DevChatter.DevStreams.Core.Data
         List<Channel> GetAll();
         List<Channel> GetAll(string userId);
         Channel GetAggregate(int id);
-        Task<List<Channel>> GetAllAggregate();
+        Task<List<Channel>> GetAllAggregates();
         Task<int?> Create(Channel model, string userId);
         Task<int> Update(Channel model);
         Task<int> Delete(int id);

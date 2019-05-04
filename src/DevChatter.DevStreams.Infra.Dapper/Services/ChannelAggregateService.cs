@@ -96,7 +96,7 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
         /// Returns all the channel data for a channel object.
         /// </summary>
         /// <returns>All Channel Info in a List<Channel> Object </Channel></returns>
-        public async Task<List<Channel>> GetAllAggregate()
+        public async Task<List<Channel>> GetAllAggregates()
         {
             string sql = @"SELECT * FROM Channels;
                          SELECT * FROM TwitchChannels;";

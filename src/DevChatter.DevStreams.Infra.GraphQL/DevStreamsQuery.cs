@@ -16,7 +16,7 @@ namespace DevChatter.DevStreams.Infra.GraphQL
         private readonly ITwitchStreamService _twitchService;
 
         public DevStreamsQuery(IChannelRepository channelRepo, ITwitchStreamService twitchService,
-            IChannelSearchService channelSearchService)
+            IChannelSearchService channelSearchService, ITagService tagService)
         {
             _channelRepo = channelRepo;
             _twitchService = twitchService;
@@ -62,6 +62,11 @@ namespace DevChatter.DevStreams.Infra.GraphQL
                 resolve: ctx =>
                 {
                     return GetLiveChannels();
+                });
+            Field<ListGraphType<TagType>>("tagsInUse",
+                resolve: ctx =>
+                {
+                    return tagService.GetTagsInUse();
                 });
         }
 

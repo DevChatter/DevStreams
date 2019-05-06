@@ -1,33 +1,86 @@
-﻿Vue.component('vue-multiselect', window.VueMultiselect.default);
+﻿Vue.component('tag-selector', {
+    data: function () {
+        return {
+            selectedTags: [],
+            tags: [],
+            isLoadingTags: false,
+            showMoreTags: false
+        };
+    },
+    props: {
+        taggedItems: { type: Array, required: false, default: null },
+        showCount: { type: Boolean, required: true }
+    },
+    template: '#tag-selector-template',
+    mounted() {
+        this.tagSearch('');
+    },
+    computed: {
+        availableTags: function () {
+            return this.tags.filter(tag => this.selectedTags.indexOf(tag) === -1);
+        }
+    },
+    methods: {
+        tagSearch: function (filter) {
+            axios.get(`/api/Tags/?filter=${encodeURIComponent(filter)}`)
+                .then(response => {
+                    this.tags = response.data;
+                })
+                .catch(error => {
+                    console.log(error.statusText);
+                });
+            if (this.showCount) {
+                this.tags
+                    .forEach(
+                        tag => tag.count = this.taggedItems.filter(
+                            (x) => x.tags.map(
+                                t => t.name).indexOf(tag.name) > -1).length);
+            }
+        },
+        showMoreLessTags: function () {
+            this.showMoreTags = !this.showMoreTags;
+        },
+        clickTag: function (tag) {
+            var index = this.selectedTags.indexOf(tag);
+            if (index > -1) {
+                this.selectedTags.splice(index, 1);
+            } else {
+                this.selectedTags.push(tag);
+            }
+            this.$emit('selection-changed', this.selectedTags);
+        },
+        displayTag: function (tag) {
+            let text = tag.name;
+            if (this.showCount) {
+                text += ` (${tag.count})`;
+            }
+            return text;
+        }
+    }
+});
 
 let calendar = new Vue({
-    components: {
-        Multiselect: window.VueMultiselect.default
-    },
     el: "#cal",
     data: {
         model: {
-            includedTags: [],
+            selectedTags: [],
             selectedDate: moment().format('YYYY-MM-DD'),
-            selectedTimeZone: document.getElementById('timeZone').value,
+            selectedTimeZone: document.getElementById('timeZone').value
         },
-
         selectedCountry: document.getElementById('country').value,
         timeZoneOptions: [],
         events: [],
-        tags: [],
-        isLoadingTags: false,
     },
     computed: {
         selectedDate() {
             return this.model.selectedDate;
         },
+        includedTags() {
+            return this.model.selectedTags;
+        },
         selectedTimeZone() {
             return this.model.selectedTimeZone;
-        },
-        includedTags() {
-            return this.model.includedTags;
-        },
+        }
     },
     watch: {
         selectedCountry: function (value, previous) {
@@ -47,7 +100,7 @@ let calendar = new Vue({
         },
         selectedTimeZone() {
             this.fetchEvents();
-        },
+        }
     },
     methods: {
         fetchTimeZones: function () {
@@ -63,8 +116,6 @@ let calendar = new Vue({
         },
         fetchEvents: function () {
             if (this.model.selectedTimeZone && this.model.selectedDate) {
-                const localDate = moment(this.model.selectedDate).format('YYYY-MM-DD');
-
                 axios.post(`/api/Events/`, this.model)
                     .then(response => {
                         this.events = response.data.map(this.convertDataToLocal);
@@ -84,15 +135,9 @@ let calendar = new Vue({
                 streamLength: moment.duration(endMoment.diff(startMoment)).humanize()
             };
         },
-        tagSearch: function (filter) {
-            axios.get(`/api/Tags/?filter=${encodeURIComponent(filter)}`)
-                .then(response => {
-                    this.tags = response.data;
-                })
-                .catch(error => {
-                    console.log(error.statusText);
-                });
-        },
+        tagSelectionChanged: function (tags) {
+            this.model.selectedTags = tags;
+        }
     },
     mounted: function () {
         this.fetchTimeZones();

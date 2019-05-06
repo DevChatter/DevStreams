@@ -22,11 +22,13 @@ namespace DevChatter.DevStreams.Infra.GraphQL
             _twitchService = twitchService;
 
             Field<ListGraphType<ChannelType>>("channels",
-                arguments: new QueryArguments(new QueryArgument<ListGraphType<IdGraphType>>
-                {
-                    Name = "tagIds",
-                    DefaultValue = new List<int>()
-                }),
+                arguments: new QueryArguments(
+                    new QueryArgument<ListGraphType<IdGraphType>>
+                    {
+                        Name = "tagIds",
+                        DefaultValue = new List<int>()
+                    }
+                ),
                 resolve: ctx =>
                 {
                     List<int> tagIds = ctx.GetArgument<List<int>>("tagIds");

@@ -6,35 +6,41 @@
 
 <h2>Find Channels</h2>
 
+<script type="text/x-template" id="tag-selector-template">
+    <div>
+        <label class="control-label" for="ajax">Selected Tags</label>
+        <div class="tag-selection">
+            <span v-for="(tag, index) in selectedTags"
+                  class="tag-selected btn-success">
+                <span>{{ tag.name }}</span>
+                <span class="tag-remove-icon" v-on:click="clickTag(tag)"></span>
+            </span>
+            <span v-if="selectedTags.length == 0">None Selected</span>
+        </div>
+        <label class="control-label">Available Tags</label>
+        <div class="tag-selection">
+            <span v-for="(tag, index) in availableTags" v-if="showMoreTags || index < 5" class="tag-available">
+                <span v-on:click="clickTag(tag)">{{tag.name}} ({{tag.count}})</span>
+            </span>
+        </div>
+        <button v-on:click="showMoreLessTags" v-if="availableTags.length > 5">{{showMoreTags ? 'Show less...' : 'Show more...'}}</button>
+    </div>
+</script>
+
 <div id="channelList">
     <div>
-        <div>
-            <label class="control-label" for="ajax">Selected Tags</label>
-            <div class="tag-selection">
-                <span v-for="(tag, index) in searchFilters.selectedTags" 
-                    class="tag-selected btn-success">
-                    <span>{{ tag.name }}</span>
-                    <span class="tag-remove-icon" v-on:click="clickTag(tag)"></span>
-                </span>
-                <span v-if="searchFilters.selectedTags.length == 0">None Selected</span>
-            </div>
-            <label class="control-label">Available Tags</label>
-            <div class="tag-selection">
-                <span v-for="(tag, index) in availableTags" v-if="showMoreTags || index < 5" class="tag-available">
-                    <span v-on:click="clickTag(tag)">{{tag.name}} ({{tag.count}})</span>
-                </span>
-            </div>
-            <button v-on:click="showMoreLessTags" v-if="availableTags.length > 5">{{showMoreTags ? 'Show less...' : 'Show more...'}}</button>
-        </div>
+        <tag-selector v-bind:show-count="true"
+                      v-bind:tagged-items="channels"
+                      v-on:selection-changed="tagSelectionChanged($event)"></tag-selector>
     </div>
     <h3>Channels</h3>
     <table class="table">
         <thead>
-        <tr>
-            <th>Name</th>
-            <th>Tags</th>
-            <th>Next Stream</th>
-        </tr>
+            <tr>
+                <th>Name</th>
+                <th>Tags</th>
+                <th>Next Stream</th>
+            </tr>
         </thead>
         <tbody>
             <tr v-for="channel in channels">

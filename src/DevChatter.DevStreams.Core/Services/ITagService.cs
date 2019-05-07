@@ -8,5 +8,6 @@ namespace DevChatter.DevStreams.Core.Services
     public interface ITagService
     {
         Task<ILookup<int, Tag>> GetChannelTagsLookup(IEnumerable<int> channelIds);
+        Task<List<Tag>> GetTagsInUse();
     }
 }

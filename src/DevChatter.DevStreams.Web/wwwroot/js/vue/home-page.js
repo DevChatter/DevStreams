@@ -4,10 +4,12 @@
         liveChannelsIsLoaded: false,
         liveChannels : [],
         hasStream: false,
-        errorMessage: ''
+        errorMessage: '',
+        appstyles: { "display": "none" }
     },
     mounted() {
         this.fetchLiveChannels();
+        this.appstyles = { "display": "block"}
     },
     methods: {
         fetchLiveChannels: function () {

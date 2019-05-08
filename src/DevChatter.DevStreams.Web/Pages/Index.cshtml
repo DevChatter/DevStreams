@@ -4,7 +4,7 @@
 @{
     ViewData["Title"] = "Home page";
 }
-<div class="row" id="mainContent">
+<div class="row" style="display:none" v-bind:style="appstyles" id="mainContent">
     <div class="col-md-3">
         <h2>Live Now</h2> @*TODO: Show channels that are live right now.*@
         <ul>

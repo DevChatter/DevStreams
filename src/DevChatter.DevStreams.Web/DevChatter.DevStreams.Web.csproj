@@ -5,6 +5,11 @@
     <UserSecretsId>aspnet-DevChatter.DevStreams.Web-D5C56103-D0BB-4509-A77A-5008B97CDFA4</UserSecretsId>
   </PropertyGroup>
 
+  <Target Name="client-app" BeforeTargets="ComputeFilesToPublish">
+    <Exec Command="npm install" WorkingDirectory="client-app"></Exec>
+    <Exec Command="npm run build" WorkingDirectory="client-app"></Exec>
+  </Target>
+
   <ItemGroup>
     <PackageReference Include="BuildBundlerMinifier" Version="2.9.406" />
     <PackageReference Include="FluentMigrator" Version="3.1.3" />

@@ -10,12 +10,13 @@ namespace DevChatter.DevStreams.Infra.Db.Migrations
     {
         private const string ColumnName = "ImageUrl";
         private const string TableName = "TwitchChannels";
+        private const int MaxUrlLength = 2000;
 
         public override void Up()
         {
             Alter.Table(TableName)
                 .AddColumn(ColumnName)
-                .AsString(4000) // Note: 4000 is Db max value in Fluent Nhibernate. Not sure if this is a good idea or not? -- DAR 18/04/2019
+                .AsString(MaxUrlLength)
                 .WithDefaultValue("")
                 .NotNullable();
         }

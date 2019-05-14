@@ -19,14 +19,32 @@ body {
 
 [v-cloak] {
     display: none;
-  }
+}
 
 .theme-select {
     margin-top: 6px;
 }
 
-/* Channel Card Styles */
+/* View Channel Styling */
+.channel-image {
+    /*Note: This class should be used in combination with the img-responsive class.*/
+    height: 100px;
+}
 
+
+.vertical-align_middle {
+    display: inline-block;
+    vertical-align: middle;
+    float: none;
+}
+
+.channel-description
+{
+    width: 60%;
+}
+/* End View Channel Styling */
+
+/* Channel Card Styles */
 .channel-card {
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
     transition: 0.3s;
@@ -52,7 +70,6 @@ div.channel-card-img {
     padding: 2px 16px 16px 16px;
     width: 100%
 }
-
 /* End Channel Card Styles */
 
 /* Basic Tag Styling */

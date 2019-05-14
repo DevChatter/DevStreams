@@ -23,5 +23,8 @@ namespace DevChatter.DevStreams.Web.Data.ViewModel.Channels
         public string Tags { get; set; }
 
         public string TwitchId { get; set; }
+
+        [Display(Name = "Channel Image")]
+        public string ImageUrl { get; set; }
     }
 }

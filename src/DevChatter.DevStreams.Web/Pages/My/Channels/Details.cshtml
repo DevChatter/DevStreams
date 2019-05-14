@@ -3,6 +3,11 @@
 
 @{
     ViewData["Title"] = "Details";
+
+    // TODO: Extract this somewhere
+    var fullyQualifiedChannelImageSource = (!string.IsNullOrWhiteSpace(Model?.Channel?.ImageUrl)) 
+        ? Model?.Channel?.ImageUrl 
+        : $"https://via.placeholder.com/150/404041/FFFFFF/?text={Model?.Channel?.Name}";
 }
 
 <h2>Details</h2>
@@ -11,6 +16,12 @@
     <h4>Channel</h4>
     <hr />
     <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Channel.ImageUrl)
+        </dt>
+        <dd>
+            <img src="@fullyQualifiedChannelImageSource" title="Channel image for @Model.Channel.Name" class="img-responsive channel-image" />
+        </dd>
         <dt>
             @Html.DisplayNameFor(model => model.Channel.Name)
         </dt>

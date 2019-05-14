@@ -5,11 +5,11 @@
         liveChannels : [],
         hasStream: false,
         errorMessage: '',
-        appstyles: { "display": "none" }
+        appStyles: { "display": "none" }
     },
     mounted() {
         this.fetchLiveChannels();
-        this.appstyles = { "display": "block"}
+        this.appStyles = { "display": "block" };
     },
     methods: {
         humanizeTime(timeOnline) {

@@ -4,8 +4,10 @@
 @{
     ViewData["Title"] = "Details";
 
-    // TODO: Should we have some kind of placeholder image displyed if there's not a valid Channel image from twitch?
-    var fullyQualifiedChannelImageSource = (!string.IsNullOrWhiteSpace(Model?.Channel?.ImageUrl)) ? Model?.Channel?.ImageUrl : "";
+    // TODO: Extract this somewhere
+    var fullyQualifiedChannelImageSource = (!string.IsNullOrWhiteSpace(Model?.Channel?.ImageUrl)) 
+        ? Model?.Channel?.ImageUrl 
+        : $"https://via.placeholder.com/150/404041/FFFFFF/?text={Model?.Channel.Name}";
 }
 
 <div id="channelDetails">

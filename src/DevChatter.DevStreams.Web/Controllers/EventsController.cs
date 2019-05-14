@@ -1,13 +1,12 @@
-using DevChatter.DevStreams.Core.Model;
+using DevChatter.DevStreams.Core;
 using DevChatter.DevStreams.Core.Services;
 using DevChatter.DevStreams.Web.Data.ViewModel.Events;
+using DevChatter.DevStreams.Web.Data.ViewModel.Tags;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DevChatter.DevStreams.Core;
-using DevChatter.DevStreams.Web.Data.ViewModel.Tags;
 
 namespace DevChatter.DevStreams.Web.Controllers
 {
@@ -24,7 +23,7 @@ namespace DevChatter.DevStreams.Web.Controllers
         [HttpPost]
         public async Task<IList<EventViewModel>> Post([FromBody] EventsRequestModel requestModel)
         {
-            var includedTagIds = requestModel.IncludedTags.Select(t => t.Id);
+            var includedTagIds = requestModel.SelectedTags.Select(t => t.Id).ToList();
             List<EventResult> events = await _streamSessionService
                 .Get(requestModel.SelectedTimeZone, requestModel.SelectedDate, includedTagIds);
 
@@ -38,6 +37,6 @@ namespace DevChatter.DevStreams.Web.Controllers
     {
         public string SelectedTimeZone { get; set; }
         public DateTime SelectedDate { get; set; }
-        public List<TagViewModel> IncludedTags { get; set; }
+        public List<TagViewModel> SelectedTags { get; set; }
     }
 }

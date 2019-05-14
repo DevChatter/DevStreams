@@ -6,6 +6,27 @@
 
 <h2>Calendar</h2>
 
+<script type="text/x-template" id="tag-selector-template">
+    <div>
+        <label class="control-label" for="ajax">Selected Tags</label>
+        <div class="tag-selection">
+            <span v-for="(tag, index) in selectedTags"
+                  class="tag-selected btn-success">
+                <span>{{ tag.name }}</span>
+                <span class="tag-remove-icon" v-on:click="clickTag(tag)"></span>
+            </span>
+            <span v-if="selectedTags.length == 0">None Selected</span>
+        </div>
+        <label class="control-label">Available Tags</label>
+        <div class="tag-selection">
+            <span v-for="(tag, index) in availableTags" v-if="showMoreTags || index < 5" class="tag-available">
+                <span v-on:click="clickTag(tag)">{{displayTag(tag)}}</span>
+            </span>
+        </div>
+        <button v-on:click="showMoreLessTags" v-if="availableTags.length > 5">{{showMoreTags ? 'Show less...' : 'Show more...'}}</button>
+    </div>
+</script>
+
 <div id="cal">
 
     <div class="form-group">
@@ -30,28 +51,8 @@
         <input id="datePicker" class="form-control" v-model="model.selectedDate" type="date" />
     </div>
 
-    <div class="form-group">
-        <label class="control-label" for="includedTags">Included Tags</label>
-        <multiselect v-model="model.includedTags" id="includedTags" label="name" 
-                     track-by="id" placeholder="" open-direction="bottom"
-                     :options="tags" :multiple="true" :searchable="true"
-                     :loading="isLoadingTags" :internal-search="false"
-                     :clear-on-select="true" :close-on-select="false"
-                     :options-limit="300" :limit="3"
-                     :max-height="600" :show-no-results="false"
-                     v-on:search-change="tagSearch">
-            <template slot="tag" slot-scope="{ option, remove }">
-                <span class="multiselect__tag">
-                    <span>{{ option.name }}</span>
-                    <span class="multiselect__tag-icon" v-on:click="remove(option)"></span>
-                </span>
-            </template>
-            <template slot="clear" slot-scope="props">
-            </template>
-            <span slot="noResult">Oops! No elements found. Consider changing the search query.</span>
-        </multiselect>
-    </div>
-
+    <tag-selector v-bind:show-count="false" 
+                  v-on:selection-changed="tagSelectionChanged"></tag-selector>
 
     <ul>
         <li v-for="anEvent in events">
@@ -61,9 +62,5 @@
 </div>
 
 @section Scripts {
-    <script src="https://unpkg.com/vue-multiselect@2.1.0"></script>
-    <link rel="stylesheet" 
-          href="https://unpkg.com/vue-multiselect@2.1.0/dist/vue-multiselect.min.css">
     <script src="~/js/vue/streams-calendar.js"></script>
 }
-

@@ -47,5 +47,17 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
                        .ToLookup(pair => pair.Key, pair => pair.Value);
             }
         }
+
+        public async Task<List<Tag>> GetTagsInUse()
+        {
+            const string sql = "SELECT * FROM Tags WHERE Id in (SELECT DISTINCT TagId FROM ChannelTags)";
+
+            using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
+            {
+                var tagsUsedByChannels = (await connection.QueryAsync<Tag>(sql)).ToList();
+
+                return tagsUsedByChannels;
+            }
+        }
     }
 }

@@ -4,12 +4,23 @@
         liveChannelsIsLoaded: false,
         liveChannels : [],
         hasStream: false,
-        errorMessage: ''
+        errorMessage: '',
+        appstyles: { "display": "none" }
     },
     mounted() {
         this.fetchLiveChannels();
+        this.appstyles = { "display": "block"}
     },
     methods: {
+        humanizeTime(timeOnline) {
+            return moment.duration(timeOnline.totalMilliseconds).humanize();
+        },
+        getImageOrPlaceholder(liveChannel) {
+            if (liveChannel.imageUrl) {
+                return liveChannel.imageUrl;
+            }
+            return `https://via.placeholder.com/150/404041/FFFFFF/?text=${liveChannel.channelName}`;
+        },
         fetchLiveChannels: function () {
             axios.get(`/api/IsLive/`)
                 .then(response => {

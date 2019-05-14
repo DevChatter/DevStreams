@@ -25,8 +25,7 @@ body {
     margin-top: 6px;
 }
 
-
-/* Styling for the channel images */
+/* View Channel Styling */
 .channel-image {
     /*Note: This class should be used in combination with the img-responsive class.*/
     height: 100px;
@@ -42,4 +41,107 @@ body {
 .channel-description
 {
     width: 60%;
+}
+/* End View Channel Styling */
+
+/* Channel Card Styles */
+.channel-card {
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+    width: 80%;
+    margin-bottom: 20px;
+}
+
+.channel-card:hover {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+div.channel-card-img {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.channel-card-img img {
+    margin: 12px;
+    width: 100%;
+}
+
+.channel-card .container {
+    padding: 2px 16px 16px 16px;
+    width: 100%
+}
+/* End Channel Card Styles */
+
+/* Basic Tag Styling */
+.tag-selection {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    min-height: 30px;
+}
+
+.tag-available {
+    background-color: #404041;
+    position: relative;
+    display: inline-block;
+    padding: 4px 10px 4px 10px;
+    border-radius: 5px;
+    margin-right: 10px;
+    color: #f3f3f4;
+    line-height: 1;
+    margin-bottom: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 100%;
+    text-overflow: ellipsis;
+    cursor: pointer;
+}
+
+.tag-available:hover {
+    background-color: #505051;
+}
+
+.tag-remove-icon:after {
+    content: "\D7";
+    color: #266d4d;
+    font-size: 14px;
+}
+
+.tag-remove-icon {
+    cursor: pointer;
+    margin-left: 7px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    font-weight: 700;
+    font-style: normal;
+    width: 22px;
+    text-align: center;
+    line-height: 22px;
+    transition: all .2s ease;
+    border-radius: 5px;
+}
+
+.tag-remove-icon:focus,.tag-remove-icon:hover {
+    background: #369a6e
+}
+
+.tag-remove-icon:focus:after,.tag-remove-icon:hover:after {
+    color: #fff
+}
+
+.tag-selected {
+    position: relative;
+    display: inline-block;
+    padding: 4px 26px 4px 10px;
+    border-radius: 5px;
+    margin-right: 10px;
+    color: #fff;
+    line-height: 1;
+    margin-bottom: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 100%;
+    text-overflow: ellipsis;
 }

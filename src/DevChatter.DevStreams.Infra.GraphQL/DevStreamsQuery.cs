@@ -16,17 +16,19 @@ namespace DevChatter.DevStreams.Infra.GraphQL
         private readonly ITwitchStreamService _twitchService;
 
         public DevStreamsQuery(IChannelRepository channelRepo, ITwitchStreamService twitchService,
-            IChannelSearchService channelSearchService)
+            IChannelSearchService channelSearchService, ITagService tagService)
         {
             _channelRepo = channelRepo;
             _twitchService = twitchService;
 
             Field<ListGraphType<ChannelType>>("channels",
-                arguments: new QueryArguments(new QueryArgument<ListGraphType<IdGraphType>>
-                {
-                    Name = "tagIds",
-                    DefaultValue = new List<int>()
-                }),
+                arguments: new QueryArguments(
+                    new QueryArgument<ListGraphType<IdGraphType>>
+                    {
+                        Name = "tagIds",
+                        DefaultValue = new List<int>()
+                    }
+                ),
                 resolve: ctx =>
                 {
                     List<int> tagIds = ctx.GetArgument<List<int>>("tagIds");
@@ -62,6 +64,11 @@ namespace DevChatter.DevStreams.Infra.GraphQL
                 resolve: ctx =>
                 {
                     return GetLiveChannels();
+                });
+            Field<ListGraphType<TagType>>("tagsInUse",
+                resolve: ctx =>
+                {
+                    return tagService.GetTagsInUse();
                 });
         }
 

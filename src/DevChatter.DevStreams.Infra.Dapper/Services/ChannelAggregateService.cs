@@ -92,6 +92,30 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
             }
         }
 
+        /// <summary>
+        /// Returns all the channel data for a channel object.
+        /// </summary>
+        /// <returns>All Channel Info in a List<Channel> Object </Channel></returns>
+        public async Task<List<Channel>> GetAllAggregates()
+        {
+            string sql = @"SELECT * FROM Channels;
+                         SELECT * FROM TwitchChannels;";
+
+            using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))
+            {
+                var dbQuery = await connection.QueryMultipleAsync(sql);
+                List<Channel> channels = dbQuery.Read<Channel>().ToList();
+                List<TwitchChannel> twitchChannels = dbQuery.Read<TwitchChannel>().ToList();
+
+                foreach (var channel in channels)
+                {
+                    channel.Twitch = twitchChannels.SingleOrDefault(x => x.ChannelId == channel.Id);
+                }
+
+                return channels;
+            }
+        }
+
         public async Task<int?> Create(Channel model, string userId)
         {
             using (IDbConnection connection = new SqlConnection(_dbSettings.DefaultConnection))

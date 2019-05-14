@@ -7,13 +7,25 @@
 <div class="row" id="mainContent">
     <div class="col-md-3">
         <h2>Live Now</h2>
-        <ul>
-            <li v-for="liveChannel in liveChannels">
-                {{ liveChannel.channelName }}
-                Viewers: {{ liveChannel.viewerCount }}
-                Online: {{ liveChannel.timeOnline }}
-            </li>
-        </ul>
+        <div>
+            <div class="channel-card" v-for="liveChannel in liveChannels">
+                <div class="channel-card-img">
+                    <img :src="getImageOrPlaceholder(liveChannel)" alt="ProfileImage">
+                </div>
+                <div class="container">
+                    <h4><b>{{ liveChannel.channelName }}</b></h4>
+                    <ul>
+                        <li>
+                            Viewers: {{ liveChannel.viewerCount }}
+                        </li>
+                        <li>
+                            Online: {{ humanizeTime(liveChannel.timeOnline) }}
+                        </li>
+                    </ul>
+                    <a :href="liveChannel.uri" class="btn btn-primary">Watch Now</a>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="col-md-5">
         <h2>DevChatter</h2>

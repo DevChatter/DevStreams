@@ -2,9 +2,12 @@
 using DevChatter.DevStreams.Core.Model;
 using DevChatter.DevStreams.Core.Twitch;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DevChatter.DevStreams.Web.Data.ViewModel.LiveChannels;
+using NodaTime;
 
 namespace DevChatter.DevStreams.Web.Controllers
 {
@@ -26,20 +29,24 @@ namespace DevChatter.DevStreams.Web.Controllers
 
 
         /// <summary>
-        /// Get all live streams.
+        /// Get info about all currently live channels.
         /// </summary>
         /// <returns></returns>
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            List<TwitchChannel> channels = await _crudRepository.GetAll<TwitchChannel>();
-            List<string> twitchIds = channels.Select(x => x.TwitchId).ToList();
-            var liveTwitchIds = (await _twitchService.GetChannelLiveStates(twitchIds))
+            List<Channel> channels = (await _channelAggregateService.GetAllAggregates())
+                .Where(c => c.Twitch != null).ToList();
+            List<string> twitchIds = channels.Select(x => x?.Twitch?.TwitchId).ToList();
+            twitchIds.RemoveAll(string.IsNullOrWhiteSpace);
+            List<ChannelLiveState> channelLiveStates = (await _twitchService.GetChannelLiveStates(twitchIds));
+            var liveTwitchData = channelLiveStates
                 .Where(x => x.IsLive)
-                .Select(x => x.TwitchId)
+                .OrderByDescending(x => x.ViewerCount)
+                .Select(x => x.ToViewModel(channels.Single(c => c.Twitch.TwitchId == x.TwitchId)))
                 .ToList();
-            var liveChannelNames = channels.Where(c => liveTwitchIds.Contains(c.TwitchId)).Select(c => c.TwitchName);
-            return Ok(liveChannelNames);
+
+            return Ok(liveTwitchData);
         }
 
         [HttpGet, Route("{twitchId}")]

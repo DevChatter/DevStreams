@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using NodaTime;
 
 namespace DevChatter.DevStreams.Core.Twitch
 {
@@ -34,7 +35,7 @@ namespace DevChatter.DevStreams.Core.Twitch
         public string Type { get; set; }
         public string Title { get; set; }
         public int Viewer_count { get; set; }
-        public DateTime Started_at { get; set; }
+        public Instant Started_at { get; set; }
         public string Language { get; set; }
         public string Thumbnail_url { get; set; }
         public List<string> Tag_ids { get; set; }

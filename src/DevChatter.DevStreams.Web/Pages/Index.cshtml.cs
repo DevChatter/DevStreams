@@ -15,11 +15,13 @@ namespace DevChatter.DevStreams.Web.Pages
     {
         private readonly ICrudRepository _repo;
         private readonly ITwitchStreamService _twitchService;
+        private readonly IChannelAggregateService _channelAggregateService;
 
-        public IndexModel(ICrudRepository repo, ITwitchStreamService twitchService)
+        public IndexModel(ICrudRepository repo, ITwitchStreamService twitchService, IChannelAggregateService channelAggregateService)
         {
             _repo = repo;
             _twitchService = twitchService;
+            _channelAggregateService = channelAggregateService;
         }
 
         public List<ChannelIndexModel> NewlyAddedChannels { get; set; }
@@ -51,19 +53,27 @@ namespace DevChatter.DevStreams.Web.Pages
 
         public async Task<IActionResult> OnGetLuckyAsync()
         {
-            List<Channel> channels = await _repo.GetAll<Channel>();
-            List<string> twitchIds = channels.Select(x => x?.Twitch?.TwitchId)
-                .Where(x => !string.IsNullOrWhiteSpace(x))
+            List<Channel> channels = await _channelAggregateService.GetAllAggregates();
+            
+            List<string> twitchIds = channels
+                .Where(x => !(string.IsNullOrEmpty(x.Twitch?.TwitchId)))
+                .Select(x => x?.Twitch?.TwitchId)
                 .ToList();
-            var liveChannelIds = (await _twitchService.GetChannelLiveStates(twitchIds))
+
+            var liveTwitchId = (await _twitchService.GetChannelLiveStates(twitchIds))
                 .Where(x => x.IsLive)
                 .Select(x => x.TwitchId)
-                .ToList();
-            var result = new Result();
+                .ToList().PickOneRandomElement();
 
-            if (liveChannelIds.Any())
+            var liveChannel = channels
+                .Where(x => x?.Twitch?.TwitchId == liveTwitchId)
+                .Select(x => x?.Name);
+
+            var result = new Result(); ;
+
+            if (liveChannel.Any())
             {
-                result.ChannelName = liveChannelIds.PickOneRandomElement();
+                result.ChannelName = liveChannel.First();
             }
             else
             {

@@ -2,11 +2,13 @@
 using DevChatter.DevStreams.Core.Twitch;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using NodaTime;
+using NodaTime.Serialization.JsonNet;
+
 
 namespace DevChatter.DevStreams.Infra.Twitch
 {
@@ -30,22 +32,17 @@ namespace DevChatter.DevStreams.Infra.Twitch
             {
                 return new List<ChannelLiveState>(); // TODO: Replace with Guard Clause
             }
-            var channelIdsQueryFormat = String.Join("&user_id=", twitchIds);
+            var channelIdsQueryFormat = string.Join("&user_id=", twitchIds);
 
             var url = $"{_twitchSettings.BaseApiUrl}/streams?user_id={channelIdsQueryFormat}";
-            var jsonResult = await Get(url);
+            string jsonResult = await Get(url);
 
-            var result = JsonConvert.DeserializeObject<StreamResult>(jsonResult);
+            var serializerSettings = new JsonSerializerSettings();
+            serializerSettings.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
+            
+            var result = JsonConvert.DeserializeObject<StreamResult>(jsonResult, serializerSettings);
 
-            var liveChannels = result.Data.Where(x => x.Type == "live").ToList();
-
-            return twitchIds
-                .Select(twitchId => new ChannelLiveState
-                {
-                    TwitchId = twitchId,
-                    IsLive = liveChannels.Any(x => x.User_id == twitchId)
-                })
-                .ToList();
+            return result.CreateChannelLiveStatesFromStreamResults(twitchIds);
         }
 
         public async Task<ChannelLiveState> IsLive(string twitchId)
@@ -57,7 +54,7 @@ namespace DevChatter.DevStreams.Infra.Twitch
 
             var result = JsonConvert.DeserializeObject<StreamResult>(jsonResult);
 
-            return new ChannelLiveState{TwitchId = twitchId, IsLive = result.Data.Any()};
+            return new ChannelLiveState { TwitchId = twitchId, IsLive = result.Data.Any() };
         }
 
         // TODO: Extract to composed dependency

@@ -82,15 +82,26 @@ div.channel-card-img {
     align-items: center;
     justify-content: center;
 }
+
 .channel-card-img img {
+    width: 100%;
+}
+
+.channel-card-img a {
     margin: 12px;
     width: 100%;
 }
 
 .channel-card .container {
     padding: 2px 16px 16px 16px;
-    width: 100%
+    width: 100%;
 }
+
+.channel-card .card-title a {
+    color: inherit;
+    text-decoration: none;
+}
+
 /* End Channel Card Styles */
 
 /* Basic Tag Styling */

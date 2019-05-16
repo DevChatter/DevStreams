@@ -106,6 +106,27 @@ div.channel-card-img {
 
 /* End Channel Card Styles */
 
+/* Calendar Event Card Styles */
+
+.events-list {
+    margin-top: 20px;
+}
+
+.event-card {
+    width: 222px;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+    margin-bottom: 20px;
+    border-radius: 6px;
+}
+
+    .event-card .container {
+        padding: 2px 16px 16px 16px;
+        width: 100%;
+    }
+
+/* End Calendar Event Card Styles */
+
 /* Basic Tag Styling */
 .tag-selection {
     display: flex;

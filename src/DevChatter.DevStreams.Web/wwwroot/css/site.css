@@ -71,6 +71,7 @@ body {
     transition: 0.3s;
     width: 80%;
     margin-bottom: 20px;
+    border-radius: 6px;
 }
 
 .channel-card:hover {
@@ -85,6 +86,7 @@ div.channel-card-img {
 
 .channel-card-img img {
     width: 100%;
+    border-radius: 6px;
 }
 
 .channel-card-img a {

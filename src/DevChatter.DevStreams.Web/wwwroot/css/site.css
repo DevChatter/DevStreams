@@ -26,11 +26,32 @@ body {
 }
 
 /* View Channel Styling */
+.live-badge {
+    margin-left: 12px;
+    padding: 3px 10px;
+    border-radius: 4px;
+    color: #F3F3F4;
+    background-color: #DA2128;
+    display: inline-block;
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 1;
+    vertical-align: middle;
+}
+
+.live-badge a{
+    color: #F3F3F4;
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 1;
+    vertical-align: middle;
+    text-decoration: none;
+}
+
 .channel-image {
     /*Note: This class should be used in combination with the img-responsive class.*/
     height: 100px;
 }
-
 
 .vertical-align_middle {
     display: inline-block;

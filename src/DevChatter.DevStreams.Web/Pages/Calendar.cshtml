@@ -54,11 +54,23 @@
     <tag-selector v-bind:show-count="false" 
                   v-on:selection-changed="tagSelectionChanged"></tag-selector>
 
-    <ul>
-        <li v-for="anEvent in events">
-            {{ anEvent.channelName }} is streaming {{anEvent.localStartTime}} until {{anEvent.localEndTime}} ({{anEvent.streamLength}})
-        </li>
-    </ul>
+    <div class="events-list">
+        <div class="event-card" v-for="anEvent in events">
+            <div class="container">
+                <h4 class="card-title">{{ anEvent.channelName }}</h4>
+                    <p>
+                        Starts: {{ anEvent.localStartTime }}
+                    </p>
+                    <p>
+                        Ends: {{ anEvent.localEndTime }}
+                    </p>
+                    <p>
+                        Duration: {{ anEvent.streamLength }}
+                    </p>
+                <a href="#" class="btn btn-primary">Go to Channel</a>
+            </div>
+        </div>
+    </div>
 </div>
 
 @section Scripts {

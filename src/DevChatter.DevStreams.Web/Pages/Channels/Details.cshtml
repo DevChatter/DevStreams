@@ -11,7 +11,11 @@
 }
 
 <div id="channelDetails">
-    <h2>@Model.Channel.Name<span v-if="isLiveComplete"> - {{liveStatus}}</span></h2>
+    <h2>@Model.Channel.Name
+        <span v-if="isLiveComplete" class="live-badge">
+            <a href="@Model.Channel.Uri">Live</a>
+        </span>
+    </h2>
 
     <div class="row">
         <div class="col-md-5">

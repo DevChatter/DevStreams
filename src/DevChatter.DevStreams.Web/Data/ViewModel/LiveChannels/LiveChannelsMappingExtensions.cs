@@ -9,6 +9,7 @@ namespace DevChatter.DevStreams.Web.Data.ViewModel.LiveChannels
         {
             var viewModel = new LiveChannelViewModel
             {
+                Id = channel.Id,
                 ChannelName = channel.Name,
                 Uri = channel.Uri,
                 StartedAt = src.StartedAt,

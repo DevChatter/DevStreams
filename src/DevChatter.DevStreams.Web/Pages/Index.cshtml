@@ -10,10 +10,12 @@
         <div>
             <div class="channel-card" v-for="liveChannel in liveChannels">
                 <div class="channel-card-img">
-                    <img :src="getImageOrPlaceholder(liveChannel)" alt="ProfileImage">
+                    <a :href="'/Channels/Details/' + liveChannel.id">
+                        <img :src="getImageOrPlaceholder(liveChannel)" alt="ProfileImage">
+                    </a>
                 </div>
                 <div class="container">
-                    <h4><b>{{ liveChannel.channelName }}</b></h4>
+                    <h4 class="card-title"><a :href="'/Channels/Details/' + liveChannel.id">{{ liveChannel.channelName }}</a></h4>
                     <ul>
                         <li>
                             Viewers: {{ liveChannel.viewerCount }}

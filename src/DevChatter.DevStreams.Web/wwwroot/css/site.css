@@ -26,11 +26,32 @@ body {
 }
 
 /* View Channel Styling */
+.live-badge {
+    margin-left: 12px;
+    padding: 3px 10px;
+    border-radius: 4px;
+    color: #F3F3F4;
+    background-color: #DA2128;
+    display: inline-block;
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 1;
+    vertical-align: middle;
+}
+
+.live-badge a{
+    color: #F3F3F4;
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 1;
+    vertical-align: middle;
+    text-decoration: none;
+}
+
 .channel-image {
     /*Note: This class should be used in combination with the img-responsive class.*/
     height: 100px;
 }
-
 
 .vertical-align_middle {
     display: inline-block;
@@ -50,6 +71,7 @@ body {
     transition: 0.3s;
     width: 80%;
     margin-bottom: 20px;
+    border-radius: 6px;
 }
 
 .channel-card:hover {
@@ -61,16 +83,49 @@ div.channel-card-img {
     align-items: center;
     justify-content: center;
 }
+
 .channel-card-img img {
+    width: 100%;
+    border-radius: 6px;
+}
+
+.channel-card-img a {
     margin: 12px;
     width: 100%;
 }
 
 .channel-card .container {
     padding: 2px 16px 16px 16px;
-    width: 100%
+    width: 100%;
 }
+
+.channel-card .card-title a {
+    color: inherit;
+    text-decoration: none;
+}
+
 /* End Channel Card Styles */
+
+/* Calendar Event Card Styles */
+
+.events-list {
+    margin-top: 20px;
+}
+
+.event-card {
+    width: 222px;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+    margin-bottom: 20px;
+    border-radius: 6px;
+}
+
+    .event-card .container {
+        padding: 2px 16px 16px 16px;
+        width: 100%;
+    }
+
+/* End Calendar Event Card Styles */
 
 /* Basic Tag Styling */
 .tag-selection {

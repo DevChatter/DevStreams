@@ -1,5 +1,7 @@
-﻿using DevChatter.DevStreams.Core.Twitch;
+﻿using DevChatter.DevStreams.Core.Settings;
+using DevChatter.DevStreams.Core.Twitch;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -10,11 +12,14 @@ namespace DevChatter.DevStreams.Web.Caching
     {
         private readonly ITwitchStreamService _service;
         private readonly IMemoryCache _cacheLayer;
+        private readonly CacheSettings _settings;
 
-        public CachedTwitchStreamService(ITwitchStreamService service, IMemoryCache cacheLayer)
+        public CachedTwitchStreamService(ITwitchStreamService service,
+            IMemoryCache cacheLayer, IOptions<CacheSettings> cacheSettings)
         {
             _service = service;
             _cacheLayer = cacheLayer;
+            _settings = cacheSettings.Value;
         }
 
         public async Task<List<ChannelLiveState>> GetChannelLiveStates(List<string> twitchIds)
@@ -50,7 +55,8 @@ namespace DevChatter.DevStreams.Web.Caching
         {
             return await _cacheLayer.GetOrCreateAsync(CreateCacheKey(twitchId), async entry =>
             {
-                entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(1));
+                var cacheLength = TimeSpan.FromMinutes(_settings.ShortCacheMinutes);
+                entry.SetAbsoluteExpiration(cacheLength);
                 return await IsLiveFallback(twitchId);
             });
         }

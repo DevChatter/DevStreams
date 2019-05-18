@@ -27,6 +27,7 @@ using NodaTime;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 
 namespace DevChatter.DevStreams.Web
 {
@@ -56,6 +57,9 @@ namespace DevChatter.DevStreams.Web
 
             services.Configure<TwitchSettings>(
                 Configuration.GetSection("TwitchSettings"));
+
+            services.Configure<CacheSettings>(
+                Configuration.GetSection(nameof(CacheSettings)));
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
@@ -105,11 +109,11 @@ namespace DevChatter.DevStreams.Web
             services.AddMemoryCache();
 
             services.AddScoped(typeof(TwitchStreamService));
-            CachedTwitchStreamService TwitchServiceFactory(IServiceProvider x) => new CachedTwitchStreamService((ITwitchStreamService) x.GetService(typeof(TwitchStreamService)), (IMemoryCache)x.GetService(typeof(IMemoryCache)));
+            CachedTwitchStreamService TwitchServiceFactory(IServiceProvider x) => new CachedTwitchStreamService((ITwitchStreamService) x.GetService(typeof(TwitchStreamService)), (IMemoryCache)x.GetService(typeof(IMemoryCache)), (IOptions<CacheSettings>)x.GetService(typeof(IOptions<CacheSettings>)));
             services.AddScoped<ITwitchStreamService, CachedTwitchStreamService>(TwitchServiceFactory);
 
             services.AddScoped<ChannelSearchService>();
-            CachedChannelSearchService ChannelSearchServiceFactory(IServiceProvider x) => new CachedChannelSearchService((IChannelSearchService) x.GetService(typeof(ChannelSearchService)), (IMemoryCache)x.GetService(typeof(IMemoryCache)));
+            CachedChannelSearchService ChannelSearchServiceFactory(IServiceProvider x) => new CachedChannelSearchService((IChannelSearchService) x.GetService(typeof(ChannelSearchService)), (IMemoryCache)x.GetService(typeof(IMemoryCache)), (IOptions<CacheSettings>)x.GetService(typeof(IOptions<CacheSettings>)));
             services.AddScoped<IChannelSearchService, CachedChannelSearchService>(ChannelSearchServiceFactory);
 
             services.AddScoped<ITwitchChannelService, TwitchChannelService>();

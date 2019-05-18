@@ -331,3 +331,4 @@ ASALocalRun/
 
 # VS Code
 */.vscode/*
+src/DevChatter.DevStreams.Web/wwwroot/css/site.min.css

@@ -39,6 +39,20 @@ namespace DevChatter.DevStreams.Infra.GraphQL
                     return channelRepo.GetAll<Channel>();
                 });
 
+            Field<ListGraphType<ChannelType>>("channelsHavingTags",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<ListGraphType<IdGraphType>>>
+                    {
+                        Name = "tagIds",
+                        DefaultValue = new List<int>()
+                    }
+                ),
+                resolve: ctx =>
+                {
+                    List<int> tagIds = ctx.GetArgument<List<int>>("tagIds");
+                    return channelSearchService.GetChannelsByTagMatches(tagIds.ToArray());
+                });
+
             Field<ChannelType>("channel",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<IdGraphType>>
                 {

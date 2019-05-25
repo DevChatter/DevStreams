@@ -50,7 +50,8 @@ namespace DevChatter.DevStreams.Web.Caching
 
             Task<List<Channel>> CacheFallback(ICacheEntry entry)
             {
-                entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(15)); // TODO: Store in Config Setting
+                var expirationTime = TimeSpan.FromMinutes(_settings.MediumCacheMinutes);
+                entry.SetAbsoluteExpiration(expirationTime);
                 return _searchService.GetChannelsByTagMatches(tagIds);
             }
         }

@@ -2,6 +2,7 @@
 using DevChatter.DevStreams.Core.Services;
 using Microsoft.Extensions.Caching.Memory;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace DevChatter.DevStreams.Web.Caching
@@ -29,6 +30,22 @@ namespace DevChatter.DevStreams.Web.Caching
             {
                 entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(15)); // TODO: Store in Config Setting
                 return _searchService.GetChannelSoundex(standardizedChannelName);
+            }
+        }
+
+        public async Task<List<Channel>> GetChannelsByTagMatches(params int[] tagIds)
+        {
+            string tags = string.Join("-", tagIds);
+            string cacheKey = $"{nameof(IChannelSearchService)}-{nameof(Task)}-{tags}";
+
+            var channels = await _cacheLayer.GetOrCreateAsync(cacheKey, CacheFallback);
+
+            return channels;
+
+            Task<List<Channel>> CacheFallback(ICacheEntry entry)
+            {
+                entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(15)); // TODO: Store in Config Setting
+                return _searchService.GetChannelsByTagMatches(tagIds);
             }
         }
     }

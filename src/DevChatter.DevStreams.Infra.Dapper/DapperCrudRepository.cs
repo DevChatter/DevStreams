@@ -13,7 +13,7 @@ namespace DevChatter.DevStreams.Infra.Dapper
 {
     public class DapperCrudRepository : ICrudRepository
     {
-        protected readonly DatabaseSettings _dbSettings;
+        private readonly DatabaseSettings _dbSettings;
 
         public DapperCrudRepository(IOptions<DatabaseSettings> databaseSettings)
         {

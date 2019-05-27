@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="NodaTime" Version="2.4.5" />
+    <PackageReference Include="NodaTime.Serialization.JsonNet" Version="2.2.0" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0" />
     <PackageReference Include="TimeZoneNames" Version="4.0.0" />
   </ItemGroup>

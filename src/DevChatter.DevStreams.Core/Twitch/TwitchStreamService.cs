@@ -1,13 +1,11 @@
-﻿using DevChatter.DevStreams.Core.Twitch;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using NodaTime;
 using NodaTime.Serialization.JsonNet;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-
-namespace DevChatter.DevStreams.Infra.Twitch
+namespace DevChatter.DevStreams.Core.Twitch
 {
     public class TwitchStreamService : ITwitchStreamService
     {

@@ -16,6 +16,10 @@ namespace DevChatter.DevStreams.Web.Pages.Channels
 
         public ChannelViewModel Channel { get; set; }
 
+        public string LogoUrl => (!string.IsNullOrWhiteSpace(Channel?.ImageUrl))
+                ? Channel?.ImageUrl
+                : $"https://via.placeholder.com/150/404041/FFFFFF/?text={Channel.Name}";
+
         public IActionResult OnGet(int id)
         {
             var channel = _channelAggregateService.GetAggregate(id);

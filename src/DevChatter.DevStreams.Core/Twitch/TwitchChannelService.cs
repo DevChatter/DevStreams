@@ -1,12 +1,11 @@
 ﻿using DevChatter.DevStreams.Core.Model;
-using DevChatter.DevStreams.Core.Twitch;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DevChatter.DevStreams.Infra.Twitch
+namespace DevChatter.DevStreams.Core.Twitch
 {
     public class TwitchChannelService : ITwitchChannelService
     {

@@ -22,16 +22,24 @@ namespace DevChatter.DevStreams.Infra.Twitch
         /// </summary>
         /// <param name="channelNames"></param>
         /// <returns>The info for each Twitch channel.</returns>
-        public async Task<List<TwitchChannel>> GetChannelsInfo(IEnumerable<string> channelNames)
+        public async Task<List<TwitchChannel>> GetChannelsInfo(params string[] channelNames)
         {
-            var channelNamesQueryFormat = string.Join("&login=", channelNames);
+            try
+            {
+                var channelNamesQueryFormat = string.Join("&login=", channelNames);
 
-            var url = $"/users?login={channelNamesQueryFormat}";
-            string jsonResult = await _twitchApiClient.GetJsonData(url);
+                var url = $"/users?login={channelNamesQueryFormat}";
+                string jsonResult = await _twitchApiClient.GetJsonData(url);
 
-            var result = JsonConvert.DeserializeObject<UserResult>(jsonResult);
+                var result = JsonConvert.DeserializeObject<UserResult>(jsonResult);
 
-            return result.Data.Select(x => x.ToTwitchChannelModel()).ToList();
+                return result.Data.Select(x => x.ToTwitchChannelModel()).ToList();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            return new List<TwitchChannel>();
         }
 
 
@@ -42,23 +50,7 @@ namespace DevChatter.DevStreams.Infra.Twitch
         /// <returns></returns>
         public async Task<TwitchChannel> GetChannelInfo(string channelName)
         {
-            try
-            {
-                string url = $"/users?login={channelName}";
-                string jsonResult = await _twitchApiClient.GetJsonData(url);
-
-                UserResult result = JsonConvert.DeserializeObject<UserResult>(jsonResult);
-
-                UserResultData userInfo = result.Data.SingleOrDefault();
-                TwitchChannel channelInfo = userInfo.ToTwitchChannelModel();
-                return channelInfo;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-
-            return null;
+            return (await GetChannelsInfo(channelName)).SingleOrDefault();
         }
     }
 }

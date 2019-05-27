@@ -42,8 +42,6 @@ namespace DevChatter.DevStreams.Core.Twitch
 
         public async Task<ChannelLiveState> IsLive(string twitchId)
         {
-            // TODO: Have this just check cache or do a refresh based on getting *all* data.
-
             var url = $"/streams?user_id={twitchId}";
             var jsonResult = await _twitchApiClient.GetJsonData(url);
 

@@ -19,7 +19,7 @@ namespace DevChatter.DevStreams.Core.Twitch
         /// <summary>
         /// Returns the subset of the channels which are currently live on Twitch.
         /// </summary>
-        /// <param name="channelNames">Names of the Channels to check for live status.</param>
+        /// <param name="twitchIds">List of TwitchIDs of channels to check their status.</param>
         /// <returns>The names of the subset of channels that are currently live.</returns>
         public async Task<List<ChannelLiveState>> GetChannelLiveStates(List<string> twitchIds)
         {

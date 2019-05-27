@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace DevChatter.DevStreams.Infra.Dapper
 {
-    // TODO: Switch this to composition, instead of inheritance
     public class DapperChannelRepository : DapperCrudRepository, IChannelRepository
     {
         public DapperChannelRepository(IOptions<DatabaseSettings> databaseSettings) 

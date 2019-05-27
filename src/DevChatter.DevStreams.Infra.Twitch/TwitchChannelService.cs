@@ -1,23 +1,20 @@
-﻿using System;
-using DevChatter.DevStreams.Core.Model;
-using DevChatter.DevStreams.Core.Settings;
+﻿using DevChatter.DevStreams.Core.Model;
 using DevChatter.DevStreams.Core.Twitch;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace DevChatter.DevStreams.Infra.Twitch
 {
     public class TwitchChannelService : ITwitchChannelService
     {
-        private readonly TwitchSettings _twitchSettings;
+        private readonly ITwitchApiClient _twitchApiClient;
 
-        public TwitchChannelService(IOptions<TwitchSettings> twitchSettings)
+        public TwitchChannelService(ITwitchApiClient twitchApiClient)
         {
-            _twitchSettings = twitchSettings.Value;
+            _twitchApiClient = twitchApiClient;
         }
 
         /// <summary>
@@ -29,8 +26,8 @@ namespace DevChatter.DevStreams.Infra.Twitch
         {
             var channelNamesQueryFormat = string.Join("&login=", channelNames);
 
-            var url = $"{_twitchSettings.BaseApiUrl}/users?login={channelNamesQueryFormat}";
-            var jsonResult = await Get(url);
+            var url = $"/users?login={channelNamesQueryFormat}";
+            string jsonResult = await _twitchApiClient.GetJsonData(url);
 
             var result = JsonConvert.DeserializeObject<UserResult>(jsonResult);
 
@@ -47,8 +44,8 @@ namespace DevChatter.DevStreams.Infra.Twitch
         {
             try
             {
-                string url = $"{_twitchSettings.BaseApiUrl}/users?login={channelName}";
-                string jsonResult = await Get(url);
+                string url = $"/users?login={channelName}";
+                string jsonResult = await _twitchApiClient.GetJsonData(url);
 
                 UserResult result = JsonConvert.DeserializeObject<UserResult>(jsonResult);
 
@@ -63,17 +60,5 @@ namespace DevChatter.DevStreams.Infra.Twitch
 
             return null;
         }
-
-        // TODO: Extract to composed dependency
-        private async Task<string> Get(string url)
-        {
-            using (var client = new HttpClient())
-            {
-                client.DefaultRequestHeaders.Add("Client-Id", _twitchSettings.ClientId);
-                var result = await client.GetStringAsync(url);
-                return result;
-            }
-        }
-
     }
 }

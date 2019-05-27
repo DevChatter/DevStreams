@@ -1,24 +1,21 @@
-﻿using DevChatter.DevStreams.Core.Settings;
-using DevChatter.DevStreams.Core.Twitch;
-using Microsoft.Extensions.Options;
+﻿using DevChatter.DevStreams.Core.Twitch;
 using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 using NodaTime;
 using NodaTime.Serialization.JsonNet;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 
 namespace DevChatter.DevStreams.Infra.Twitch
 {
     public class TwitchStreamService : ITwitchStreamService
     {
-        private readonly TwitchSettings _twitchSettings;
+        private readonly ITwitchApiClient _twitchApiClient;
 
-        public TwitchStreamService(IOptions<TwitchSettings> twitchSettings)
+        public TwitchStreamService(ITwitchApiClient twitchApiClient)
         {
-            _twitchSettings = twitchSettings.Value;
+            _twitchApiClient = twitchApiClient;
         }
 
         /// <summary>
@@ -34,8 +31,8 @@ namespace DevChatter.DevStreams.Infra.Twitch
             }
             var channelIdsQueryFormat = string.Join("&user_id=", twitchIds);
 
-            var url = $"{_twitchSettings.BaseApiUrl}/streams?user_id={channelIdsQueryFormat}";
-            string jsonResult = await Get(url);
+            var url = $"/streams?user_id={channelIdsQueryFormat}";
+            string jsonResult = await _twitchApiClient.GetJsonData(url);
 
             var serializerSettings = new JsonSerializerSettings();
             serializerSettings.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
@@ -49,23 +46,12 @@ namespace DevChatter.DevStreams.Infra.Twitch
         {
             // TODO: Have this just check cache or do a refresh based on getting *all* data.
 
-            var url = $"{_twitchSettings.BaseApiUrl}/streams?user_id={twitchId}";
-            var jsonResult = await Get(url);
+            var url = $"/streams?user_id={twitchId}";
+            var jsonResult = await _twitchApiClient.GetJsonData(url);
 
             var result = JsonConvert.DeserializeObject<StreamResult>(jsonResult);
 
             return new ChannelLiveState { TwitchId = twitchId, IsLive = result.Data.Any() };
-        }
-
-        // TODO: Extract to composed dependency
-        private async Task<string> Get(string url)
-        {
-            using (var client = new HttpClient())
-            {
-                client.DefaultRequestHeaders.Add("Client-Id", _twitchSettings.ClientId);
-                var result = await client.GetStringAsync(url);
-                return result;
-            }
         }
     }
 }

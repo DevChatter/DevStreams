@@ -101,6 +101,8 @@ namespace DevChatter.DevStreams.Web
 
             services.AddScoped<ITagService, TagService>();
 
+            services.AddScoped<ITwitchApiClient, TwitchApiClient>();
+
             services.AddTransient<ITagSearchService, TagSearchService>();
             services.AddTransient<ICrudRepository, DapperCrudRepository>();
             services.AddScoped<IChannelRepository, DapperChannelRepository>();

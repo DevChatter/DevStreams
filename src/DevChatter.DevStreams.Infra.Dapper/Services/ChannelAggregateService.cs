@@ -160,6 +160,15 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
                 var channelTags = model.Tags
                     .Select(tag => new ChannelTag {ChannelId = model.Id, TagId = tag.Id});
 
+                var deleteTwitchSql = "DELETE FROM [TwitchChannels] WHERE [ChannelId] = @Id";
+                await connection.ExecuteAsync(deleteTwitchSql, new { model.Id });
+                if (model.Twitch != null)
+                {
+                    model.Twitch.ChannelId = model.Id;
+                    const string insertTwitchChannelSql = "INSERT INTO [TwitchChannels] (ChannelId, TwitchId, TwitchName, IsAffiliate, IsPartner, Description, ImageUrl) VALUES (@ChannelId, @TwitchId, @TwitchName, @IsAffiliate, @IsPartner, @Description, @ImageUrl)";
+                    await connection.ExecuteAsync(insertTwitchChannelSql, model.Twitch);
+                }
+
                 await connection.DeleteListAsync<ChannelTag>(new {ChannelId = model.Id});
 
                 const string insertChannelTagSql = "INSERT INTO [ChannelTags] (ChannelId, TagId) VALUES (@ChannelId, @TagId)";
@@ -167,7 +176,6 @@ namespace DevChatter.DevStreams.Infra.Dapper.Services
                 {
                     await connection.ExecuteAsync(insertChannelTagSql, channelTag);
                 }
-                // TODO: Update the TwitchInfo on channel Edit
 
                 return rows;
             }

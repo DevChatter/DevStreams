@@ -41,7 +41,8 @@ namespace DevChatter.DevStreams.Web.Pages.Manage.Tags
                 return NotFound();
             }
 
-            Tag = await _repo.Get<Tag>(id.Value); // TODO: See if we can skip this
+            // Required: SimpleCRUD Fails to delete Tag by Id only.
+            Tag = await _repo.Get<Tag>(id.Value);
 
             if (Tag != null)
             {

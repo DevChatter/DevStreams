@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using DevChatter.DevStreams.Core.Model;
+using DevChatter.DevStreams.Web.Data.ViewModel.Tags;
 using System.Globalization;
 using System.Linq;
-using DevChatter.DevStreams.Core.Model;
 using TimeZoneNames;
-using DevChatter.DevStreams.Web.Data.ViewModel.Tags;
 
 namespace DevChatter.DevStreams.Web.Data.ViewModel.Channels
 {
-    // TODO: Rename to ChannelExtensions
-    public static class ChannelMappings
+    public static class ChannelExtensions
     {
         public static ChannelIndexModel ToChannelIndexModel(this Channel src)
         {

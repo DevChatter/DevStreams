@@ -27,6 +27,7 @@ using NodaTime;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 
 namespace DevChatter.DevStreams.Web
 {
@@ -56,6 +57,9 @@ namespace DevChatter.DevStreams.Web
 
             services.Configure<TwitchSettings>(
                 Configuration.GetSection("TwitchSettings"));
+
+            services.Configure<CacheSettings>(
+                Configuration.GetSection(nameof(CacheSettings)));
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
@@ -97,6 +101,8 @@ namespace DevChatter.DevStreams.Web
 
             services.AddScoped<ITagService, TagService>();
 
+            services.AddScoped<ITwitchApiClient, TwitchApiClient>();
+
             services.AddTransient<ITagSearchService, TagSearchService>();
             services.AddTransient<ICrudRepository, DapperCrudRepository>();
             services.AddScoped<IChannelRepository, DapperChannelRepository>();
@@ -105,11 +111,11 @@ namespace DevChatter.DevStreams.Web
             services.AddMemoryCache();
 
             services.AddScoped(typeof(TwitchStreamService));
-            CachedTwitchStreamService TwitchServiceFactory(IServiceProvider x) => new CachedTwitchStreamService((ITwitchStreamService) x.GetService(typeof(TwitchStreamService)), (IMemoryCache)x.GetService(typeof(IMemoryCache)));
+            CachedTwitchStreamService TwitchServiceFactory(IServiceProvider x) => new CachedTwitchStreamService((ITwitchStreamService) x.GetService(typeof(TwitchStreamService)), (IMemoryCache)x.GetService(typeof(IMemoryCache)), (IOptions<CacheSettings>)x.GetService(typeof(IOptions<CacheSettings>)));
             services.AddScoped<ITwitchStreamService, CachedTwitchStreamService>(TwitchServiceFactory);
 
             services.AddScoped<ChannelSearchService>();
-            CachedChannelSearchService ChannelSearchServiceFactory(IServiceProvider x) => new CachedChannelSearchService((IChannelSearchService) x.GetService(typeof(ChannelSearchService)), (IMemoryCache)x.GetService(typeof(IMemoryCache)));
+            CachedChannelSearchService ChannelSearchServiceFactory(IServiceProvider x) => new CachedChannelSearchService((IChannelSearchService) x.GetService(typeof(ChannelSearchService)), (IMemoryCache)x.GetService(typeof(IMemoryCache)), (IOptions<CacheSettings>)x.GetService(typeof(IOptions<CacheSettings>)));
             services.AddScoped<IChannelSearchService, CachedChannelSearchService>(ChannelSearchServiceFactory);
 
             services.AddScoped<ITwitchChannelService, TwitchChannelService>();
@@ -140,7 +146,8 @@ namespace DevChatter.DevStreams.Web
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, 
-            IMigrationRunner migrationRunner, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
+            IMigrationRunner migrationRunner, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager,
+            IOptions<InitialSettings> initialSettings)
         {
             if (env.IsDevelopment())
             {
@@ -159,7 +166,8 @@ namespace DevChatter.DevStreams.Web
 
             InitializeDatabase(app, migrationRunner);
 
-            SetUpDefaultUsersAndRoles(userManager, roleManager).Wait();
+            SetUpDefaultUsersAndRoles(userManager, roleManager, initialSettings.Value)
+                .Wait();
 
             app.UseAuthentication();
 
@@ -176,7 +184,7 @@ namespace DevChatter.DevStreams.Web
         }
 
         private async Task SetUpDefaultUsersAndRoles(UserManager<IdentityUser> userManager,
-            RoleManager<IdentityRole> roleManager)
+            RoleManager<IdentityRole> roleManager, InitialSettings settings)
         {
             const string roleName = "Administrator";
             if (!await roleManager.RoleExistsAsync(roleName))
@@ -185,16 +193,14 @@ namespace DevChatter.DevStreams.Web
                 var roleCreateResult = await roleManager.CreateAsync(identityRole);
             }
 
-            const string defaultUserAccountName = "chatter1@example.com"; // TODO: Pull from Config
-            const string defaultUserPassword = "Passw0rd!"; // TODO: Pull from Config
             var usersInRole = (await userManager.GetUsersInRoleAsync(roleName));
             if (!usersInRole.Any() 
-                && await userManager.FindByEmailAsync(defaultUserAccountName) == null)
+                && await userManager.FindByEmailAsync(settings.AdminUsername) == null)
             {
-                var user = new IdentityUser(defaultUserAccountName);
-                user.Email = defaultUserAccountName;
+                var user = new IdentityUser(settings.AdminUsername);
+                user.Email = settings.AdminUsername;
                 
-                var result = await userManager.CreateAsync(user, defaultUserPassword);
+                var result = await userManager.CreateAsync(user, settings.AdminPassword);
 
                 if (result.Succeeded)
                 {

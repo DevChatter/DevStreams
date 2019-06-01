@@ -7,6 +7,6 @@ namespace DevChatter.DevStreams.Core.Twitch
     public interface ITwitchChannelService
     {
         Task<TwitchChannel> GetChannelInfo(string channelName);
-        Task<List<TwitchChannel>> GetChannelsInfo(IEnumerable<string> channelNames);
+        Task<List<TwitchChannel>> GetChannelsInfo(params string[] channelNames);
     }
 }

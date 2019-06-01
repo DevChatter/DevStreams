@@ -3,12 +3,10 @@ using DevChatter.DevStreams.Core.Model;
 using DevChatter.DevStreams.Core.Settings;
 using Microsoft.Extensions.Options;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace DevChatter.DevStreams.Infra.Dapper
 {
-    // TODO: Switch this to composition, instead of inheritance
     public class DapperChannelRepository : DapperCrudRepository, IChannelRepository
     {
         public DapperChannelRepository(IOptions<DatabaseSettings> databaseSettings) 
